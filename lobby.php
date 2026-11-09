@@ -32,8 +32,9 @@ $defaultApps = array(
     array('id'=>'school-checkin','group'=>'student-care','name'=>'มาโรงเรียน','description'=>'บันทึกและตรวจสอบการมาโรงเรียน','url'=>'student_affairs/checkinrow/','icon'=>'fa-calendar-check-o','color'=>'emerald'),
     array('id'=>'class-checkin','group'=>'student-care','name'=>'เข้าเรียนวิชาพื้นฐาน','description'=>'ตรวจสอบการเข้าเรียนรายคาบ','url'=>'student_affairs/checkinclass/','icon'=>'fa-check-square-o','color'=>'indigo'),
     array('id'=>'schedule-checkin','group'=>'student-care','name'=>'เช็กชื่อด้วยตารางสอน','description'=>'เช็กชื่อเข้าเรียนจากตารางสอน','url'=>'teacher/src/checkinclass.php?m=5','icon'=>'fa-clock-o','color'=>'violet','tag'=>'ใหม่'),
-    array('id'=>'student-track','group'=>'student-care','name'=>'บันทึกติดตามนักเรียน','description'=>'บันทึกข้อมูลการติดตามรายบุคคล','url'=>'student_affairs/advisor/studenttrack.php','icon'=>'fa-map-marker','color'=>'rose'),
-    array('id'=>'student-track-report','group'=>'student-care','name'=>'รายงานการติดตาม','description'=>'ดูรายงานและผลการติดตามนักเรียน','url'=>'student_affairs/advisor/studenttrack_report.php','icon'=>'fa-line-chart','color'=>'amber'),
+    // ระบบติดตามนักเรียน (ใหม่) ใช้ id เดิม 'student-track' เพื่อคงตำแหน่งการ์ดที่ admin จัดไว้ใน lobby_layout.json
+    // แทนที่ "บันทึกติดตามนักเรียน" (advisor/studenttrack.php) และ "รายงานการติดตาม" (advisor/studenttrack_report.php) เดิม
+    array('id'=>'student-track','group'=>'student-care','name'=>'ระบบติดตามนักเรียน','description'=>'ติดตามนักเรียนขาดเรียน ออกเอกสาร ขร. และบันทึกผลเยี่ยมบ้าน','url'=>'student_affairs/student_track/','icon'=>'fa-map-marker','color'=>'rose','tag'=>'ใหม่','badge'=>'student_track'),
     array('id'=>'advisor','group'=>'student-care','name'=>'ข้อมูลครูที่ปรึกษา','description'=>'ข้อมูลนักเรียนและครูที่ปรึกษา','url'=>'student_affairs/advisor/','icon'=>'fa-user-circle-o','color'=>'cyan'),
     array('id'=>'behavior','group'=>'student-care','name'=>'พฤติกรรมนักเรียน','description'=>'บันทึกและติดตามพฤติกรรม','url'=>'student_affairs/new_behavior/','icon'=>'fa-child','color'=>'orange'),
     array('id'=>'home-visit','group'=>'student-care','name'=>'บันทึกเยี่ยมบ้าน','description'=>'บันทึกข้อมูลการเยี่ยมบ้านนักเรียน','url'=>'student_affairs/advisor/homevisit.php','icon'=>'fa-home','color'=>'teal'),
@@ -243,6 +244,8 @@ $badges['activity_permission'] = lobby_count_query($conn, "SELECT COUNT(*) FROM 
 $badges['activity_permission'] += lobby_count_query($conn, "SELECT COUNT(*) FROM act_pms_report_list WHERE act_pms_report_list_status=0");
 $escapedMemberId = isset($conn) && method_exists($conn, 'real_escape_string') ? $conn->real_escape_string($memberId) : addslashes($memberId);
 $badges['substitute'] = lobby_count_query($conn, "SELECT COUNT(*) FROM ct_teach_data WHERE ct_teach_data_status1=1 AND (psn_mem_id_1='" . $escapedMemberId . "' OR psn_mem_id_2='" . $escapedMemberId . "')");
+// ระบบติดตามนักเรียน: แจ้งเตือนที่ยังไม่ได้อ่าน (ถ้ายังไม่ได้สร้างตาราง trk_* จะได้ 0)
+$badges['student_track'] = lobby_count_query($conn, "SELECT COUNT(*) FROM trk_notifications WHERE recipient_id=" . (int) $memberId . " AND read_at IS NULL");
 
 function e($value) { return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8'); }
 ?>
