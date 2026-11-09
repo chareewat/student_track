@@ -37,5 +37,15 @@ foreach (trk_classroom_advisors((int) $doc['std_classroom_id'], (int) $doc['seme
     }
 }
 
+// ขร.6 ส่งถึงเจ้าหน้าที่วิชาการ จึงแจ้งการยกเลิกด้วย
+if ($doc['doc_type'] === 'KR6') {
+    foreach (trk_db_all("SELECT psn_mem_id FROM trk_user_roles WHERE role = 'academic'") as $m) {
+        if ((int) $m['psn_mem_id'] !== $user['id']) {
+            trk_notify((int) $m['psn_mem_id'], 'ยกเลิก ขร.6 #' . $doc['id'] . ' ' . $doc['data']['student']['name'] . ': ' . $reason,
+                $back, (int) $doc['id']);
+        }
+    }
+}
+
 trk_flash('success', 'ยกเลิกเอกสารแล้ว');
 trk_redirect($back);

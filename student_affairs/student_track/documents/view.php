@@ -110,6 +110,21 @@ trk_render_header(trk_document_title($doc));
       <dd><?= e(trk_thai_date($d['absence']['from'])) ?> – <?= e(trk_thai_date($d['absence']['to'])) ?> (<?= (int) $d['absence']['days'] ?> วัน)</dd>
       <dt class="text-slate-500">ให้ติดต่อภายใน</dt><dd><?= e(trk_thai_date($d['deadline'])) ?></dd>
     <?php endif; ?>
+    <?php if (!empty($d['occasions'])): ?>
+      <dt class="text-slate-500">ติดตามแล้ว</dt>
+      <dd>
+        <?php foreach ($d['occasions'] as $i => $o): ?>
+          <div>
+            ครั้งที่ <?= $i + 1 ?>: <?= e(trk_thai_date($o['followup_date'])) ?> (<?= e($o['method']) ?>) ·
+            <?= (int) $o['case_type'] === 2
+                ? 'ขาดติดต่อกัน ' . e(trk_thai_date($o['from'], true)) . ' – ' . e(trk_thai_date($o['to'], true))
+                : 'ขาดรายวิชา ' . e($o['subject']) ?>
+          </div>
+        <?php endforeach; ?>
+      </dd>
+      <dt class="text-slate-500">หลังติดตามครั้งล่าสุด</dt>
+      <dd>ไม่มาโรงเรียน <?= (int) $d['after']['checked'] ?> วันทำการ</dd>
+    <?php endif; ?>
     <?php if (!empty($d['month_absence'])): ?>
       <dt class="text-slate-500">ขาดเรียนในเดือนนี้</dt>
       <dd><?= (int) $d['month_absence']['days'] ?> วัน (ติดต่อกันสูงสุด <?= (int) $d['month_absence']['max_consecutive'] ?> วัน)</dd>
@@ -137,6 +152,8 @@ trk_render_header(trk_document_title($doc));
             นักเรียนในเอกสารนี้จะกลับไปอยู่ในรายชื่อที่ต้องออก ขร.1 อีกครั้ง และครูที่ปรึกษาจะได้รับแจ้ง
           <?php elseif ($doc['doc_type'] === 'KR2'): ?>
             รอบติดตามจะกลับไปที่ขั้น "รอออก ขร.2" และ บค.14 ที่ออกคู่กันจะถูกยกเลิกด้วย
+          <?php elseif ($doc['doc_type'] === 'KR6'): ?>
+            นักเรียนจะกลับไปอยู่ในรายชื่อเสนอจำหน่ายของครูที่ปรึกษา และเจ้าหน้าที่วิชาการจะเห็นว่ายกเลิกแล้ว
           <?php elseif ($doc['doc_type'] === 'KR5'): ?>
             รอบติดตามนี้จะถูกยกเลิก และนักเรียนจะกลับไปอยู่ในรายชื่อที่ต้องออก ขร.5 อีกครั้ง
           <?php elseif ($doc['doc_type'] === 'KR3'): ?>

@@ -102,9 +102,19 @@ function trk_menu(): array
             }
         }
         $items[] = ['key' => 'case2', 'label' => 'นักเรียนขาดติดต่อกัน' . ($case2 ? " ($case2)" : ''), 'url' => trk_url('advisor/case2.php')];
+        $case3 = 0;
+        foreach (trk_advisor_classrooms($user['id'], trk_semester_id()) as $room) {
+            foreach (trk_case3_candidates((int) $room['std_classroom_id'], trk_semester_id()) as $c) {
+                $case3 += $c['eligible'] ? 1 : 0;
+            }
+        }
+        $items[] = ['key' => 'case3', 'label' => 'เสนอจำหน่าย' . ($case3 ? " ($case3)" : ''), 'url' => trk_url('advisor/case3.php')];
     }
     if (trk_teaching_assignments($user['id'], trk_semester_id())) {
         $items[] = ['key' => 'case1', 'label' => 'นักเรียนขาดรายวิชา', 'url' => trk_url('case1/index.php')];
+    }
+    if (trk_sees_all_rooms()) {
+        $items[] = ['key' => 'kr6', 'label' => 'ขร.6 เสนอจำหน่าย', 'url' => trk_url('academic/kr6.php')];
     }
     $unread = trk_unread_count($user['id']);
     $items[] = ['key' => 'notifications', 'label' => 'แจ้งเตือน' . ($unread ? " ($unread)" : ''), 'url' => trk_url('notifications.php')];

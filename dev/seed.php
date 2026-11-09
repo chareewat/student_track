@@ -66,7 +66,7 @@ foreach (['vic_attendance_subject', 'vic_attendance_teach', 'sch_attendance', 't
     $db->query("TRUNCATE TABLE `$t`");
 }
 if ($resetTracking) {
-    foreach (['trk_rounds', 'trk_documents', 'trk_document_rounds', 'trk_notifications'] as $t) {
+    foreach (['trk_rounds', 'trk_documents', 'trk_document_rounds', 'trk_notifications', 'trk_followups', 'trk_followup_photos'] as $t) {
         if ($db->query("SHOW TABLES LIKE '$t'")->num_rows) {
             $db->query("TRUNCATE TABLE `$t`");
         }
