@@ -24,10 +24,14 @@
    mysql -u root -e "DROP DATABASE IF EXISTS zpqmmpsz_db; CREATE DATABASE zpqmmpsz_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
    (echo SET FOREIGN_KEY_CHECKS=0; cat dev/sql/01_legacy_schema.sql dev/sql/02_lookup_data.sql) | mysql -u root --default-character-set=utf8mb4 zpqmmpsz_db
    php dev/seed.php
+   php student_affairs/student_track/migrations/migrate.php
    ```
+   เมื่อรัน `dev/seed.php` ใหม่ ตาราง `trk_*` (role, ตั้งค่า) จะไม่ถูกล้าง
 6. ติดตั้งและ build CSS: `npm install` แล้ว `npm run build:css` (ระหว่างพัฒนาใช้ `npm run watch:css`)
 
-เข้าใช้งานที่ http://localhost/student_track/login.php
+เข้าใช้งานที่ http://localhost/student_track/login.php แล้วไปที่ http://localhost/student_track/student_affairs/student_track/
+
+ครั้งแรก ให้ login เป็น `admin` แล้วไปที่ "จัดการสิทธิ์" กดบันทึกค่าที่ระบบแนะนำ จากนั้นบัญชีอื่นจึงจะเข้าใช้งานได้
 
 ## บัญชีจำลอง (รหัสผ่าน 1234 ทุกบัญชี)
 
