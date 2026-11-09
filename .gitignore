@@ -5,6 +5,7 @@ global_config.server.php
 # ข้อมูลจริง / ไฟล์ขนาดใหญ่ (ห้ามขึ้น repo)
 *.sql
 !dev/sql/*.sql
+!student_affairs/student_track/migrations/*.sql
 *.zip
 
 # โค้ดระบบเดิมที่ใช้อ้างอิงเท่านั้น (มีรูปบุคลากรจริง)
