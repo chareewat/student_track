@@ -40,6 +40,10 @@ if (trk_is_post()) {
         $errors['consecutive_absent_days'] = 'ต้องเป็นตัวเลข 1–30';
     }
 
+    if (mb_strlen($input['doc_no_prefix']) > 30 || mb_strlen($input['school_postcode']) > 10 || mb_strlen($input['academic_phone']) > 30) {
+        $errors['doc_no_prefix'] = 'ข้อความยาวเกินไป';
+    }
+
     $hours = [];
     foreach ((array) ($_POST['subject_hours'] ?? []) as $subjectId => $h) {
         $h = trim((string) $h);
@@ -134,6 +138,25 @@ trk_render_header('ตั้งค่า', 'settings');
         <?= trk_settings_input('deputy_academic_name', $values['deputy_academic_name'], '', 'text') ?>
       </label>
     </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="font-semibold">หนังสือถึงผู้ปกครอง (ขร.2, บค.14, ขร.5)</h2>
+    <div class="mt-4 grid gap-4 sm:grid-cols-3">
+      <label class="block">
+        <span class="mb-1 block text-sm text-slate-700">เลขนำหน้าหนังสือออก</span>
+        <?= trk_settings_input('doc_no_prefix', $values['doc_no_prefix'], '', 'text') ?>
+      </label>
+      <label class="block">
+        <span class="mb-1 block text-sm text-slate-700">รหัสไปรษณีย์โรงเรียน</span>
+        <?= trk_settings_input('school_postcode', $values['school_postcode'], '', 'text') ?>
+      </label>
+      <label class="block">
+        <span class="mb-1 block text-sm text-slate-700">โทรศัพท์กลุ่มบริหารวิชาการ</span>
+        <?= trk_settings_input('academic_phone', $values['academic_phone'], '', 'text') ?>
+      </label>
+    </div>
+    <?= trk_settings_error($errors, 'doc_no_prefix') ?>
   </section>
 
   <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">

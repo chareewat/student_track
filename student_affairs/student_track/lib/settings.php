@@ -13,6 +13,9 @@ function trk_setting_defaults(): array
         'consecutive_absent_days' => '5',   // เคส 2
         'director_name' => '',              // ผู้อำนวยการ (พิมพ์ลงเอกสาร)
         'deputy_academic_name' => '',       // รองผู้อำนวยการกลุ่มบริหารวิชาการ
+        'doc_no_prefix' => 'ศธ 04294.32/',  // นำหน้าเลขหนังสือออกถึงผู้ปกครอง (ขร.2, บค.14, ขร.5)
+        'school_postcode' => '62210',
+        'academic_phone' => '',             // โทรศัพท์กลุ่มบริหารวิชาการ (ขร.5)
     ];
 }
 

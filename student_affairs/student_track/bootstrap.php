@@ -34,6 +34,7 @@ require_once TRK_ROOT . '/lib/members.php';
 require_once TRK_ROOT . '/lib/notify.php';
 require_once TRK_ROOT . '/lib/documents.php';
 require_once TRK_ROOT . '/lib/case1.php';
+require_once TRK_ROOT . '/lib/rounds.php';
 
 trk_db_init($conn);
 

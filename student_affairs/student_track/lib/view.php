@@ -87,6 +87,15 @@ function trk_menu(): array
 {
     $user = trk_user();
     $items = [['key' => 'home', 'label' => 'หน้าหลัก', 'url' => trk_url('index.php')]];
+    if (trk_advisor_classrooms($user['id'], trk_semester_id())) {
+        $pending = (int) trk_db_value(
+            "SELECT COUNT(*) FROM trk_rounds r JOIN std_advisor a
+               ON a.std_classroom_id = r.std_classroom_id AND a.std_semester_id = r.semester_id AND a.psn_mem_id = ?
+             WHERE r.semester_id = ? AND r.status = 'open'",
+            [$user['id'], trk_semester_id()]
+        );
+        $items[] = ['key' => 'advisor', 'label' => 'งานครูที่ปรึกษา' . ($pending ? " ($pending)" : ''), 'url' => trk_url('advisor/index.php')];
+    }
     if (trk_teaching_assignments($user['id'], trk_semester_id())) {
         $items[] = ['key' => 'case1', 'label' => 'นักเรียนขาดรายวิชา', 'url' => trk_url('case1/index.php')];
     }

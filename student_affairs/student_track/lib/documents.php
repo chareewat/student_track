@@ -73,12 +73,16 @@ function trk_document_cancel_block_reason(array $doc, int $memberId): ?string
     return null;
 }
 
+/**
+ * มีเอกสารขั้นถัดไป (ออกหลังเอกสารนี้ ในรอบเดียวกัน และยัง active) หรือไม่
+ * บค.14 เป็นเอกสารคู่ของ ขร.2 จึงไม่นับเป็นขั้นถัดไป (ยกเลิก ขร.2 แล้ว บค.14 ถูกยกเลิกตาม)
+ */
 function trk_document_has_next_step(int $docId): bool
 {
     return (bool) trk_db_value(
         "SELECT 1 FROM trk_document_rounds dr
-         JOIN trk_document_rounds other ON other.round_id = dr.round_id AND other.document_id <> dr.document_id
-         JOIN trk_documents d ON d.id = other.document_id AND d.status = 'active'
+         JOIN trk_document_rounds other ON other.round_id = dr.round_id AND other.document_id > dr.document_id
+         JOIN trk_documents d ON d.id = other.document_id AND d.status = 'active' AND d.doc_type <> 'BK14'
          WHERE dr.document_id = ? LIMIT 1",
         [$docId]
     );
@@ -91,11 +95,32 @@ function trk_document_has_next_step(int $docId): bool
 function trk_document_cancel(int $docId, int $memberId, string $reason): void
 {
     trk_db_transaction(function () use ($docId, $memberId, $reason) {
+        $now = date('Y-m-d H:i:s');
+        $doc = trk_db_one('SELECT id, doc_type FROM trk_documents WHERE id = ?', [$docId]);
         trk_db_exec(
             "UPDATE trk_documents SET status = 'cancelled', cancelled_by = ?, cancelled_at = ?, cancel_reason = ?
              WHERE id = ? AND status = 'active'",
-            [$memberId, date('Y-m-d H:i:s'), $reason, $docId]
+            [$memberId, $now, $reason, $docId]
         );
+
+        if ($doc['doc_type'] === 'KR2') {
+            // บค.14 ที่ออกคู่กับ ขร.2 นี้ ถูกยกเลิกตาม
+            trk_db_exec(
+                "UPDATE trk_documents SET status = 'cancelled', cancelled_by = ?, cancelled_at = ?, cancel_reason = ?
+                 WHERE doc_type = 'BK14' AND status = 'active'
+                   AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.kr2_document_id')) = ?",
+                [$memberId, $now, 'ยกเลิกตาม ขร.2: ' . $reason, (string) $docId]
+            );
+        }
+        if ($doc['doc_type'] === 'KR3') {
+            // ผลติดตามของ ขร.3 นี้ไม่นับ และเปิดรอบกลับมาให้บันทึกใหม่
+            trk_db_exec("UPDATE trk_followups SET status = 'cancelled' WHERE document_id = ?", [$docId]);
+            trk_db_exec(
+                "UPDATE trk_rounds SET status = 'open', closed_at = NULL
+                 WHERE status = 'closed' AND id IN (SELECT round_id FROM trk_document_rounds WHERE document_id = ?)",
+                [$docId]
+            );
+        }
         trk_db_exec(
             "UPDATE trk_rounds r SET r.status = 'cancelled'
              WHERE r.id IN (SELECT round_id FROM trk_document_rounds WHERE document_id = ?)

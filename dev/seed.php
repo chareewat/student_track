@@ -62,7 +62,7 @@ function insert(mysqli $db, string $table, array $row): int
 // ---------------------------------------------------------------- ล้างข้อมูลเดิม
 $db->query('SET FOREIGN_KEY_CHECKS=0');
 foreach (['vic_attendance_subject', 'vic_attendance_teach', 'sch_attendance', 't_teachtable', 'vic_subject_open',
-          'std_advisor', 'std_head_advisor', 'std_student', 'std_classroom', 'vic_subject', 'psn_member'] as $t) {
+          'std_advisor', 'std_head_advisor', 'std_family', 'std_student', 'std_classroom', 'vic_subject', 'psn_member'] as $t) {
     $db->query("TRUNCATE TABLE `$t`");
 }
 if ($resetTracking) {
@@ -206,6 +206,25 @@ foreach ($rooms as $r) {
             'std_student_region' => 'พุทธ',
         ]);
         $students[$code] = ['id' => $sid, 'room' => $rid, 'level' => $level, 'label' => "$level/$room", 'no' => $n];
+
+        // ผู้ปกครองจำลอง (นักเรียนเลขที่ 14 ไม่มีข้อมูลผู้ปกครอง เพื่อทดสอบช่องว่าง)
+        if ($n !== 14) {
+            $parentSurname = $surnames[($sid * 3) % 8];
+            insert($db, 'std_family', [
+                'std_student_id' => $sid,
+                'std_old_brother' => 0, 'std_young_brother' => 0, 'std_old_sister' => 0, 'std_young_sister' => 0,
+                'std_order_child' => 1,
+                'std_family_status_id' => 1,
+                'std_father_citizen_id' => '', 'std_father_title_id' => 3, 'std_father_name' => 'บิดา', 'std_father_surname' => $parentSurname,
+                'std_father_salary' => 0.0, 'std_father_tel' => '',
+                'std_mother_citizen_id' => '', 'std_mother_title_id' => 4, 'std_mother_name' => 'มารดา', 'std_mother_surname' => $parentSurname,
+                'std_mother_salary' => 0.0, 'std_mother_tel' => '',
+                'std_parent_about' => 'มารดา',
+                'std_parent_citizen_id' => '', 'std_parent_title_id' => 4,
+                'std_parent_name' => 'ผู้ปกครอง' . $n, 'std_parent_surname' => $parentSurname,
+                'std_parent_salary' => 0.0, 'std_parent_tel' => '0800000000',
+            ]);
+        }
     }
 }
 

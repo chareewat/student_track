@@ -693,3 +693,42 @@ ALTER TABLE `vic_subject_open`
   ADD CONSTRAINT `fk_open_semester` FOREIGN KEY (`std_semester_id`) REFERENCES `std_semester` (`std_semester_id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_open_subject` FOREIGN KEY (`vic_subject_id`) REFERENCES `vic_subject` (`vic_subject_id`) ON UPDATE CASCADE;
 
+CREATE TABLE `std_family` (
+  `std_family_id` int(11) NOT NULL,
+  `std_student_id` int(11) NOT NULL,
+  `std_old_brother` int(11) NOT NULL COMMENT 'พี่ชาย',
+  `std_young_brother` int(11) NOT NULL COMMENT 'น้องชาย',
+  `std_old_sister` int(11) NOT NULL COMMENT 'พี่สาว',
+  `std_young_sister` int(11) NOT NULL COMMENT 'น้องสาว',
+  `std_order_child` int(11) NOT NULL COMMENT 'บุครคนที่',
+  `std_family_status_id` int(11) NOT NULL COMMENT 'สถานะภาพบิดาและมารดา FK',
+  `std_father_citizen_id` varchar(13) NOT NULL,
+  `std_father_title_id` int(11) NOT NULL COMMENT 'FK',
+  `std_father_name` varchar(60) NOT NULL,
+  `std_father_surname` varchar(70) NOT NULL,
+  `std_father_salary` decimal(10,2) NOT NULL COMMENT 'รายได้ต่อเดือน',
+  `std_father_tel` varchar(10) NOT NULL COMMENT '0901234567',
+  `std_mother_citizen_id` varchar(13) NOT NULL,
+  `std_mother_title_id` int(11) NOT NULL COMMENT 'FK',
+  `std_mother_name` varchar(60) NOT NULL,
+  `std_mother_surname` varchar(70) NOT NULL,
+  `std_mother_salary` decimal(10,2) NOT NULL COMMENT 'รายได้ต่อเดือน',
+  `std_mother_tel` varchar(10) NOT NULL COMMENT '0901234567',
+  `std_parent_about` varchar(10) NOT NULL,
+  `std_parent_citizen_id` varchar(13) NOT NULL,
+  `std_parent_title_id` int(11) NOT NULL,
+  `std_parent_name` varchar(60) NOT NULL,
+  `std_parent_surname` varchar(70) NOT NULL,
+  `std_parent_salary` decimal(10,2) NOT NULL,
+  `std_parent_tel` varchar(10) NOT NULL COMMENT '0901234567'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+ALTER TABLE `std_family`
+  ADD PRIMARY KEY (`std_family_id`),
+  ADD KEY `family2familystatus` (`std_family_status_id`),
+  ADD KEY `father2title` (`std_father_title_id`),
+  ADD KEY `mother2title` (`std_mother_title_id`),
+  ADD KEY `parent2title` (`std_parent_title_id`);
+
+ALTER TABLE `std_family`
+  MODIFY `std_family_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1612;

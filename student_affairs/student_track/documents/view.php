@@ -14,15 +14,26 @@ $d = $doc['data'];
 $cancelBlock = trk_document_cancel_block_reason($doc, $user['id']);
 $canCancel = $cancelBlock === null;
 $canceller = $doc['cancelled_by'] ? trk_member_profile((int) $doc['cancelled_by'])['name'] : '';
+$isKr1 = $doc['doc_type'] === 'KR1';
+
+// รอบติดตามที่ผูกกับเอกสาร [std_student_id => round_id]
+$roundIds = [];
+foreach (trk_db_all('SELECT r.id, r.std_student_id FROM trk_document_rounds dr JOIN trk_rounds r ON r.id = dr.round_id WHERE dr.document_id = ?', [(int) $doc['id']]) as $r) {
+    $roundIds[(int) $r['std_student_id']] = (int) $r['id'];
+}
+
+if ($isKr1) {
+    $heading = $d['subject']['code'] . ' ' . $d['subject']['name'] . ' · ม.' . $d['classroom']['level'] . '/' . $d['classroom']['room'];
+} else {
+    $heading = $d['student']['name'] . ' · ม.' . $d['student']['level'] . '/' . $d['student']['room'];
+}
 
 trk_render_header(trk_document_title($doc));
 ?>
 <div class="flex flex-wrap items-start justify-between gap-3">
   <div>
     <div class="text-sm text-slate-500"><?= e(trk_document_title($doc)) ?><?= $doc['doc_no'] ? ' · ที่ ' . e($doc['doc_no']) : '' ?></div>
-    <h1 class="mt-1 text-xl font-semibold">
-      <?= e($d['subject']['code'] . ' ' . $d['subject']['name']) ?> · ม.<?= e($d['classroom']['level'] . '/' . $d['classroom']['room']) ?>
-    </h1>
+    <h1 class="mt-1 text-xl font-semibold"><?= e($heading) ?></h1>
     <p class="mt-1 text-sm text-slate-600">
       ออกโดย <?= e($doc['issued_by_name']) ?> เมื่อ <?= e(trk_thai_date($doc['issued_at'])) ?> <?= e(substr($doc['issued_at'], 11, 5)) ?> น.
     </p>
@@ -37,6 +48,7 @@ trk_render_header(trk_document_title($doc));
   </div>
 <?php endif; ?>
 
+<?php if ($isKr1): ?>
 <div class="mt-6 grid gap-4 sm:grid-cols-3">
   <div class="rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm">
     <div class="text-xs text-slate-500">เวลาเรียนทั้งหมด</div>
@@ -67,6 +79,9 @@ trk_render_header(trk_document_title($doc));
           <td class="px-4 py-2">
             <div><?= e($s['name']) ?></div>
             <div class="text-xs text-slate-400"><?= e($s['code']) ?></div>
+            <?php if (isset($roundIds[(int) $s['id']])): ?>
+              <a href="<?= e(trk_url('advisor/round.php?id=' . $roundIds[(int) $s['id']])) ?>" class="text-xs text-blue-700 hover:underline">รอบติดตาม →</a>
+            <?php endif; ?>
           </td>
           <td class="px-4 py-2 text-right"><?= (int) $s['absent_hours'] ?> ชม.</td>
           <td class="px-4 py-2 text-xs text-slate-600">
@@ -79,6 +94,31 @@ trk_render_header(trk_document_title($doc));
     </tbody>
   </table>
 </div>
+<?php else: ?>
+<div class="mt-6 rounded-xl border border-slate-200 bg-white p-4 text-sm shadow-sm">
+  <dl class="grid gap-x-6 gap-y-2 sm:grid-cols-[10rem_1fr]">
+    <dt class="text-slate-500">นักเรียน</dt><dd><?= e($d['student']['name']) ?> (<?= e($d['student']['code']) ?>)</dd>
+    <?php if (!empty($d['guardian']) || array_key_exists('guardian', $d)): ?>
+      <dt class="text-slate-500">ผู้ปกครอง</dt><dd><?= e($d['guardian'] ?: '-') ?></dd>
+    <?php endif; ?>
+    <?php if (!empty($d['subjects'])): ?>
+      <dt class="text-slate-500">รายวิชา</dt>
+      <dd><?= e(implode(', ', array_map(function ($s) { return $s['code'] . ' ' . $s['name'] . ' (' . $s['absent_hours'] . ' คาบ)'; }, $d['subjects']))) ?></dd>
+    <?php endif; ?>
+    <?php if (!empty($d['month_absence'])): ?>
+      <dt class="text-slate-500">ขาดเรียนในเดือนนี้</dt>
+      <dd><?= (int) $d['month_absence']['days'] ?> วัน (ติดต่อกันสูงสุด <?= (int) $d['month_absence']['max_consecutive'] ?> วัน)</dd>
+    <?php endif; ?>
+    <?php if (!empty($d['followup'])): ?>
+      <dt class="text-slate-500">วันที่ติดตาม</dt><dd><?= e(trk_thai_date($d['followup']['date'])) ?> (<?= e($d['followup']['method']) ?>)</dd>
+      <dt class="text-slate-500">ผลที่พบ</dt><dd class="whitespace-pre-line"><?= e($d['followup']['findings']) ?></dd>
+    <?php endif; ?>
+  </dl>
+  <?php foreach ($roundIds as $rid): ?>
+    <a href="<?= e(trk_url('advisor/round.php?id=' . $rid)) ?>" class="mt-3 inline-block text-blue-700 hover:underline">ดูรอบติดตาม →</a>
+  <?php endforeach; ?>
+</div>
+<?php endif; ?>
 
 <?php if ($doc['status'] === 'active'): ?>
   <details class="mt-8 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -87,7 +127,17 @@ trk_render_header(trk_document_title($doc));
       <form method="post" action="<?= e(trk_url('documents/cancel.php')) ?>" class="mt-3 space-y-3">
         <?= trk_csrf_field() ?>
         <input type="hidden" name="id" value="<?= (int) $doc['id'] ?>">
-        <p class="text-sm text-slate-600">นักเรียนในเอกสารนี้จะกลับไปอยู่ในรายชื่อที่ต้องออกเอกสารอีกครั้ง และครูที่ปรึกษาจะได้รับแจ้ง</p>
+        <p class="text-sm text-slate-600">
+          <?php if ($isKr1): ?>
+            นักเรียนในเอกสารนี้จะกลับไปอยู่ในรายชื่อที่ต้องออก ขร.1 อีกครั้ง และครูที่ปรึกษาจะได้รับแจ้ง
+          <?php elseif ($doc['doc_type'] === 'KR2'): ?>
+            รอบติดตามจะกลับไปที่ขั้น "รอออก ขร.2" และ บค.14 ที่ออกคู่กันจะถูกยกเลิกด้วย
+          <?php elseif ($doc['doc_type'] === 'KR3'): ?>
+            ผลการติดตามนี้จะไม่ถูกนับ และรอบติดตามจะกลับไปที่ขั้น "รอบันทึกผลติดตาม"
+          <?php else: ?>
+            เอกสารนี้จะถูกทำเครื่องหมายว่ายกเลิก
+          <?php endif; ?>
+        </p>
         <input name="reason" required maxlength="255" placeholder="เหตุผลที่ยกเลิก (จำเป็น)"
                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
         <button class="rounded-lg border border-rose-300 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-50">ยืนยันยกเลิก</button>
