@@ -20,9 +20,13 @@ if ($dbhost !== 'localhost' && $dbhost !== '127.0.0.1') {
 }
 
 $until = date('Y-m-d');
+$resetTracking = false;
 foreach ($argv as $arg) {
     if (strpos($arg, '--until=') === 0) {
         $until = substr($arg, 8);
+    }
+    if ($arg === '--reset-tracking') {
+        $resetTracking = true; // ล้างรอบติดตาม เอกสาร และแจ้งเตือนที่สร้างระหว่างทดสอบ (role และตั้งค่ายังอยู่)
     }
 }
 
@@ -60,6 +64,13 @@ $db->query('SET FOREIGN_KEY_CHECKS=0');
 foreach (['vic_attendance_subject', 'vic_attendance_teach', 'sch_attendance', 't_teachtable', 'vic_subject_open',
           'std_advisor', 'std_head_advisor', 'std_student', 'std_classroom', 'vic_subject', 'psn_member'] as $t) {
     $db->query("TRUNCATE TABLE `$t`");
+}
+if ($resetTracking) {
+    foreach (['trk_rounds', 'trk_documents', 'trk_document_rounds', 'trk_notifications'] as $t) {
+        if ($db->query("SHOW TABLES LIKE '$t'")->num_rows) {
+            $db->query("TRUNCATE TABLE `$t`");
+        }
+    }
 }
 $db->query('SET FOREIGN_KEY_CHECKS=1');
 

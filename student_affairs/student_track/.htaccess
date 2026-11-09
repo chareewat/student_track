@@ -1,0 +1,3 @@
+# ห้ามเปิดไฟล์ภายในจากเว็บ
+RedirectMatch 403 /student_track/(vendor|tools|lib|views|migrations|storage)/
+RedirectMatch 403 /student_track/composer\.(json|lock)$

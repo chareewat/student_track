@@ -28,6 +28,15 @@
    ```
    เมื่อรัน `dev/seed.php` ใหม่ ตาราง `trk_*` (role, ตั้งค่า) จะไม่ถูกล้าง
 6. ติดตั้งและ build CSS: `npm install` แล้ว `npm run build:css` (ระหว่างพัฒนาใช้ `npm run watch:css`)
+7. ติดตั้ง mPDF (ไลบรารีสร้าง PDF): ในโฟลเดอร์ `student_affairs/student_track` สั่ง
+   `php C:/ProgramData/ComposerSetup/bin/composer.phar install --no-dev`
+   (composer.json ล็อกไว้ที่ PHP 7.4 และจะลบฟอนต์ของ mPDF ที่ไม่ได้ใช้ให้อัตโนมัติ)
+
+## ฟอนต์ใน PDF
+
+`assets/fonts/Sarabun-*.ttf` มาจาก Google Fonts (SIL OFL 1.1) **และถูกแก้ไขแล้ว** โดยเพิ่ม glyph ว่างสำหรับ U+200B
+เพราะ mPDF แทรกอักขระนี้ระหว่างคำภาษาไทยเพื่อตัดบรรทัด ถ้าฟอนต์ไม่มี glyph นี้จะเห็นเป็นกล่อง □ ใน PDF
+ถ้าดาวน์โหลดฟอนต์ใหม่ ต้องรัน `python tools/add-zwsp-glyph.py assets/fonts/Sarabun-*.ttf` อีกครั้ง (ต้องติดตั้ง fonttools)
 
 เข้าใช้งานที่ http://localhost/student_track/login.php แล้วไปที่ http://localhost/student_track/student_affairs/student_track/
 
@@ -58,6 +67,9 @@
 | 900048 | 4/1 | ขาดยาวตั้งแต่ 27 ต.ค. ไม่กลับมาเลย |
 
 หากต้องการให้นักเรียนข้ามเกณฑ์ครั้งที่ 2/3 ให้สร้างเช็คชื่อล่วงหน้า: `php dev/seed.php --until=2027-01-29`
+ล้างเอกสาร/รอบติดตาม/แจ้งเตือนที่สร้างระหว่างทดสอบ: `php dev/seed.php --reset-tracking`
+
+ตัวอย่างที่ใช้ทดสอบเคส 1: login เป็น `t01` → เมนู "นักเรียนขาดรายวิชา" (ภาษาไทย 1 ม.1/1 และสุขศึกษา 4 ม.4/1 มีนักเรียนถึงเกณฑ์)
 
 ## ข้อกำหนดของโค้ด
 

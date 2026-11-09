@@ -1,0 +1,23 @@
+{
+    "name": "rws/student-track",
+    "description": "ระบบติดตามนักเรียน",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "mpdf/mpdf": "^8.2"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.33"
+        },
+        "optimize-autoloader": true
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@php tools/prune-mpdf-fonts.php"
+        ],
+        "post-update-cmd": [
+            "@php tools/prune-mpdf-fonts.php"
+        ]
+    }
+}

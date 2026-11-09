@@ -85,7 +85,13 @@ function trk_take_flashes(): array
 /** เมนูตาม role (เพิ่มเมนูของแต่ละเฟสที่นี่) */
 function trk_menu(): array
 {
+    $user = trk_user();
     $items = [['key' => 'home', 'label' => 'หน้าหลัก', 'url' => trk_url('index.php')]];
+    if (trk_teaching_assignments($user['id'], trk_semester_id())) {
+        $items[] = ['key' => 'case1', 'label' => 'นักเรียนขาดรายวิชา', 'url' => trk_url('case1/index.php')];
+    }
+    $unread = trk_unread_count($user['id']);
+    $items[] = ['key' => 'notifications', 'label' => 'แจ้งเตือน' . ($unread ? " ($unread)" : ''), 'url' => trk_url('notifications.php')];
     if (trk_has_role('admin')) {
         $items[] = ['key' => 'roles', 'label' => 'จัดการสิทธิ์', 'url' => trk_url('admin/roles.php')];
         $items[] = ['key' => 'settings', 'label' => 'ตั้งค่า', 'url' => trk_url('admin/settings.php')];
