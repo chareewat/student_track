@@ -62,6 +62,7 @@ trk_render_header('รอบติดตาม', 'advisor');
         <span class="ml-auto flex gap-3">
           <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="text-blue-700 hover:underline">ดู</a>
           <a href="<?= e(trk_url('documents/print.php?id=' . (int) $d['id'])) ?>" target="_blank" class="text-blue-700 hover:underline">พิมพ์</a>
+          <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $d['id'])) ?>" class="text-blue-700 hover:underline">Word</a>
         </span>
       </li>
     <?php endforeach; ?>

@@ -32,6 +32,12 @@
    `php C:/ProgramData/ComposerSetup/bin/composer.phar install --no-dev`
    (composer.json ล็อกไว้ที่ PHP 7.4 และจะลบฟอนต์ของ mPDF ที่ไม่ได้ใช้ให้อัตโนมัติ)
 
+## ไฟล์ Word (.docx)
+
+สร้างด้วย PhpWord (`lib/docx.php`) เนื้อหาเหมือน PDF แต่ใช้ฟอนต์ **TH SarabunIT๙ 16pt** ตามแบบฟอร์มต้นฉบับ
+ฟอนต์ไม่ได้ฝังในไฟล์ เครื่องที่เปิดต้องมีฟอนต์นี้ (เครื่องของโรงเรียนส่วนใหญ่มี) ถ้าไม่มี Word จะใช้ฟอนต์อื่นแทนและบางบรรทัดอาจขึ้นบรรทัดใหม่
+ตรวจหน้าตาบนเครื่องพัฒนาได้ด้วย LibreOffice: `soffice --headless --convert-to pdf ไฟล์.docx`
+
 ## ฟอนต์ใน PDF
 
 `assets/fonts/Sarabun-*.ttf` มาจาก Google Fonts (SIL OFL 1.1) **และถูกแก้ไขแล้ว** โดยเพิ่ม glyph ว่างสำหรับ U+200B

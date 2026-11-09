@@ -38,8 +38,12 @@ trk_render_header(trk_document_title($doc));
       ออกโดย <?= e($doc['issued_by_name']) ?> เมื่อ <?= e(trk_thai_date($doc['issued_at'])) ?> <?= e(substr($doc['issued_at'], 11, 5)) ?> น.
     </p>
   </div>
-  <a href="<?= e(trk_url('documents/print.php?id=' . (int) $doc['id'])) ?>" target="_blank"
-     class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">พิมพ์ PDF</a>
+  <div class="flex flex-wrap gap-2">
+    <a href="<?= e(trk_url('documents/print.php?id=' . (int) $doc['id'])) ?>" target="_blank"
+       class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">พิมพ์ PDF</a>
+    <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $doc['id'])) ?>"
+       class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">ดาวน์โหลด Word</a>
+  </div>
 </div>
 
 <?php if ($doc['status'] === 'cancelled'): ?>

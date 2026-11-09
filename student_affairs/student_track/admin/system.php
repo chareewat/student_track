@@ -23,7 +23,7 @@ $toBytes = function (string $v): int {
 
 // ---------------------------------------------------------------- PHP
 $add('PHP', 'เวอร์ชัน PHP', version_compare(PHP_VERSION, '7.4.0', '>='), PHP_VERSION . ' (ต้องการ 7.4 ขึ้นไป)');
-foreach (['mysqli' => true, 'mbstring' => true, 'gd' => true, 'json' => true, 'fileinfo' => false] as $ext => $required) {
+foreach (['mysqli' => true, 'mbstring' => true, 'gd' => true, 'json' => true, 'zip' => true, 'dom' => true, 'xml' => true, 'fileinfo' => false] as $ext => $required) {
     $add('PHP', "extension $ext", extension_loaded($ext), extension_loaded($ext) ? 'เปิดอยู่' : 'ไม่ได้เปิด', !$required);
 }
 $add('PHP', 'mysqlnd (get_result)', method_exists('mysqli_stmt', 'get_result'),
@@ -117,6 +117,28 @@ if (is_file(TRK_ROOT . '/vendor/autoload.php')) {
     $pdfDetail = 'ข้าม (ไม่มี vendor/)';
 }
 $add('PDF', 'สร้าง PDF ด้วย mPDF', $pdfOk, $pdfDetail);
+
+// ---------------------------------------------------------------- ทดสอบสร้าง Word
+$docxOk = false;
+$docxDetail = '';
+if (is_file(TRK_ROOT . '/vendor/autoload.php') && class_exists('ZipArchive')) {
+    try {
+        require_once TRK_ROOT . '/lib/docx.php';
+        $w = new TrkDocx('test');
+        $w->p('ทดสอบภาษาไทย ผู้ปกครอง');
+        $tmp = tempnam(TRK_ROOT . '/storage/tmp', 'chk');
+        \PhpOffice\PhpWord\IOFactory::createWriter($w->word, 'Word2007')->save($tmp);
+        $bytes = filesize($tmp);
+        @unlink($tmp);
+        $docxOk = $bytes > 1000;
+        $docxDetail = 'สร้างได้ (' . number_format($bytes) . ' bytes)';
+    } catch (Throwable $ex) {
+        $docxDetail = 'ผิดพลาด: ' . $ex->getMessage();
+    }
+} else {
+    $docxDetail = 'ข้าม (ไม่มี vendor/ หรือ extension zip)';
+}
+$add('PDF', 'สร้าง Word (.docx) ด้วย PhpWord', $docxOk, $docxDetail);
 
 $summary = ['ok' => 0, 'warn' => 0, 'fail' => 0];
 foreach ($checks as $items) {

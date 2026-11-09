@@ -61,6 +61,7 @@ trk_render_header('ขร.6 เสนอจำหน่าย', 'kr6');
             <td class="px-4 py-2 text-right whitespace-nowrap">
               <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="text-blue-700 hover:underline">ดู</a>
               <a href="<?= e(trk_url('documents/print.php?id=' . (int) $d['id'])) ?>" target="_blank" class="ml-3 text-blue-700 hover:underline">พิมพ์</a>
+              <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $d['id'])) ?>" class="ml-3 text-blue-700 hover:underline">Word</a>
             </td>
           </tr>
         <?php endforeach; ?>
