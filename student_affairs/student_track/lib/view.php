@@ -124,6 +124,7 @@ function trk_menu(): array
     if (trk_has_role('admin')) {
         $items[] = ['key' => 'roles', 'label' => 'จัดการสิทธิ์', 'url' => trk_url('admin/roles.php')];
         $items[] = ['key' => 'settings', 'label' => 'ตั้งค่า', 'url' => trk_url('admin/settings.php')];
+        $items[] = ['key' => 'system', 'label' => 'ตรวจสอบระบบ', 'url' => trk_url('admin/system.php')];
     }
     return $items;
 }

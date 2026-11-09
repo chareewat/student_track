@@ -24,3 +24,6 @@ error_log
 # dependencies
 node_modules/
 /student_affairs/*/vendor/
+
+# ชุดไฟล์ขึ้น production (สร้างด้วย tools/build-release.php)
+/dist/
