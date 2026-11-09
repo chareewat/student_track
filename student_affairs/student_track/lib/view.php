@@ -95,6 +95,13 @@ function trk_menu(): array
             [$user['id'], trk_semester_id()]
         );
         $items[] = ['key' => 'advisor', 'label' => 'งานครูที่ปรึกษา' . ($pending ? " ($pending)" : ''), 'url' => trk_url('advisor/index.php')];
+        $case2 = 0;
+        foreach (trk_advisor_classrooms($user['id'], trk_semester_id()) as $room) {
+            foreach (trk_case2_candidates((int) $room['std_classroom_id'], trk_semester_id()) as $c) {
+                $case2 += $c['eligible'] ? 1 : 0;
+            }
+        }
+        $items[] = ['key' => 'case2', 'label' => 'นักเรียนขาดติดต่อกัน' . ($case2 ? " ($case2)" : ''), 'url' => trk_url('advisor/case2.php')];
     }
     if (trk_teaching_assignments($user['id'], trk_semester_id())) {
         $items[] = ['key' => 'case1', 'label' => 'นักเรียนขาดรายวิชา', 'url' => trk_url('case1/index.php')];

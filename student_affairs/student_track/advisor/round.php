@@ -37,6 +37,8 @@ trk_render_header('รอบติดตาม', 'advisor');
   <?php if ((int) $round['case_type'] === 1): ?>
     · <?= e($round['vic_subject_code'] . ' ' . $round['vic_subject_name']) ?>
     ขาดสะสม <?= (int) $round['absent_hours'] ?>/<?= (int) $round['total_hours'] ?> ชม. (ณ วันที่ออก ขร.1)
+  <?php else: ?>
+    · ขาดติดต่อกันตั้งแต่ <?= e(trk_thai_date($round['absent_from'])) ?> ถึง <?= e(trk_thai_date($round['absent_to'])) ?> (ณ วันที่ออก ขร.5)
   <?php endif; ?>
 </p>
 

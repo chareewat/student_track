@@ -11,7 +11,6 @@ const TRK_DOC_TYPES = [
     'KR5' => 'ขร.5',
     'KR6' => 'ขร.6',
 ];
-
 function trk_document_create(string $type, int $semesterId, int $classroomId, ?int $subjectId, ?int $roundNo,
                              ?string $docNo, array $data, int $issuedBy, array $roundIds): int
 {

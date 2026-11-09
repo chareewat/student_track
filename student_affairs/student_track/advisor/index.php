@@ -19,7 +19,7 @@ foreach ($rounds as $r) {
 }
 $groupInfo = [
     'need_kr2' => ['รอออก ขร.2 แจ้งผู้ปกครอง', 'ครูประจำวิชาส่ง ขร.1 มาแล้ว ให้ขอเลขหนังสือจากงานสารบรรณแล้วออก ขร.2 (ม.1–3 ออก บค.14 คู่กัน)', 'bg-amber-100 text-amber-800'],
-    'need_followup' => ['รอบันทึกผลติดตาม (ขร.3)', 'ออก ขร.2 แล้ว ลงพื้นที่ติดตามนักเรียนพร้อมเจ้าหน้าที่ฝ่ายกิจการนักเรียน แล้วบันทึกผล', 'bg-blue-100 text-blue-800'],
+    'need_followup' => ['รอบันทึกผลติดตาม (ขร.3)', 'ออก ขร.2 หรือ ขร.5 แล้ว ลงพื้นที่ติดตามนักเรียนพร้อมเจ้าหน้าที่ฝ่ายกิจการนักเรียน แล้วบันทึกผล', 'bg-blue-100 text-blue-800'],
     'closed' => ['ปิดรอบแล้ว', 'บันทึกผลติดตามและออก ขร.3 แล้ว พิมพ์ ขร.3 เสนอผู้อำนวยการ', 'bg-emerald-100 text-emerald-800'],
 ];
 
@@ -63,7 +63,7 @@ trk_render_header('งานครูที่ปรึกษา', 'advisor');
                     ขาดรายวิชา <span class="font-mono text-xs"><?= e($r['vic_subject_code']) ?></span> <?= e($r['vic_subject_name']) ?>
                     <span class="text-xs text-slate-500">(<?= (int) $r['absent_hours'] ?>/<?= (int) $r['total_hours'] ?> ชม.)</span>
                   <?php else: ?>
-                    ขาดติดต่อกัน
+                    ขาดติดต่อกัน <span class="text-xs text-slate-500"><?= e(trk_thai_date($r['absent_from'], true)) ?> – <?= e(trk_thai_date($r['absent_to'], true)) ?></span>
                   <?php endif; ?>
                 </td>
                 <td class="px-4 py-2"><?= (int) $r['round_no'] ?></td>

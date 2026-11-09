@@ -10,7 +10,7 @@ if (!$doc || !trk_document_can_view($doc, $user['id'])) {
     exit;
 }
 
-$templates = ['KR1' => 'kr1', 'KR2' => 'kr2', 'BK14' => 'bk14', 'KR3' => 'kr3'];
+$templates = ['KR1' => 'kr1', 'KR2' => 'kr2', 'BK14' => 'bk14', 'KR3' => 'kr3', 'KR5' => 'kr5'];
 if (!isset($templates[$doc['doc_type']])) {
     trk_render_message('ยังพิมพ์เอกสารชนิดนี้ไม่ได้', trk_document_title($doc));
     exit;
