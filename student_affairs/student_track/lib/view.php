@@ -86,9 +86,9 @@ function trk_take_flashes(): array
 function trk_menu(): array
 {
     $user = trk_user();
-    $items = [['key' => 'home', 'label' => 'หน้าหลัก', 'url' => trk_url('index.php')]];
+    $items = [['key' => 'home', 'icon' => 'home', 'label' => 'หน้าหลัก', 'url' => trk_url('index.php')]];
     if (trk_sees_all_rooms()) {
-        $items[] = ['key' => 'dashboard', 'label' => 'ภาพรวม', 'url' => trk_url('dashboard/index.php')];
+        $items[] = ['key' => 'dashboard', 'icon' => 'dashboard', 'label' => 'ภาพรวม', 'url' => trk_url('dashboard/index.php')];
     }
     if (trk_advisor_classrooms($user['id'], trk_semester_id())) {
         $pending = (int) trk_db_value(
@@ -97,34 +97,34 @@ function trk_menu(): array
              WHERE r.semester_id = ? AND r.status = 'open'",
             [$user['id'], trk_semester_id()]
         );
-        $items[] = ['key' => 'advisor', 'label' => 'งานครูที่ปรึกษา', 'count' => $pending, 'url' => trk_url('advisor/index.php')];
+        $items[] = ['key' => 'advisor', 'icon' => 'clipboard', 'label' => 'งานครูที่ปรึกษา', 'count' => $pending, 'url' => trk_url('advisor/index.php')];
         $case2 = 0;
         foreach (trk_advisor_classrooms($user['id'], trk_semester_id()) as $room) {
             foreach (trk_case2_candidates((int) $room['std_classroom_id'], trk_semester_id()) as $c) {
                 $case2 += $c['eligible'] ? 1 : 0;
             }
         }
-        $items[] = ['key' => 'case2', 'label' => 'นักเรียนขาดติดต่อกัน', 'count' => $case2, 'url' => trk_url('advisor/case2.php')];
+        $items[] = ['key' => 'case2', 'icon' => 'calendar-x', 'label' => 'นักเรียนขาดติดต่อกัน', 'count' => $case2, 'url' => trk_url('advisor/case2.php')];
         $case3 = 0;
         foreach (trk_advisor_classrooms($user['id'], trk_semester_id()) as $room) {
             foreach (trk_case3_candidates((int) $room['std_classroom_id'], trk_semester_id()) as $c) {
                 $case3 += $c['eligible'] ? 1 : 0;
             }
         }
-        $items[] = ['key' => 'case3', 'label' => 'เสนอจำหน่าย', 'count' => $case3, 'url' => trk_url('advisor/case3.php')];
+        $items[] = ['key' => 'case3', 'icon' => 'user-x', 'label' => 'เสนอจำหน่าย', 'count' => $case3, 'url' => trk_url('advisor/case3.php')];
     }
     if (trk_teaching_assignments($user['id'], trk_semester_id())) {
-        $items[] = ['key' => 'case1', 'label' => 'นักเรียนขาดรายวิชา', 'url' => trk_url('case1/index.php')];
+        $items[] = ['key' => 'case1', 'icon' => 'book', 'label' => 'นักเรียนขาดรายวิชา', 'url' => trk_url('case1/index.php')];
     }
     if (trk_sees_all_rooms()) {
-        $items[] = ['key' => 'kr6', 'label' => 'ขร.6 เสนอจำหน่าย', 'url' => trk_url('academic/kr6.php')];
+        $items[] = ['key' => 'kr6', 'icon' => 'file-warning', 'label' => 'ขร.6 เสนอจำหน่าย', 'url' => trk_url('academic/kr6.php')];
     }
     $unread = trk_unread_count($user['id']);
-    $items[] = ['key' => 'notifications', 'label' => 'แจ้งเตือน', 'count' => $unread, 'url' => trk_url('notifications.php')];
+    $items[] = ['key' => 'notifications', 'icon' => 'bell', 'label' => 'แจ้งเตือน', 'count' => $unread, 'url' => trk_url('notifications.php')];
     if (trk_has_role('admin')) {
-        $items[] = ['key' => 'roles', 'label' => 'จัดการสิทธิ์', 'url' => trk_url('admin/roles.php')];
-        $items[] = ['key' => 'settings', 'label' => 'ตั้งค่า', 'url' => trk_url('admin/settings.php')];
-        $items[] = ['key' => 'system', 'label' => 'ตรวจสอบระบบ', 'url' => trk_url('admin/system.php')];
+        $items[] = ['key' => 'roles', 'icon' => 'shield', 'label' => 'จัดการสิทธิ์', 'url' => trk_url('admin/roles.php')];
+        $items[] = ['key' => 'settings', 'icon' => 'sliders', 'label' => 'ตั้งค่า', 'url' => trk_url('admin/settings.php')];
+        $items[] = ['key' => 'system', 'icon' => 'activity', 'label' => 'ตรวจสอบระบบ', 'url' => trk_url('admin/system.php')];
     }
     return $items;
 }
@@ -145,10 +145,10 @@ function trk_render_message(string $title, string $message): void
 {
     trk_render_header($title);
     echo '<div class="card mx-auto mt-6 max-w-lg p-8 text-center">'
-        . '<div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-canvas text-2xl text-navy" aria-hidden="true">!</div>'
+        . '<div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-canvas text-navy">' . trk_icon('info', 'h-7 w-7') . '</div>'
         . '<h1 class="mt-4 text-lg font-semibold">' . e($title) . '</h1>'
         . '<p class="hint mt-2">' . e($message) . '</p>'
-        . '<a href="' . e(trk_url('index.php')) . '" class="btn btn-navy mt-6">กลับหน้าหลัก</a>'
+        . '<a href="' . e(trk_url('index.php')) . '" class="btn btn-navy mt-6">' . trk_icon('home') . 'กลับหน้าหลัก</a>'
         . '</div>';
     trk_render_footer();
 }

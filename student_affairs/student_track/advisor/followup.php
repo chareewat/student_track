@@ -83,8 +83,8 @@ function trk_field_error(array $errors, string $key): string
 
 trk_render_header('บันทึกผลติดตาม', 'advisor');
 ?>
-<a href="<?= e(trk_url('advisor/round.php?id=' . (int) $round['id'])) ?>" class="btn btn-navy btn-sm">← รอบติดตาม</a>
-<h1 class="mt-2 text-2xl font-semibold tracking-tight">บันทึกผลติดตาม (ขร.3)</h1>
+<a href="<?= e(trk_url('advisor/round.php?id=' . (int) $round['id'])) ?>" class="btn btn-navy btn-sm"><?= trk_icon('arrow-left') ?>รอบติดตาม</a>
+<h1 class="mt-2 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('map-pin', 'h-5 w-5') ?></span>บันทึกผลติดตาม (ขร.3)</h1>
 <p class="mt-1 text-sm text-ink/60">
   <?= e($round['full_name']) ?> (<?= e($round['std_student_code']) ?>) <?= e($round['classroom_label']) ?> · ครั้งที่ <?= (int) $round['round_no'] ?>
   <?php if ((int) $round['case_type'] === 1): ?>
@@ -146,7 +146,7 @@ trk_render_header('บันทึกผลติดตาม', 'advisor');
   </label>
 
   <div class="flex justify-end">
-    <button class="btn btn-green btn-lg">บันทึกและออก ขร.3</button>
+    <button class="btn btn-green btn-lg"><?= trk_icon('save') ?>บันทึกและออก ขร.3</button>
   </div>
 </form>
 <?php

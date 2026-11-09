@@ -31,7 +31,7 @@ trk_render_header('รอบติดตาม', 'advisor');
   รอบติดตาม<?= (int) $round['case_type'] === 1 ? 'ขาดรายวิชา' : 'ขาดติดต่อกัน' ?> ครั้งที่ <?= (int) $round['round_no'] ?>
   · <span class="rounded-full bg-sand/50 px-2 py-0.5 text-xs"><?= e(TRK_STAGE_LABELS[$round['stage']]) ?></span>
 </div>
-<h1 class="mt-1 text-2xl font-semibold tracking-tight"><?= e($round['full_name']) ?></h1>
+<h1 class="mt-1 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('user', 'h-5 w-5') ?></span><?= e($round['full_name']) ?></h1>
 <p class="mt-1 text-sm text-ink/60">
   <?= e($round['std_student_code']) ?> · <?= e($round['classroom_label']) ?>
   <?php if ((int) $round['case_type'] === 1): ?>
@@ -43,13 +43,13 @@ trk_render_header('รอบติดตาม', 'advisor');
 </p>
 
 <?php if ($canAct && $round['stage'] === 'need_kr2'): ?>
-  <a href="<?= e(trk_url('advisor/kr2.php?round=' . (int) $round['id'])) ?>" class="btn btn-green mt-4">ออก ขร.2</a>
+  <a href="<?= e(trk_url('advisor/kr2.php?round=' . (int) $round['id'])) ?>" class="btn btn-green mt-4"><?= trk_icon('file-plus') ?>ออก ขร.2</a>
 <?php elseif ($canAct && $round['stage'] === 'need_followup'): ?>
-  <a href="<?= e(trk_url('advisor/followup.php?round=' . (int) $round['id'])) ?>" class="btn btn-green mt-4">บันทึกผลติดตาม (ขร.3)</a>
+  <a href="<?= e(trk_url('advisor/followup.php?round=' . (int) $round['id'])) ?>" class="btn btn-green mt-4"><?= trk_icon('map-pin') ?>บันทึกผลติดตาม (ขร.3)</a>
 <?php endif; ?>
 
 <section class="mt-6">
-  <h2 class="text-base font-semibold">เอกสาร</h2>
+  <h2 class="text-base font-semibold flex items-center gap-2"><?= trk_icon('file-text', 'h-[18px] w-[18px] text-navy/70') ?>เอกสาร</h2>
   <ol class="mt-3 space-y-2">
     <?php foreach ($docs as $d): ?>
       <li class="card flex flex-wrap items-center gap-3 px-4 py-3 text-sm <?= $d['status'] === 'cancelled' ? 'opacity-60' : '' ?>">
@@ -60,9 +60,9 @@ trk_render_header('รอบติดตาม', 'advisor');
           <span class="text-xs text-rose-700">ยกเลิก: <?= e($d['cancel_reason']) ?></span>
         <?php endif; ?>
         <span class="ml-auto flex gap-3">
-          <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-blue btn-sm">ดู</a>
-          <a href="<?= e(trk_url('documents/print.php?id=' . (int) $d['id'])) ?>" target="_blank" class="btn btn-soft-purple btn-sm">PDF</a>
-          <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-purple btn-sm">Word</a>
+          <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-blue btn-sm"><?= trk_icon('eye') ?>ดู</a>
+          <a href="<?= e(trk_url('documents/print.php?id=' . (int) $d['id'])) ?>" target="_blank" class="btn btn-soft-purple btn-sm"><?= trk_icon('printer') ?>PDF</a>
+          <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-purple btn-sm"><?= trk_icon('file-text') ?>Word</a>
         </span>
       </li>
     <?php endforeach; ?>
@@ -71,7 +71,7 @@ trk_render_header('รอบติดตาม', 'advisor');
 
 <?php if ($followup): ?>
   <section class="mt-6 card p-4">
-    <h2 class="text-base font-semibold">ผลการติดตาม</h2>
+    <h2 class="text-base font-semibold flex items-center gap-2"><?= trk_icon('camera', 'h-[18px] w-[18px] text-navy/70') ?>ผลการติดตาม</h2>
     <dl class="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[10rem_1fr]">
       <dt class="text-ink/55">วันที่ติดตาม</dt><dd><?= e(trk_thai_date($followup['followup_date'])) ?></dd>
       <dt class="text-ink/55">วิธีการ</dt><dd><?= e($followup['method']) ?></dd>
@@ -83,7 +83,7 @@ trk_render_header('รอบติดตาม', 'advisor');
         <?php foreach ($followup['photos'] as $p): ?>
           <a href="<?= e(trk_url('photo.php?id=' . (int) $p['id'])) ?>" target="_blank"
              class="group relative block overflow-hidden rounded-2xl ring-1 ring-sand transition hover:-translate-y-px hover:shadow-lift">
-            <img src="<?= e(trk_url('photo.php?id=' . (int) $p['id'])) ?>" alt="รูปการติดตาม" class="aspect-[4/3] w-full object-cover">
+            <?= trk_icon('maximize', 'h-3.5 w-3.5') ?><img src="<?= e(trk_url('photo.php?id=' . (int) $p['id'])) ?>" alt="รูปการติดตาม" class="aspect-[4/3] w-full object-cover">
             <span class="btn btn-blue btn-sm absolute bottom-2 right-2">ขยาย</span>
           </a>
         <?php endforeach; ?>

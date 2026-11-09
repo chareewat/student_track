@@ -31,7 +31,7 @@ if (trk_is_post()) {
 
 trk_render_header('เสนอจำหน่าย (ขร.6)', 'case3');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight">นักเรียนที่ติดตามครบ 3 ครั้ง</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('user-x', 'h-5 w-5') ?></span>นักเรียนที่ติดตามครบ 3 ครั้ง</h1>
 <p class="mt-1 text-sm text-ink/60">
   นับบันทึกผลติดตามของเคสขาดรายวิชาและเคสขาดติดต่อกันรวมกันในภาคเรียนนี้
   ถ้าหลังวันที่ติดตามครั้งล่าสุดนักเรียนยังไม่มาโรงเรียนเลย ให้ยืนยันส่ง ขร.6 ขอให้จำหน่ายนักเรียนถึงเจ้าหน้าที่วิชาการ
@@ -42,7 +42,7 @@ trk_render_header('เสนอจำหน่าย (ขร.6)', 'case3');
   <section class="mt-6 card">
     <div class="border-b border-sand/50 px-4 py-3 font-semibold"><?= e(trk_classroom_label($room)) ?></div>
     <?php if (!$candidates): ?>
-      <p class="px-4 py-4 text-sm text-ink/55">ยังไม่มีนักเรียนที่ติดตามครบ 3 ครั้ง</p>
+      <p class="px-4 py-4 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ยังไม่มีนักเรียนที่ติดตามครบ 3 ครั้ง</p>
     <?php else: ?>
       <ul class="divide-y divide-sand/40">
         <?php foreach ($candidates as $c): ?>
@@ -64,12 +64,12 @@ trk_render_header('เสนอจำหน่าย (ขร.6)', 'case3');
                   <?php else: ?>
                     ขาดติดต่อกัน ครั้งที่ <?= (int) $f['round_no'] ?>
                   <?php endif; ?>
-                  <a href="<?= e(trk_url('advisor/round.php?id=' . (int) $f['round_id'])) ?>" class="btn btn-soft-blue btn-sm ml-1">รอบติดตาม</a>
+                  <a href="<?= e(trk_url('advisor/round.php?id=' . (int) $f['round_id'])) ?>" class="btn btn-soft-blue btn-sm ml-1"><?= trk_icon('history') ?>รอบติดตาม</a>
                 </li>
               <?php endforeach; ?>
             </ol>
             <?php if ($c['kr6_id']): ?>
-              <a href="<?= e(trk_url('documents/view.php?id=' . $c['kr6_id'])) ?>" class="btn btn-blue btn-sm mt-3">ดู ขร.6 →</a>
+              <a href="<?= e(trk_url('documents/view.php?id=' . $c['kr6_id'])) ?>" class="btn btn-blue btn-sm mt-3"><?= trk_icon('eye') ?>ดู ขร.6</a>
             <?php elseif ($c['eligible']): ?>
               <form method="post" class="mt-3 flex flex-wrap items-end gap-3 rounded-lg bg-rose-50 p-3">
                 <?= trk_csrf_field() ?>
@@ -82,7 +82,7 @@ trk_render_header('เสนอจำหน่าย (ขร.6)', 'case3');
                   <input type="checkbox" name="confirm" value="1" required >
                   ยืนยันว่าติดตามครบ 3 ครั้งแล้ว ผู้ปกครองยังไม่มาติดต่อและนักเรียนไม่มาเรียน
                 </label>
-                <button class="btn btn-red">ส่ง ขร.6 เสนอจำหน่าย</button>
+                <button class="btn btn-red"><?= trk_icon('send') ?>ส่ง ขร.6 เสนอจำหน่าย</button>
               </form>
             <?php endif; ?>
           </li>

@@ -26,11 +26,11 @@ foreach (trk_db_all('SELECT document_id FROM trk_notifications WHERE recipient_i
 
 trk_render_header('ขร.6 เสนอจำหน่าย', 'kr6');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight">ขร.6 ขอให้จำหน่ายนักเรียน</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('file-warning', 'h-5 w-5') ?></span>ขร.6 ขอให้จำหน่ายนักเรียน</h1>
 <p class="mt-1 text-sm text-ink/60">ครูที่ปรึกษาส่งมาหลังติดตามครบ 3 ครั้งแล้วนักเรียนยังไม่มาเรียน · ภาคเรียน <?= e(trk_semester_label()) ?></p>
 
 <?php if (!$docs): ?>
-  <p class="mt-6 text-sm text-ink/55">ยังไม่มี ขร.6 ในภาคเรียนนี้</p>
+  <p class="mt-6 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ยังไม่มี ขร.6 ในภาคเรียนนี้</p>
 <?php else: ?>
   <div class="mt-6 table-wrap">
     <table class="table">
@@ -59,9 +59,9 @@ trk_render_header('ขร.6 เสนอจำหน่าย', 'kr6');
             <td class="px-4 py-2 text-right"><?= (int) $data['followup_count'] ?> ครั้ง</td>
             <td class="px-4 py-2 text-xs"><?= $d['status'] === 'cancelled' ? 'ยกเลิก: ' . e($d['cancel_reason']) : 'รอพิจารณา' ?></td>
             <td class="px-4 py-2 text-right whitespace-nowrap">
-              <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-blue btn-sm">ดู</a>
-              <a href="<?= e(trk_url('documents/print.php?id=' . (int) $d['id'])) ?>" target="_blank" class="btn btn-soft-purple btn-sm ml-1">PDF</a>
-              <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-purple btn-sm ml-1">Word</a>
+              <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-blue btn-sm"><?= trk_icon('eye') ?>ดู</a>
+              <a href="<?= e(trk_url('documents/print.php?id=' . (int) $d['id'])) ?>" target="_blank" class="btn btn-soft-purple btn-sm ml-1"><?= trk_icon('printer') ?>PDF</a>
+              <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-purple btn-sm ml-1"><?= trk_icon('file-text') ?>Word</a>
             </td>
           </tr>
         <?php endforeach; ?>

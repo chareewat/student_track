@@ -98,13 +98,13 @@ function trk_settings_error(array $errors, string $key): string
 
 trk_render_header('ตั้งค่า', 'settings');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight">ตั้งค่า</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('sliders', 'h-5 w-5') ?></span>ตั้งค่า</h1>
 
 <form method="post" class="mt-4 space-y-6">
   <?= trk_csrf_field() ?>
 
   <section class="card p-5">
-    <h2 class="font-semibold">เคส 1: ขาดเรียนรายวิชา</h2>
+    <h2 class="font-semibold flex items-center gap-2"><?= trk_icon('book', 'h-[18px] w-[18px] text-navy/70') ?>เคส 1: ขาดเรียนรายวิชา</h2>
     <p class="mt-1 text-sm text-ink/55">นับชั่วโมงที่มีสถานะ ขาด, ลา และหนี เทียบกับเวลาเรียนทั้งหมดของรายวิชา</p>
     <div class="mt-4 grid gap-4 sm:grid-cols-3">
       <?php for ($i = 1; $i <= 3; $i++): ?>
@@ -123,7 +123,7 @@ trk_render_header('ตั้งค่า', 'settings');
   </section>
 
   <section class="card p-5">
-    <h2 class="font-semibold">เคส 2: ขาดเรียนติดต่อกัน</h2>
+    <h2 class="font-semibold flex items-center gap-2"><?= trk_icon('calendar-x', 'h-[18px] w-[18px] text-navy/70') ?>เคส 2: ขาดเรียนติดต่อกัน</h2>
     <label class="mt-4 block">
       <span class="mb-1 block text-sm text-ink/80">จำนวนวันที่ขาดติดต่อกัน</span>
       <?= trk_settings_input('consecutive_absent_days', $values['consecutive_absent_days'], 'วัน') ?>
@@ -132,7 +132,7 @@ trk_render_header('ตั้งค่า', 'settings');
   </section>
 
   <section class="card p-5">
-    <h2 class="font-semibold">งานค้างเกินกำหนด (หน้าภาพรวม)</h2>
+    <h2 class="font-semibold flex items-center gap-2"><?= trk_icon('clock', 'h-[18px] w-[18px] text-navy/70') ?>งานค้างเกินกำหนด (หน้าภาพรวม)</h2>
     <div class="mt-4 grid gap-4 sm:grid-cols-2">
       <label class="block">
         <span class="mb-1 block text-sm text-ink/80">รอออก ขร.2 นานเกิน</span>
@@ -147,7 +147,7 @@ trk_render_header('ตั้งค่า', 'settings');
   </section>
 
   <section class="card p-5">
-    <h2 class="font-semibold">ชื่อผู้ลงนามในเอกสาร</h2>
+    <h2 class="font-semibold flex items-center gap-2"><?= trk_icon('user', 'h-[18px] w-[18px] text-navy/70') ?>ชื่อผู้ลงนามในเอกสาร</h2>
     <div class="mt-4 grid gap-4 sm:grid-cols-2">
       <label class="block">
         <span class="mb-1 block text-sm text-ink/80">ผู้อำนวยการโรงเรียน</span>
@@ -161,7 +161,7 @@ trk_render_header('ตั้งค่า', 'settings');
   </section>
 
   <section class="card p-5">
-    <h2 class="font-semibold">หนังสือถึงผู้ปกครอง (ขร.2, บค.14, ขร.5)</h2>
+    <h2 class="font-semibold flex items-center gap-2"><?= trk_icon('send', 'h-[18px] w-[18px] text-navy/70') ?>หนังสือถึงผู้ปกครอง (ขร.2, บค.14, ขร.5)</h2>
     <div class="mt-4 grid gap-4 sm:grid-cols-3">
       <label class="block">
         <span class="mb-1 block text-sm text-ink/80">เลขนำหน้าหนังสือออก</span>
@@ -180,11 +180,11 @@ trk_render_header('ตั้งค่า', 'settings');
   </section>
 
   <section class="card p-5">
-    <h2 class="font-semibold">ชั่วโมงเรียนของรายวิชาที่ไม่มีหน่วยกิต</h2>
+    <h2 class="font-semibold flex items-center gap-2"><?= trk_icon('clock', 'h-[18px] w-[18px] text-navy/70') ?>ชั่วโมงเรียนของรายวิชาที่ไม่มีหน่วยกิต</h2>
     <p class="mt-1 text-sm text-ink/55">รายวิชาที่สอนในภาคเรียน <?= e(trk_semester_label()) ?> ที่หน่วยกิตเป็น 0 ต้องกำหนดชั่วโมงเอง ระบบจึงจะคำนวณเกณฑ์ได้</p>
     <?= trk_settings_error($errors, 'subject_hours') ?>
     <?php if (!$customSubjects): ?>
-      <p class="mt-3 text-sm text-ink/55">ไม่มีรายวิชาที่ต้องกำหนดชั่วโมงเอง</p>
+      <p class="mt-3 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('check-circle', 'h-4 w-4 text-ink/35') ?>ไม่มีรายวิชาที่ต้องกำหนดชั่วโมงเอง</p>
     <?php else: ?>
       <div class="mt-3 divide-y divide-sand/40">
         <?php foreach ($customSubjects as $s): ?>
@@ -198,7 +198,7 @@ trk_render_header('ตั้งค่า', 'settings');
   </section>
 
   <div class="flex justify-end">
-    <button class="btn btn-green btn-lg">บันทึก</button>
+    <button class="btn btn-green btn-lg"><?= trk_icon('save') ?>บันทึก</button>
   </div>
 </form>
 <?php

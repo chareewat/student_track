@@ -19,17 +19,17 @@ $unread = count(array_filter($items, function ($n) { return $n['read_at'] === nu
 trk_render_header('แจ้งเตือน', 'notifications');
 ?>
 <div class="flex flex-wrap items-center justify-between gap-3">
-  <h1 class="text-2xl font-semibold tracking-tight">แจ้งเตือน</h1>
+  <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('bell', 'h-5 w-5') ?></span>แจ้งเตือน</h1>
   <?php if ($unread): ?>
     <form method="post">
       <?= trk_csrf_field() ?>
-      <button class="btn btn-yellow btn-sm">อ่านทั้งหมดแล้ว</button>
+      <button class="btn btn-yellow btn-sm"><?= trk_icon('check-check') ?>อ่านทั้งหมดแล้ว</button>
     </form>
   <?php endif; ?>
 </div>
 
 <?php if (!$items): ?>
-  <p class="mt-4 text-sm text-ink/55">ยังไม่มีการแจ้งเตือน</p>
+  <p class="mt-4 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ยังไม่มีการแจ้งเตือน</p>
 <?php else: ?>
   <ul class="mt-4 space-y-2">
     <?php foreach ($items as $n): ?>
@@ -44,7 +44,7 @@ trk_render_header('แจ้งเตือน', 'notifications');
               <?php if ($isUnread): ?><span class="chip-yellow ml-1">ใหม่</span><?php endif; ?>
             </span>
           </span>
-          <span class="btn btn-soft-blue btn-sm shrink-0">เปิด</span>
+          <span class="btn btn-soft-blue btn-sm shrink-0">เปิด<?= trk_icon('chevron-right') ?></span>
         </a>
       </li>
     <?php endforeach; ?>

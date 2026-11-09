@@ -34,7 +34,7 @@ $issuedDocs = trk_db_all(
 
 trk_render_header('นักเรียนขาดรายวิชา', 'case1');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight">นักเรียนขาดรายวิชา</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('book', 'h-5 w-5') ?></span>นักเรียนขาดรายวิชา</h1>
 <p class="mt-1 text-sm text-ink/60">
   นับชั่วโมง ขาด + ลา + หนี เทียบกับเวลาเรียนทั้งหมด เกณฑ์ครั้งที่ 1/2/3 = <?= implode('/', $thresholds) ?>%
   แสดงเฉพาะนักเรียนที่ถึงเกณฑ์ครั้งที่ 1 ขึ้นไป ต้องออก ขร.1 เรียงตามครั้ง
@@ -62,7 +62,7 @@ trk_render_header('นักเรียนขาดรายวิชา', 'cas
     <?php if ($sec['total'] <= 0): ?>
       <p class="px-4 py-4 text-sm text-amber-700">รายวิชานี้ไม่มีหน่วยกิตและยังไม่ได้กำหนดชั่วโมงเรียน ให้ Admin กำหนดในหน้าตั้งค่าก่อน</p>
     <?php elseif (!$sec['candidates']): ?>
-      <p class="px-4 py-4 text-sm text-ink/55">ยังไม่มีนักเรียนที่ถึงเกณฑ์</p>
+      <p class="px-4 py-4 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ยังไม่มีนักเรียนที่ถึงเกณฑ์</p>
     <?php else: ?>
       <form method="post" action="<?= e(trk_url('case1/issue.php')) ?>">
         <?= trk_csrf_field() ?>
@@ -122,7 +122,7 @@ trk_render_header('นักเรียนขาดรายวิชา', 'cas
               <span class="mb-1 block text-xs text-ink/55">เลขหนังสือ (ไม่บังคับ)</span>
               <input name="doc_no" maxlength="30" placeholder="เช่น 123/2569" class="w-40 input py-1.5">
             </label>
-            <button class="btn btn-green">ออก ขร.1 ให้นักเรียนที่เลือก</button>
+            <button class="btn btn-green"><?= trk_icon('file-plus') ?>ออก ขร.1 ให้นักเรียนที่เลือก</button>
           </div>
         <?php endif; ?>
       </form>
@@ -131,9 +131,9 @@ trk_render_header('นักเรียนขาดรายวิชา', 'cas
 <?php endforeach; ?>
 
 <section class="mt-10">
-  <h2 class="text-base font-semibold">ขร.1 ที่ออกแล้วในภาคเรียนนี้</h2>
+  <h2 class="text-base font-semibold flex items-center gap-2"><?= trk_icon('folder-check', 'h-[18px] w-[18px] text-navy/70') ?>ขร.1 ที่ออกแล้วในภาคเรียนนี้</h2>
   <?php if (!$issuedDocs): ?>
-    <p class="mt-2 text-sm text-ink/55">ยังไม่มี</p>
+    <p class="mt-2 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ยังไม่มี</p>
   <?php else: ?>
     <div class="mt-3 table-wrap">
       <table class="table">
@@ -162,7 +162,7 @@ trk_render_header('นักเรียนขาดรายวิชา', 'cas
                     : '<span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-800">ส่งครูที่ปรึกษาแล้ว</span>' ?>
               </td>
               <td class="px-4 py-2 text-right">
-                <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-blue btn-sm">ดูเอกสาร</a>
+                <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-blue btn-sm"><?= trk_icon('eye') ?>ดูเอกสาร</a>
               </td>
             </tr>
           <?php endforeach; ?>

@@ -70,17 +70,17 @@ if ($student) {
 
 trk_render_header($student ? $student['full_name'] : 'ค้นหานักเรียน', 'dashboard');
 ?>
-<a href="<?= e(trk_url('dashboard/index.php')) ?>" class="btn btn-navy btn-sm">← ภาพรวม</a>
+<a href="<?= e(trk_url('dashboard/index.php')) ?>" class="btn btn-navy btn-sm"><?= trk_icon('arrow-left') ?>ภาพรวม</a>
 
 <form class="mt-3 flex max-w-lg gap-2">
   <input type="search" name="q" value="<?= e($q) ?>" placeholder="ชื่อ นามสกุล หรือเลขประจำตัว" autofocus
          class="flex-1 input">
-  <button class="btn btn-blue">ค้นหา</button>
+  <button class="btn btn-blue"><?= trk_icon('search') ?>ค้นหา</button>
 </form>
 
 <?php if ($id === 0 && $q !== ''): ?>
   <?php if (!$results): ?>
-    <p class="mt-4 text-sm text-ink/55">ไม่พบนักเรียน</p>
+    <p class="mt-4 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('search', 'h-4 w-4 text-ink/35') ?>ไม่พบนักเรียน</p>
   <?php else: ?>
     <ul class="mt-4 space-y-2">
       <?php foreach ($results as $s): ?>
@@ -92,7 +92,7 @@ trk_render_header($student ? $student['full_name'] : 'ค้นหานัก�
             <span class="text-sm text-ink/60"><?= $s['std_classroom_level'] ? 'ม.' . e($s['std_classroom_level'] . '/' . $s['std_classroom_room']) : '' ?></span>
             <?php if ((int) $s['std_status_id'] !== 1): ?><span class="text-xs text-ink/55">(<?= e($s['std_status_name']) ?>)</span><?php endif; ?>
             <span class="chip-sand ml-auto">ติดตาม <?= (int) $s['round_count'] ?> รอบ</span>
-            <span class="btn btn-soft-blue btn-sm">ดูประวัติ</span>
+            <span class="btn btn-soft-blue btn-sm"><?= trk_icon('history') ?>ดูประวัติ</span>
           </a>
         </li>
       <?php endforeach; ?>
@@ -102,10 +102,10 @@ trk_render_header($student ? $student['full_name'] : 'ค้นหานัก�
 <?php endif; ?>
 
 <?php if ($id > 0 && !$student): ?>
-  <p class="mt-4 text-sm text-ink/55">ไม่พบนักเรียน</p>
+  <p class="mt-4 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('search', 'h-4 w-4 text-ink/35') ?>ไม่พบนักเรียน</p>
 <?php elseif ($student): ?>
   <div class="mt-6 card p-4">
-    <h1 class="text-2xl font-semibold tracking-tight"><?= e($student['full_name']) ?></h1>
+    <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('user', 'h-5 w-5') ?></span><?= e($student['full_name']) ?></h1>
     <dl class="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[9rem_1fr]">
       <dt class="text-ink/55">เลขประจำตัว</dt><dd><?= e($student['std_student_code']) ?></dd>
       <dt class="text-ink/55">ห้องปัจจุบัน</dt><dd><?= $student['std_classroom_level'] ? 'ม.' . e($student['std_classroom_level'] . '/' . $student['std_classroom_room']) : '-' ?> (เลขที่ <?= (int) $student['std_student_number'] ?>)</dd>
@@ -120,15 +120,15 @@ trk_render_header($student ? $student['full_name'] : 'ค้นหานัก�
         <div>
           ขร.6 เสนอจำหน่าย ภาคเรียน <?= e(trk_semester_label($semesters[(int) $d['semester_id']] ?? null)) ?>
           เมื่อ <?= e(trk_thai_date($d['issued_at'])) ?> <?= $d['status'] === 'cancelled' ? '(ยกเลิกแล้ว)' : '' ?>
-          <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-red btn-sm ml-2">ดู ขร.6</a>
+          <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-red btn-sm ml-2"><?= trk_icon('file-warning') ?>ดู ขร.6</a>
         </div>
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
 
-  <h2 class="mt-6 text-base font-semibold">ประวัติการติดตาม</h2>
+  <h2 class="mt-6 text-base font-semibold flex items-center gap-2"><?= trk_icon('history', 'h-[18px] w-[18px] text-navy/70') ?>ประวัติการติดตาม</h2>
   <?php if (!$rounds): ?>
-    <p class="mt-2 text-sm text-ink/55">ไม่เคยถูกติดตาม</p>
+    <p class="mt-2 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ไม่เคยถูกติดตาม</p>
   <?php else: ?>
     <ol class="mt-3 space-y-3">
       <?php foreach ($rounds as $r): ?>
@@ -143,7 +143,7 @@ trk_render_header($student ? $student['full_name'] : 'ค้นหานัก�
             </span>
             <span class="rounded-full bg-sand/50 px-2 py-0.5 text-xs"><?= e(TRK_STAGE_LABELS[$r['stage']]) ?></span>
             <span class="text-xs text-ink/55"><?= e($r['classroom_label']) ?> · เปิดรอบ <?= e(trk_thai_date($r['opened_at'], true)) ?></span>
-            <a href="<?= e(trk_url('advisor/round.php?id=' . (int) $r['id'])) ?>" class="btn btn-soft-blue btn-sm ml-auto">รายละเอียด</a>
+            <a href="<?= e(trk_url('advisor/round.php?id=' . (int) $r['id'])) ?>" class="btn btn-soft-blue btn-sm ml-auto"><?= trk_icon('eye') ?>รายละเอียด</a>
           </div>
           <?php if ($r['followup']): ?>
             <p class="mt-2 text-ink/60">

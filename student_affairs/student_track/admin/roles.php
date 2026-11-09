@@ -78,7 +78,7 @@ trk_render_header('จัดการสิทธิ์', 'roles');
 ?>
 <div class="flex flex-wrap items-end justify-between gap-3">
   <div>
-    <h1 class="text-2xl font-semibold tracking-tight">จัดการสิทธิ์</h1>
+    <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('shield', 'h-5 w-5') ?></span>จัดการสิทธิ์</h1>
     <p class="mt-1 text-sm text-ink/60">ครูประจำวิชาและครูที่ปรึกษาไม่ต้องตั้งที่นี่ ระบบอนุมานจากข้อมูลการสอนและการมอบหมายห้อง</p>
   </div>
   <input type="search" placeholder="ค้นหาชื่อ" data-filter-target="#roles-table"
@@ -97,7 +97,7 @@ trk_render_header('จัดการสิทธิ์', 'roles');
 <?php elseif ($withoutRole > 0): ?>
   <div class="card mt-4 flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
     <span>มีบุคลากร <?= $withoutRole ?> คนที่ยังไม่มีสิทธิ์ใช้งาน</span>
-    <a href="<?= e(trk_url('admin/roles.php?suggest=1')) ?>" class="btn btn-yellow btn-sm">ติ๊กสิทธิ์ที่แนะนำให้</a>
+    <a href="<?= e(trk_url('admin/roles.php?suggest=1')) ?>" class="btn btn-yellow btn-sm"><?= trk_icon('sparkles') ?>ติ๊กสิทธิ์ที่แนะนำให้</a>
   </div>
 <?php endif; ?>
 
@@ -141,7 +141,7 @@ trk_render_header('จัดการสิทธิ์', 'roles');
     </table>
   </div>
   <div class="sticky bottom-0 mt-4 flex justify-end border-t border-sand/60 bg-canvas/90 py-3 backdrop-blur">
-    <button class="btn btn-green btn-lg">บันทึก</button>
+    <button class="btn btn-green btn-lg"><?= trk_icon('save') ?>บันทึก</button>
   </div>
 </form>
 <?php

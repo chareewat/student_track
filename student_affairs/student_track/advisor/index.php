@@ -25,15 +25,16 @@ $groupInfo = [
 
 trk_render_header('งานครูที่ปรึกษา', 'advisor');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight">งานครูที่ปรึกษา</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('clipboard', 'h-5 w-5') ?></span>งานครูที่ปรึกษา</h1>
 <p class="mt-1 text-sm text-ink/60">
   ห้อง <?= e(implode(', ', array_map('trk_classroom_label', $rooms))) ?> · ภาคเรียน <?= e(trk_semester_label()) ?>
 </p>
 
+<?php $stageIcons = ['need_kr2' => 'file-plus', 'need_followup' => 'map-pin', 'closed' => 'folder-check']; ?>
 <?php foreach ($groupInfo as $stage => [$title, $hint, $badge]): ?>
   <section class="mt-6">
     <div class="flex items-baseline gap-2">
-      <h2 class="text-base font-semibold"><?= e($title) ?></h2>
+      <h2 class="text-base font-semibold flex items-center gap-2"><?= trk_icon($stageIcons[$stage], 'h-[18px] w-[18px] text-navy/70') ?><?= e($title) ?></h2>
       <span class="rounded-full px-2 py-0.5 text-xs font-medium <?= $badge ?>"><?= count($groups[$stage]) ?></span>
     </div>
     <p class="mt-0.5 text-xs text-ink/55"><?= e($hint) ?></p>
@@ -70,11 +71,11 @@ trk_render_header('งานครูที่ปรึกษา', 'advisor');
                 <td class="hidden px-4 py-2 text-ink/60 md:table-cell"><?= e(trk_thai_date($r['opened_at'], true)) ?></td>
                 <td class="px-4 py-2 text-right"><div class="flex flex-col items-end gap-1.5 sm:flex-row sm:justify-end">
                   <?php if ($stage === 'need_kr2'): ?>
-                    <a href="<?= e(trk_url('advisor/kr2.php?round=' . (int) $r['id'])) ?>" class="btn btn-green btn-sm">ออก ขร.2</a>
+                    <a href="<?= e(trk_url('advisor/kr2.php?round=' . (int) $r['id'])) ?>" class="btn btn-green btn-sm"><?= trk_icon('file-plus') ?>ออก ขร.2</a>
                   <?php elseif ($stage === 'need_followup'): ?>
-                    <a href="<?= e(trk_url('advisor/followup.php?round=' . (int) $r['id'])) ?>" class="btn btn-green btn-sm">บันทึกผลติดตาม</a>
+                    <a href="<?= e(trk_url('advisor/followup.php?round=' . (int) $r['id'])) ?>" class="btn btn-green btn-sm"><?= trk_icon('map-pin') ?>บันทึกผลติดตาม</a>
                   <?php endif; ?>
-                  <a href="<?= e(trk_url('advisor/round.php?id=' . (int) $r['id'])) ?>" class="btn btn-soft-blue btn-sm">รายละเอียด</a>
+                  <a href="<?= e(trk_url('advisor/round.php?id=' . (int) $r['id'])) ?>" class="btn btn-soft-blue btn-sm"><?= trk_icon('eye') ?>รายละเอียด</a>
                   </div>
                 </td>
               </tr>
@@ -83,7 +84,7 @@ trk_render_header('งานครูที่ปรึกษา', 'advisor');
         </table>
       </div>
     <?php else: ?>
-      <p class="mt-2 text-sm text-ink/40">ไม่มีรายการ</p>
+      <p class="mt-2 text-sm text-ink/40 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ไม่มีรายการ</p>
     <?php endif; ?>
   </section>
 <?php endforeach; ?>

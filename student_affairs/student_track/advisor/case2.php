@@ -58,7 +58,7 @@ foreach ($rooms as $room) {
 
 trk_render_header('นักเรียนขาดติดต่อกัน', 'case2');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight">นักเรียนขาดเรียนติดต่อกัน</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('calendar-x', 'h-5 w-5') ?></span>นักเรียนขาดเรียนติดต่อกัน</h1>
 <p class="mt-1 text-sm text-ink/60">
   นับจากการเช็คชื่อรายวัน เฉพาะสถานะ "ขาด" ตั้งแต่ <?= $minDays ?> วันติดต่อกันขึ้นไป (วันที่ไม่มีการเช็คชื่อจะถูกข้าม)
   ครั้งถัดไปนับเมื่อนักเรียนกลับมาเรียนแล้วขาดใหม่ ขร.5 ต้องมีเลขหนังสือออกรายคน
@@ -79,7 +79,7 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
       <div class="mx-4 mt-3 alert border-rose-200 bg-rose-50 text-rose-800"><?= e($errors[$rid]) ?></div>
     <?php endif; ?>
     <?php if (!$sec['candidates']): ?>
-      <p class="px-4 py-4 text-sm text-ink/55">ไม่มีนักเรียนที่ขาดติดต่อกันถึงเกณฑ์</p>
+      <p class="px-4 py-4 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ไม่มีนักเรียนที่ขาดติดต่อกันถึงเกณฑ์</p>
     <?php else: ?>
       <form method="post">
         <?= trk_csrf_field() ?>
@@ -118,7 +118,7 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
                         <?= e(trk_thai_date($ep['from'], true)) ?> – <?= e(trk_thai_date($ep['to'], true)) ?>
                         (<?= (int) $ep['days'] ?> วัน<?= $ep['ongoing'] ? ', ยังขาดอยู่' : '' ?>)
                         <?php if ($ep['round_no']): ?>
-                          <a href="<?= e(trk_url('advisor/round.php?id=' . $ep['round_id'])) ?>" class="btn btn-soft-green btn-sm">ออกครั้งที่ <?= (int) $ep['round_no'] ?> แล้ว</a>
+                          <a href="<?= e(trk_url('advisor/round.php?id=' . $ep['round_id'])) ?>" class="btn btn-soft-green btn-sm"><?= trk_icon('check-circle') ?>ออกครั้งที่ <?= (int) $ep['round_no'] ?> แล้ว</a>
                         <?php endif; ?>
                       </div>
                     <?php endforeach; ?>
@@ -154,7 +154,7 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
                      value="<?= e($posted['classroom_id'] === $rid ? $posted['deadline'] : $defaultDeadline) ?>"
                      class="input py-1.5">
             </label>
-            <button class="btn btn-green">ออก ขร.5 ให้นักเรียนที่เลือก</button>
+            <button class="btn btn-green"><?= trk_icon('file-plus') ?>ออก ขร.5 ให้นักเรียนที่เลือก</button>
           </div>
         <?php endif; ?>
       </form>

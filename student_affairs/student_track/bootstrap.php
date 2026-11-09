@@ -29,6 +29,7 @@ require_once TRK_ROOT . '/lib/roles.php';
 require_once TRK_ROOT . '/lib/duties.php';
 require_once TRK_ROOT . '/lib/audit.php';
 require_once TRK_ROOT . '/lib/view.php';
+require_once TRK_ROOT . '/lib/icons.php';
 require_once TRK_ROOT . '/lib/thai.php';
 require_once TRK_ROOT . '/lib/members.php';
 require_once TRK_ROOT . '/lib/notify.php';

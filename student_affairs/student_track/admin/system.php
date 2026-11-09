@@ -147,14 +147,14 @@ foreach ($checks as $items) {
     }
 }
 $badge = [
-    'ok' => ['ผ่าน', 'bg-emerald-100 text-emerald-800', '✓'],
-    'warn' => ['ควรแก้', 'bg-amber-100 text-amber-900', '!'],
-    'fail' => ['ไม่ผ่าน', 'bg-rose-100 text-rose-800', '✕'],
+    'ok' => ['ผ่าน', 'bg-emerald-100 text-emerald-800', 'check-circle'],
+    'warn' => ['ควรแก้', 'bg-amber-100 text-amber-900', 'alert'],
+    'fail' => ['ไม่ผ่าน', 'bg-rose-100 text-rose-800', 'x-circle'],
 ];
 
 trk_render_header('ตรวจสอบระบบ', 'system');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight">ตรวจสอบความพร้อมของระบบ</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('activity', 'h-5 w-5') ?></span>ตรวจสอบความพร้อมของระบบ</h1>
 <p class="mt-1 text-sm text-ink/60">
   ผ่าน <?= $summary['ok'] ?> · ควรแก้ <?= $summary['warn'] ?> · ไม่ผ่าน <?= $summary['fail'] ?>
   <?php if ($summary['fail'] === 0): ?> — <span class="chip-green">พร้อมใช้งาน</span><?php endif; ?>
@@ -171,7 +171,7 @@ trk_render_header('ตรวจสอบระบบ', 'system');
             <tr>
               <td class="w-28 px-4 py-2">
                 <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium <?= $cls ?>">
-                  <span aria-hidden="true"><?= $icon ?></span><?= $label ?>
+                  <?= trk_icon($icon, 'h-3.5 w-3.5') ?><?= $label ?>
                 </span>
               </td>
               <td class="px-4 py-2 font-medium"><?= e($c['name']) ?></td>

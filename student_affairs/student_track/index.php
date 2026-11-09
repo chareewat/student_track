@@ -19,7 +19,7 @@ $teaching = trk_teaching_assignments($user['id'], $semesterId);
 
 trk_render_header('หน้าหลัก', 'home');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight">สวัสดี <?= e($user['name']) ?></h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('home', 'h-5 w-5') ?></span>สวัสดี <?= e($user['name']) ?></h1>
 <p class="mt-1 text-sm text-ink/60">หน้าที่ของคุณในภาคเรียน <?= e(trk_semester_label()) ?> ระบบดึงจากข้อมูลครูที่ปรึกษาและการเช็คชื่อรายวิชา</p>
 
 <?php if (trk_sees_all_rooms()): ?>
@@ -29,9 +29,9 @@ trk_render_header('หน้าหลัก', 'home');
 <?php endif; ?>
 
 <section class="mt-6">
-  <h2 class="text-base font-semibold">ห้องที่เป็นครูที่ปรึกษา</h2>
+  <h2 class="text-base font-semibold flex items-center gap-2"><?= trk_icon('users', 'h-[18px] w-[18px] text-navy/70') ?>ห้องที่เป็นครูที่ปรึกษา</h2>
   <?php if (!$advisorRooms): ?>
-    <p class="mt-2 text-sm text-ink/55">ไม่ได้เป็นครูที่ปรึกษาในภาคเรียนนี้</p>
+    <p class="mt-2 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ไม่ได้เป็นครูที่ปรึกษาในภาคเรียนนี้</p>
   <?php else: ?>
     <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <?php foreach ($advisorRooms as $room): ?>
@@ -53,9 +53,9 @@ trk_render_header('หน้าหลัก', 'home');
 </section>
 
 <section class="mt-8">
-  <h2 class="text-base font-semibold">รายวิชาที่สอน</h2>
+  <h2 class="text-base font-semibold flex items-center gap-2"><?= trk_icon('book', 'h-[18px] w-[18px] text-navy/70') ?>รายวิชาที่สอน</h2>
   <?php if (!$teaching): ?>
-    <p class="mt-2 text-sm text-ink/55">ไม่พบรายวิชาที่สอนในภาคเรียนนี้</p>
+    <p class="mt-2 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('search', 'h-4 w-4 text-ink/35') ?>ไม่พบรายวิชาที่สอนในภาคเรียนนี้</p>
   <?php else: ?>
     <div class="mt-3 table-wrap">
       <table class="table">

@@ -33,16 +33,16 @@ trk_render_header(trk_document_title($doc));
 <div class="flex flex-wrap items-start justify-between gap-3">
   <div>
     <div class="text-sm text-ink/55"><?= e(trk_document_title($doc)) ?><?= $doc['doc_no'] ? ' · ที่ ' . e($doc['doc_no']) : '' ?></div>
-    <h1 class="mt-1 text-2xl font-semibold tracking-tight"><?= e($heading) ?></h1>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('file-text', 'h-5 w-5') ?></span><?= e($heading) ?></h1>
     <p class="mt-1 text-sm text-ink/60">
       ออกโดย <?= e($doc['issued_by_name']) ?> เมื่อ <?= e(trk_thai_date($doc['issued_at'])) ?> <?= e(substr($doc['issued_at'], 11, 5)) ?> น.
     </p>
   </div>
   <div class="flex flex-wrap gap-2">
     <a href="<?= e(trk_url('documents/print.php?id=' . (int) $doc['id'])) ?>" target="_blank"
-       class="btn btn-purple">พิมพ์ PDF</a>
+       class="btn btn-purple"><?= trk_icon('printer') ?>พิมพ์ PDF</a>
     <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $doc['id'])) ?>"
-       class="btn btn-soft-purple">ดาวน์โหลด Word</a>
+       class="btn btn-soft-purple"><?= trk_icon('file-text') ?>ดาวน์โหลด Word</a>
   </div>
 </div>
 
@@ -84,7 +84,7 @@ trk_render_header(trk_document_title($doc));
             <div><?= e($s['name']) ?></div>
             <div class="text-xs text-ink/40"><?= e($s['code']) ?></div>
             <?php if (isset($roundIds[(int) $s['id']])): ?>
-              <a href="<?= e(trk_url('advisor/round.php?id=' . $roundIds[(int) $s['id']])) ?>" class="btn btn-soft-blue btn-sm">รอบติดตาม →</a>
+              <a href="<?= e(trk_url('advisor/round.php?id=' . $roundIds[(int) $s['id']])) ?>" class="btn btn-soft-blue btn-sm"><?= trk_icon('history') ?>รอบติดตาม</a>
             <?php endif; ?>
           </td>
           <td class="px-4 py-2 text-right"><?= (int) $s['absent_hours'] ?> ชม.</td>
@@ -139,14 +139,14 @@ trk_render_header(trk_document_title($doc));
     <?php endif; ?>
   </dl>
   <?php foreach ($roundIds as $rid): ?>
-    <a href="<?= e(trk_url('advisor/round.php?id=' . $rid)) ?>" class="btn btn-soft-blue btn-sm">ดูรอบติดตาม →</a>
+    <a href="<?= e(trk_url('advisor/round.php?id=' . $rid)) ?>" class="btn btn-soft-blue btn-sm"><?= trk_icon('history') ?>ดูรอบติดตาม</a>
   <?php endforeach; ?>
 </div>
 <?php endif; ?>
 
 <?php if ($doc['status'] === 'active'): ?>
   <details class="mt-8 card p-4">
-    <summary class="btn btn-soft-red btn-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden">ยกเลิกเอกสารนี้</summary>
+    <summary class="btn btn-soft-red btn-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden"><?= trk_icon('x-circle') ?>ยกเลิกเอกสารนี้</summary>
     <?php if ($canCancel): ?>
       <form method="post" action="<?= e(trk_url('documents/cancel.php')) ?>" class="mt-3 space-y-3">
         <?= trk_csrf_field() ?>
@@ -168,7 +168,7 @@ trk_render_header(trk_document_title($doc));
         </p>
         <input name="reason" required maxlength="255" placeholder="เหตุผลที่ยกเลิก (จำเป็น)"
                class="input w-full">
-        <button class="btn btn-red">ยืนยันยกเลิก</button>
+        <button class="btn btn-red"><?= trk_icon('x-circle') ?>ยืนยันยกเลิก</button>
       </form>
     <?php else: ?>
       <p class="mt-3 text-sm text-ink/60"><?= e($cancelBlock) ?></p>
