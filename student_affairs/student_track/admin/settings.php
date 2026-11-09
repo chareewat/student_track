@@ -40,6 +40,11 @@ if (trk_is_post()) {
         $errors['consecutive_absent_days'] = 'ต้องเป็นตัวเลข 1–30';
     }
 
+    foreach (['overdue_kr2_days', 'overdue_followup_days'] as $k) {
+        if (!ctype_digit($input[$k]) || (int) $input[$k] < 1 || (int) $input[$k] > 120) {
+            $errors['overdue_kr2_days'] = 'จำนวนวันต้องเป็นตัวเลข 1–120';
+        }
+    }
     if (mb_strlen($input['doc_no_prefix']) > 30 || mb_strlen($input['school_postcode']) > 10 || mb_strlen($input['academic_phone']) > 30) {
         $errors['doc_no_prefix'] = 'ข้อความยาวเกินไป';
     }
@@ -124,6 +129,21 @@ trk_render_header('ตั้งค่า', 'settings');
       <?= trk_settings_input('consecutive_absent_days', $values['consecutive_absent_days'], 'วัน') ?>
     </label>
     <?= trk_settings_error($errors, 'consecutive_absent_days') ?>
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="font-semibold">งานค้างเกินกำหนด (หน้าภาพรวม)</h2>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+      <label class="block">
+        <span class="mb-1 block text-sm text-slate-700">รอออก ขร.2 นานเกิน</span>
+        <?= trk_settings_input('overdue_kr2_days', $values['overdue_kr2_days'], 'วัน') ?>
+      </label>
+      <label class="block">
+        <span class="mb-1 block text-sm text-slate-700">รอบันทึกผลติดตามนานเกิน</span>
+        <?= trk_settings_input('overdue_followup_days', $values['overdue_followup_days'], 'วัน') ?>
+      </label>
+    </div>
+    <?= trk_settings_error($errors, 'overdue_kr2_days') ?>
   </section>
 
   <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">

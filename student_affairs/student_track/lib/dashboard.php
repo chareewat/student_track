@@ -1,0 +1,158 @@
+<?php
+/**
+ * ภาพรวมทั้งโรงเรียน (เฟส 5) สำหรับ admin, ผู้บริหาร, เจ้าหน้าที่วิชาการ, เจ้าหน้าที่กิจการนักเรียน
+ */
+
+/**
+ * นักเรียนที่รอออก ขร.1 ทั้งโรงเรียน คำนวณด้วย query เดียว (ไม่วนทีละรายวิชา)
+ * คืน [std_classroom_id => จำนวน (นักเรียน × รายวิชา) ที่ถึงเกณฑ์ครั้งถัดไปแต่ยังไม่ออก]
+ */
+function trk_dashboard_case1_waiting(int $semesterId): array
+{
+    $thresholds = trk_kr1_thresholds();
+    $rows = trk_db_all(
+        "SELECT st.std_student_id, st.std_classroom_id, t.vic_subject_id, s.vic_subject_credit,
+                SUM(a.vic_att_subject_check_status IN (2, 3, 4)) AS absent_hours
+         FROM vic_attendance_teach t
+         JOIN vic_attendance_subject a ON a.vic_att_teach_id = t.vic_att_teach_id
+         JOIN std_student st ON st.std_student_code = a.std_student_code AND st.std_status_id = 1
+         JOIN vic_subject s ON s.vic_subject_id = t.vic_subject_id
+         WHERE t.std_semester_id = ?
+         GROUP BY st.std_student_id, st.std_classroom_id, t.vic_subject_id, s.vic_subject_credit, t.vic_att_classroom
+         HAVING absent_hours > 0",
+        [$semesterId]
+    );
+    $issued = [];
+    foreach (trk_db_all(
+        "SELECT std_student_id, vic_subject_id, MAX(round_no) AS last_round FROM trk_rounds
+         WHERE case_type = 1 AND semester_id = ? AND status <> 'cancelled' GROUP BY std_student_id, vic_subject_id",
+        [$semesterId]
+    ) as $r) {
+        $issued[$r['std_student_id'] . ':' . $r['vic_subject_id']] = (int) $r['last_round'];
+    }
+    $customHours = [];
+    foreach (trk_db_all('SELECT vic_subject_id, hours FROM trk_subject_hours') as $h) {
+        $customHours[(int) $h['vic_subject_id']] = (int) $h['hours'];
+    }
+    $perCredit = (int) trk_setting('hours_per_credit');
+
+    $waiting = [];
+    foreach ($rows as $r) {
+        $total = $customHours[(int) $r['vic_subject_id']] ?? (int) round((float) $r['vic_subject_credit'] * $perCredit);
+        $level = trk_case1_level((int) $r['absent_hours'], $total, $thresholds);
+        $next = ($issued[$r['std_student_id'] . ':' . $r['vic_subject_id']] ?? 0) + 1;
+        if ($next <= 3 && $level >= $next) {
+            $cid = (int) $r['std_classroom_id'];
+            $waiting[$cid] = ($waiting[$cid] ?? 0) + 1;
+        }
+    }
+    return $waiting;
+}
+
+/** ห้องเรียนที่เปิดใช้งาน พร้อมรายชื่อครูที่ปรึกษา */
+function trk_dashboard_classrooms(int $semesterId): array
+{
+    $rooms = trk_db_all(
+        "SELECT c.*,
+                (SELECT GROUP_CONCAT(CONCAT(m.psn_mem_name, ' ', m.psn_mem_surname) ORDER BY a.std_advisor_id SEPARATOR ', ')
+                 FROM std_advisor a JOIN psn_member m ON m.psn_mem_id = a.psn_mem_id
+                 WHERE a.std_classroom_id = c.std_classroom_id AND a.std_semester_id = ?) AS advisors
+         FROM std_classroom c
+         WHERE c.std_classroom_status = 1 AND c.std_classroom_id > 0
+         ORDER BY c.std_classroom_priority",
+        [$semesterId]
+    );
+    return $rooms;
+}
+
+/**
+ * ตัวเลขรายห้อง: case1_waiting, case2_waiting, need_kr2, need_followup, closed, kr6
+ * คืน [std_classroom_id => [...]] และผลรวมทั้งโรงเรียนใน ['total']
+ */
+function trk_dashboard_counts(int $semesterId, array $rooms): array
+{
+    $counts = [];
+    $blank = ['case1_waiting' => 0, 'case2_waiting' => 0, 'need_kr2' => 0, 'need_followup' => 0, 'closed' => 0, 'kr6' => 0];
+    foreach ($rooms as $room) {
+        $counts[(int) $room['std_classroom_id']] = $blank;
+    }
+
+    foreach (trk_dashboard_case1_waiting($semesterId) as $cid => $n) {
+        if (isset($counts[$cid])) {
+            $counts[$cid]['case1_waiting'] = $n;
+        }
+    }
+    foreach ($rooms as $room) {
+        $cid = (int) $room['std_classroom_id'];
+        foreach (trk_case2_candidates($cid, $semesterId) as $c) {
+            $counts[$cid]['case2_waiting'] += $c['eligible'] ? 1 : 0;
+        }
+    }
+    foreach (trk_rounds_for_classrooms(array_keys($counts), $semesterId) as $r) {
+        $cid = (int) $r['std_classroom_id'];
+        if (isset($counts[$cid][$r['stage']])) {
+            $counts[$cid][$r['stage']]++;
+        }
+    }
+    foreach (trk_db_all(
+        "SELECT std_classroom_id, COUNT(*) AS n FROM trk_documents
+         WHERE doc_type = 'KR6' AND status = 'active' AND semester_id = ? GROUP BY std_classroom_id",
+        [$semesterId]
+    ) as $r) {
+        if (isset($counts[(int) $r['std_classroom_id']])) {
+            $counts[(int) $r['std_classroom_id']]['kr6'] = (int) $r['n'];
+        }
+    }
+
+    $total = $blank;
+    foreach ($counts as $c) {
+        foreach ($c as $k => $v) {
+            $total[$k] += $v;
+        }
+    }
+    $counts['total'] = $total;
+    return $counts;
+}
+
+/**
+ * รอบติดตามที่ค้างนานเกินกำหนด
+ *  - รอออก ขร.2: นับจากวันที่เปิดรอบ (ขร.1) เกิน overdue_kr2_days วัน
+ *  - รอบันทึกผลติดตาม: นับจากวันที่ออก ขร.2/ขร.5 เกิน overdue_followup_days วัน
+ */
+function trk_dashboard_overdue(int $semesterId): array
+{
+    $kr2Days = (int) trk_setting('overdue_kr2_days');
+    $followDays = (int) trk_setting('overdue_followup_days');
+    $today = new DateTime(date('Y-m-d'));
+    $rows = [];
+    foreach (trk_db_all(trk_rounds_select_sql() . " WHERE r.semester_id = ? AND r.status = 'open' ORDER BY r.opened_at", [$semesterId]) as $r) {
+        $r['stage'] = trk_round_stage($r);
+        if ($r['stage'] === 'need_kr2') {
+            $since = substr($r['opened_at'], 0, 10);
+            $limit = $kr2Days;
+        } else {
+            $stepDoc = (int) ($r['kr2_id'] ?: 0);
+            $since = $stepDoc
+                ? substr((string) trk_db_value('SELECT issued_at FROM trk_documents WHERE id = ?', [$stepDoc]), 0, 10)
+                : substr($r['opened_at'], 0, 10);
+            $limit = $followDays;
+        }
+        $age = (int) $today->diff(new DateTime($since))->days;
+        if ($age > $limit) {
+            $r['since'] = $since;
+            $r['age_days'] = $age;
+            $r['limit_days'] = $limit;
+            $rows[] = $r;
+        }
+    }
+    usort($rows, function ($a, $b) {
+        return $b['age_days'] <=> $a['age_days'];
+    });
+    return $rows;
+}
+
+/** วันสุดท้ายของสัปดาห์ที่ 8 ของภาคเรียน (หมายเหตุใน ขร.2: ต้องแจ้งผู้ปกครองภายในสัปดาห์ที่ 8) */
+function trk_semester_week8_end(array $semester): string
+{
+    return date('Y-m-d', strtotime($semester['std_semester_beginday'] . ' +8 weeks -1 day'));
+}

@@ -65,7 +65,8 @@ function trk_case3_candidates(int $classroomId, int $semesterId): array
          JOIN std_student st ON st.std_student_id = f.std_student_id
          LEFT JOIN psn_title t ON t.psn_title_id = st.psn_title_id
          WHERE f.semester_id = ? AND f.status = 'active' AND st.std_classroom_id = ? AND st.std_status_id = 1
-         GROUP BY st.std_student_id
+         GROUP BY st.std_student_id, st.std_student_code, st.std_student_number, t.psn_title_name,
+                  st.std_student_name, st.std_student_surname
          HAVING COUNT(*) >= ?
          ORDER BY st.std_student_number",
         [$semesterId, $classroomId, TRK_CASE3_MIN_FOLLOWUPS]

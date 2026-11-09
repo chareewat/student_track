@@ -52,7 +52,9 @@ function trk_case1_student_hours(int $subjectId, string $roomLabel, int $semeste
          JOIN std_classroom c ON c.std_classroom_id = st.std_classroom_id
          LEFT JOIN psn_title ti ON ti.psn_title_id = st.psn_title_id
          WHERE t.std_semester_id = ? AND t.vic_subject_id = ? AND t.vic_att_classroom = ?
-         GROUP BY st.std_student_id
+         GROUP BY st.std_student_id, st.std_student_code, st.std_student_number, ti.psn_title_name,
+                  st.std_student_name, st.std_student_surname,
+                  c.std_classroom_id, c.std_classroom_level, c.std_classroom_room, c.std_classroom_priority
          ORDER BY c.std_classroom_priority, st.std_student_number",
         [$semesterId, $subjectId, $roomLabel]
     );

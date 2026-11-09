@@ -87,6 +87,9 @@ function trk_menu(): array
 {
     $user = trk_user();
     $items = [['key' => 'home', 'label' => 'หน้าหลัก', 'url' => trk_url('index.php')]];
+    if (trk_sees_all_rooms()) {
+        $items[] = ['key' => 'dashboard', 'label' => 'ภาพรวม', 'url' => trk_url('dashboard/index.php')];
+    }
     if (trk_advisor_classrooms($user['id'], trk_semester_id())) {
         $pending = (int) trk_db_value(
             "SELECT COUNT(*) FROM trk_rounds r JOIN std_advisor a

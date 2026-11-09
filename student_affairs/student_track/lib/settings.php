@@ -16,6 +16,8 @@ function trk_setting_defaults(): array
         'doc_no_prefix' => 'ศธ 04294.32/',  // นำหน้าเลขหนังสือออกถึงผู้ปกครอง (ขร.2, บค.14, ขร.5)
         'school_postcode' => '62210',
         'academic_phone' => '',             // โทรศัพท์กลุ่มบริหารวิชาการ (ขร.5)
+        'overdue_kr2_days' => '7',          // Dashboard: รอออก ขร.2 นานเกินกี่วันถือว่าค้าง
+        'overdue_followup_days' => '14',    // Dashboard: รอบันทึกผลติดตามนานเกินกี่วันถือว่าค้าง
     ];
 }
 

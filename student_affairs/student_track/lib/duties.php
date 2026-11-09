@@ -76,7 +76,8 @@ function trk_teaching_assignments(int $memberId, int $semesterId): array
          JOIN std_classroom c ON c.std_classroom_id = a.std_classroom_id
          LEFT JOIN vic_attendance_teach t
                 ON t.vic_subject_id = a.vic_subject_id AND t.std_semester_id = ? AND t.vic_att_classroom = $label
-         GROUP BY s.vic_subject_id, c.std_classroom_id
+         GROUP BY s.vic_subject_id, s.vic_subject_code, s.vic_subject_name, s.vic_subject_credit,
+                  c.std_classroom_id, c.std_classroom_level, c.std_classroom_room, c.std_classroom_priority
          ORDER BY s.vic_subject_code, c.std_classroom_priority",
         [$memberId, $semesterId, $memberId, $semesterId, $semesterId]
     );
