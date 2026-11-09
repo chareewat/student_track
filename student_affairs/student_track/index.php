@@ -19,11 +19,11 @@ $teaching = trk_teaching_assignments($user['id'], $semesterId);
 
 trk_render_header('หน้าหลัก', 'home');
 ?>
-<h1 class="text-xl font-semibold">สวัสดี <?= e($user['name']) ?></h1>
-<p class="mt-1 text-sm text-slate-600">หน้าที่ของคุณในภาคเรียน <?= e(trk_semester_label()) ?> ระบบดึงจากข้อมูลครูที่ปรึกษาและการเช็คชื่อรายวิชา</p>
+<h1 class="text-2xl font-semibold tracking-tight">สวัสดี <?= e($user['name']) ?></h1>
+<p class="mt-1 text-sm text-ink/60">หน้าที่ของคุณในภาคเรียน <?= e(trk_semester_label()) ?> ระบบดึงจากข้อมูลครูที่ปรึกษาและการเช็คชื่อรายวิชา</p>
 
 <?php if (trk_sees_all_rooms()): ?>
-  <div class="mt-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+  <div class="mt-4 alert border-blue-200 bg-blue-50 text-blue-800">
     บทบาทของคุณ (<?= strip_tags(trk_role_badges(array_intersect($user['roles'], TRK_ROLES_SEE_ALL))) ?>) เห็นข้อมูลการติดตามของทุกห้อง
   </div>
 <?php endif; ?>
@@ -31,19 +31,19 @@ trk_render_header('หน้าหลัก', 'home');
 <section class="mt-6">
   <h2 class="text-base font-semibold">ห้องที่เป็นครูที่ปรึกษา</h2>
   <?php if (!$advisorRooms): ?>
-    <p class="mt-2 text-sm text-slate-500">ไม่ได้เป็นครูที่ปรึกษาในภาคเรียนนี้</p>
+    <p class="mt-2 text-sm text-ink/55">ไม่ได้เป็นครูที่ปรึกษาในภาคเรียนนี้</p>
   <?php else: ?>
     <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <?php foreach ($advisorRooms as $room): ?>
-        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <div class="card p-4">
           <div class="flex items-baseline justify-between">
             <span class="text-lg font-semibold"><?= e(trk_classroom_label($room)) ?></span>
-            <span class="text-sm text-slate-500"><?= $room['student_count'] ?> คน</span>
+            <span class="text-sm text-ink/55"><?= $room['student_count'] ?> คน</span>
           </div>
-          <div class="mt-2 text-xs text-slate-500">ครูที่ปรึกษา</div>
+          <div class="mt-2 text-xs text-ink/55">ครูที่ปรึกษา</div>
           <ul class="mt-1 space-y-0.5 text-sm">
             <?php foreach ($room['advisors'] as $a): ?>
-              <li class="<?= (int) $a['psn_mem_id'] === $user['id'] ? 'font-medium text-blue-700' : 'text-slate-700' ?>"><?= e($a['full_name']) ?></li>
+              <li class="<?= (int) $a['psn_mem_id'] === $user['id'] ? 'font-semibold text-navy' : 'text-ink/80' ?>"><?= e($a['full_name']) ?><?= (int) $a['psn_mem_id'] === $user['id'] ? ' <span class="chip-navy">คุณ</span>' : '' ?></li>
             <?php endforeach; ?>
           </ul>
         </div>
@@ -55,11 +55,11 @@ trk_render_header('หน้าหลัก', 'home');
 <section class="mt-8">
   <h2 class="text-base font-semibold">รายวิชาที่สอน</h2>
   <?php if (!$teaching): ?>
-    <p class="mt-2 text-sm text-slate-500">ไม่พบรายวิชาที่สอนในภาคเรียนนี้</p>
+    <p class="mt-2 text-sm text-ink/55">ไม่พบรายวิชาที่สอนในภาคเรียนนี้</p>
   <?php else: ?>
-    <div class="mt-3 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-      <table class="min-w-full text-sm">
-        <thead class="bg-slate-50 text-left text-xs text-slate-500">
+    <div class="mt-3 table-wrap">
+      <table class="table">
+        <thead>
           <tr>
             <th class="px-4 py-2 font-medium">รหัสวิชา</th>
             <th class="px-4 py-2 font-medium">รายวิชา</th>
@@ -70,7 +70,7 @@ trk_render_header('หน้าหลัก', 'home');
             <th class="px-4 py-2 text-right font-medium">เช็คชื่อแล้ว</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody>
           <?php foreach ($teaching as $t): ?>
             <?php $total = trk_subject_total_hours((int) $t['vic_subject_id'], (float) $t['vic_subject_credit']); ?>
             <tr>
@@ -80,13 +80,13 @@ trk_render_header('หน้าหลัก', 'home');
               <td class="px-4 py-2 text-right"><?= e(rtrim(rtrim($t['vic_subject_credit'], '0'), '.')) ?></td>
               <?php if ($total > 0): ?>
                 <td class="px-4 py-2 text-right"><?= $total ?> ชม.</td>
-                <td class="px-4 py-2 text-right text-slate-600">
+                <td class="px-4 py-2 text-right text-ink/60">
                   <?= implode(' / ', array_map(function ($p) use ($total) {
                       return rtrim(rtrim(number_format($total * $p / 100, 1), '0'), '.');
                   }, $thresholds)) ?> ชม.
                 </td>
               <?php else: ?>
-                <td class="px-4 py-2 text-right text-amber-700" colspan="2">ยังไม่ได้กำหนดชั่วโมง</td>
+                <td class="px-4 py-2 text-right" colspan="2"><span class="chip-yellow">ยังไม่ได้กำหนดชั่วโมง</span></td>
               <?php endif; ?>
               <td class="px-4 py-2 text-right"><?= (int) $t['periods_checked'] ?> คาบ</td>
             </tr>

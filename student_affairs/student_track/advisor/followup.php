@@ -83,9 +83,9 @@ function trk_field_error(array $errors, string $key): string
 
 trk_render_header('บันทึกผลติดตาม', 'advisor');
 ?>
-<a href="<?= e(trk_url('advisor/round.php?id=' . (int) $round['id'])) ?>" class="text-sm text-blue-700 hover:underline">← รอบติดตาม</a>
-<h1 class="mt-2 text-xl font-semibold">บันทึกผลติดตาม (ขร.3)</h1>
-<p class="mt-1 text-sm text-slate-600">
+<a href="<?= e(trk_url('advisor/round.php?id=' . (int) $round['id'])) ?>" class="btn btn-navy btn-sm">← รอบติดตาม</a>
+<h1 class="mt-2 text-2xl font-semibold tracking-tight">บันทึกผลติดตาม (ขร.3)</h1>
+<p class="mt-1 text-sm text-ink/60">
   <?= e($round['full_name']) ?> (<?= e($round['std_student_code']) ?>) <?= e($round['classroom_label']) ?> · ครั้งที่ <?= (int) $round['round_no'] ?>
   <?php if ((int) $round['case_type'] === 1): ?>
     · ขาดรายวิชา <?= e($round['vic_subject_code'] . ' ' . $round['vic_subject_name']) ?>
@@ -93,10 +93,10 @@ trk_render_header('บันทึกผลติดตาม', 'advisor');
 </p>
 
 <?php if ($errors): ?>
-  <div class="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">กรุณาแก้ไขข้อมูลที่ไม่ถูกต้อง (ถ้าแนบรูปไว้ ต้องเลือกรูปใหม่อีกครั้ง)</div>
+  <div class="mt-4 alert border-rose-200 bg-rose-50 text-rose-800">กรุณาแก้ไขข้อมูลที่ไม่ถูกต้อง (ถ้าแนบรูปไว้ ต้องเลือกรูปใหม่อีกครั้ง)</div>
 <?php endif; ?>
 
-<form method="post" enctype="multipart/form-data" class="mt-6 max-w-2xl space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+<form method="post" enctype="multipart/form-data" class="mt-6 max-w-2xl space-y-4 card p-5">
   <?= trk_csrf_field() ?>
   <input type="hidden" name="round" value="<?= (int) $round['id'] ?>">
 
@@ -104,12 +104,12 @@ trk_render_header('บันทึกผลติดตาม', 'advisor');
     <label class="block">
       <span class="mb-1 block text-sm font-medium">วันที่ติดตาม <span class="text-rose-600">*</span></span>
       <input type="date" name="followup_date" value="<?= e($values['followup_date']) ?>" max="<?= e(date('Y-m-d')) ?>" required
-             class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+             class="input w-full">
       <?= trk_field_error($errors, 'followup_date') ?>
     </label>
     <label class="block">
       <span class="mb-1 block text-sm font-medium">วิธีการ <span class="text-rose-600">*</span></span>
-      <select name="method" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+      <select name="method" class="input w-full">
         <?php foreach (TRK_FOLLOWUP_METHODS as $m): ?>
           <option <?= $values['method'] === $m ? 'selected' : '' ?>><?= e($m) ?></option>
         <?php endforeach; ?>
@@ -120,33 +120,33 @@ trk_render_header('บันทึกผลติดตาม', 'advisor');
 
   <label class="block">
     <span class="mb-1 block text-sm font-medium">ผู้ร่วมติดตาม <span class="text-rose-600">*</span></span>
-    <input name="visitors" value="<?= e($values['visitors']) ?>" maxlength="255" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
+    <input name="visitors" value="<?= e($values['visitors']) ?>" maxlength="255" required class="input w-full">
     <?= trk_field_error($errors, 'visitors') ?>
   </label>
 
   <label class="block">
     <span class="mb-1 block text-sm font-medium">ผลที่พบ <span class="text-rose-600">*</span></span>
     <textarea name="findings" rows="5" required placeholder="สภาพปัญหา สาเหตุที่ขาดเรียน ข้อตกลงกับผู้ปกครอง"
-              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"><?= e($values['findings']) ?></textarea>
+              class="input w-full"><?= e($values['findings']) ?></textarea>
     <?= trk_field_error($errors, 'findings') ?>
   </label>
 
   <label class="block">
     <span class="mb-1 block text-sm font-medium">รูปถ่าย (JPG/PNG ไม่เกิน <?= TRK_PHOTO_MAX ?> รูป)</span>
     <input type="file" name="photos[]" accept="image/jpeg,image/png" multiple
-           class="block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm">
-    <p class="mt-1 text-xs text-slate-500">การเยี่ยมบ้านต้องแนบอย่างน้อย 1 รูป ระบบจะย่อรูปให้อัตโนมัติ</p>
+           class="block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-sand/50 file:px-3 file:py-2 file:text-sm">
+    <p class="mt-1 text-xs text-ink/55">การเยี่ยมบ้านต้องแนบอย่างน้อย 1 รูป ระบบจะย่อรูปให้อัตโนมัติ</p>
     <?= trk_field_error($errors, 'photos') ?>
   </label>
 
   <label class="block">
     <span class="mb-1 block text-sm font-medium">เลขที่บันทึกข้อความ ขร.3 (ไม่บังคับ)</span>
-    <input name="doc_no" value="<?= e($values['doc_no']) ?>" maxlength="30" class="w-40 rounded-lg border border-slate-300 px-3 py-2 text-sm">
+    <input name="doc_no" value="<?= e($values['doc_no']) ?>" maxlength="30" class="w-40 input">
     <?= trk_field_error($errors, 'doc_no') ?>
   </label>
 
   <div class="flex justify-end">
-    <button class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700">บันทึกและออก ขร.3</button>
+    <button class="btn btn-green btn-lg">บันทึกและออก ขร.3</button>
   </div>
 </form>
 <?php

@@ -26,15 +26,15 @@ foreach (trk_db_all('SELECT document_id FROM trk_notifications WHERE recipient_i
 
 trk_render_header('ขร.6 เสนอจำหน่าย', 'kr6');
 ?>
-<h1 class="text-xl font-semibold">ขร.6 ขอให้จำหน่ายนักเรียน</h1>
-<p class="mt-1 text-sm text-slate-600">ครูที่ปรึกษาส่งมาหลังติดตามครบ 3 ครั้งแล้วนักเรียนยังไม่มาเรียน · ภาคเรียน <?= e(trk_semester_label()) ?></p>
+<h1 class="text-2xl font-semibold tracking-tight">ขร.6 ขอให้จำหน่ายนักเรียน</h1>
+<p class="mt-1 text-sm text-ink/60">ครูที่ปรึกษาส่งมาหลังติดตามครบ 3 ครั้งแล้วนักเรียนยังไม่มาเรียน · ภาคเรียน <?= e(trk_semester_label()) ?></p>
 
 <?php if (!$docs): ?>
-  <p class="mt-6 text-sm text-slate-500">ยังไม่มี ขร.6 ในภาคเรียนนี้</p>
+  <p class="mt-6 text-sm text-ink/55">ยังไม่มี ขร.6 ในภาคเรียนนี้</p>
 <?php else: ?>
-  <div class="mt-6 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-    <table class="min-w-full text-sm">
-      <thead class="bg-slate-50 text-left text-xs text-slate-500">
+  <div class="mt-6 table-wrap">
+    <table class="table">
+      <thead>
         <tr>
           <th class="px-4 py-2 font-medium">วันที่ส่ง</th>
           <th class="px-4 py-2 font-medium">นักเรียน</th>
@@ -45,23 +45,23 @@ trk_render_header('ขร.6 เสนอจำหน่าย', 'kr6');
           <th class="px-4 py-2"></th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100">
+      <tbody>
         <?php foreach ($docs as $d): ?>
           <?php $data = json_decode($d['data'], true); ?>
-          <tr class="<?= $d['status'] === 'cancelled' ? 'text-slate-400' : '' ?>">
+          <tr class="<?= $d['status'] === 'cancelled' ? 'text-ink/40' : '' ?>">
             <td class="px-4 py-2">
-              <?php if (isset($unread[(int) $d['id']])): ?><span class="mr-1 inline-block h-2 w-2 rounded-full bg-blue-600"></span><?php endif; ?>
+              <?php if (isset($unread[(int) $d['id']])): ?><span class="mr-1 inline-block h-2 w-2 rounded-full bg-amber-400"></span><?php endif; ?>
               <?= e(trk_thai_date($d['issued_at'], true)) ?>
             </td>
-            <td class="px-4 py-2"><?= e($data['student']['name']) ?> <span class="text-xs text-slate-400"><?= e($data['student']['code']) ?></span></td>
+            <td class="px-4 py-2"><?= e($data['student']['name']) ?> <span class="text-xs text-ink/40"><?= e($data['student']['code']) ?></span></td>
             <td class="px-4 py-2"><?= e(trk_classroom_label($d)) ?></td>
             <td class="px-4 py-2"><?= e($d['issued_by_name']) ?></td>
             <td class="px-4 py-2 text-right"><?= (int) $data['followup_count'] ?> ครั้ง</td>
             <td class="px-4 py-2 text-xs"><?= $d['status'] === 'cancelled' ? 'ยกเลิก: ' . e($d['cancel_reason']) : 'รอพิจารณา' ?></td>
             <td class="px-4 py-2 text-right whitespace-nowrap">
-              <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="text-blue-700 hover:underline">ดู</a>
-              <a href="<?= e(trk_url('documents/print.php?id=' . (int) $d['id'])) ?>" target="_blank" class="ml-3 text-blue-700 hover:underline">พิมพ์</a>
-              <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $d['id'])) ?>" class="ml-3 text-blue-700 hover:underline">Word</a>
+              <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-blue btn-sm">ดู</a>
+              <a href="<?= e(trk_url('documents/print.php?id=' . (int) $d['id'])) ?>" target="_blank" class="btn btn-soft-purple btn-sm ml-1">PDF</a>
+              <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-purple btn-sm ml-1">Word</a>
             </td>
           </tr>
         <?php endforeach; ?>

@@ -87,8 +87,8 @@ function trk_settings_input(string $name, string $value, string $suffix = '', st
 {
     return '<div class="flex items-center gap-2"><input type="' . $type . '" name="' . e($name) . '" value="' . e($value) . '" '
         . ($type === 'number' ? 'min="1" ' : '')
-        . 'class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm' . ($type === 'number' ? ' sm:w-28' : '') . '">'
-        . ($suffix ? '<span class="text-sm text-slate-500">' . e($suffix) . '</span>' : '') . '</div>';
+        . 'class="input w-full' . ($type === 'number' ? ' sm:w-28' : '') . '">'
+        . ($suffix ? '<span class="text-sm text-ink/55">' . e($suffix) . '</span>' : '') . '</div>';
 }
 
 function trk_settings_error(array $errors, string $key): string
@@ -98,98 +98,98 @@ function trk_settings_error(array $errors, string $key): string
 
 trk_render_header('ตั้งค่า', 'settings');
 ?>
-<h1 class="text-xl font-semibold">ตั้งค่า</h1>
+<h1 class="text-2xl font-semibold tracking-tight">ตั้งค่า</h1>
 
 <form method="post" class="mt-4 space-y-6">
   <?= trk_csrf_field() ?>
 
-  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <section class="card p-5">
     <h2 class="font-semibold">เคส 1: ขาดเรียนรายวิชา</h2>
-    <p class="mt-1 text-sm text-slate-500">นับชั่วโมงที่มีสถานะ ขาด, ลา และหนี เทียบกับเวลาเรียนทั้งหมดของรายวิชา</p>
+    <p class="mt-1 text-sm text-ink/55">นับชั่วโมงที่มีสถานะ ขาด, ลา และหนี เทียบกับเวลาเรียนทั้งหมดของรายวิชา</p>
     <div class="mt-4 grid gap-4 sm:grid-cols-3">
       <?php for ($i = 1; $i <= 3; $i++): ?>
         <label class="block">
-          <span class="mb-1 block text-sm text-slate-700">ครั้งที่ <?= $i ?></span>
+          <span class="mb-1 block text-sm text-ink/80">ครั้งที่ <?= $i ?></span>
           <?= trk_settings_input("kr1_threshold_$i", $values["kr1_threshold_$i"], '%') ?>
         </label>
       <?php endfor; ?>
     </div>
     <?= trk_settings_error($errors, 'kr1_threshold_1') ?>
     <label class="mt-4 block">
-      <span class="mb-1 block text-sm text-slate-700">เวลาเรียนทั้งหมด = หน่วยกิต ×</span>
+      <span class="mb-1 block text-sm text-ink/80">เวลาเรียนทั้งหมด = หน่วยกิต ×</span>
       <?= trk_settings_input('hours_per_credit', $values['hours_per_credit'], 'ชั่วโมง') ?>
     </label>
     <?= trk_settings_error($errors, 'hours_per_credit') ?>
   </section>
 
-  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <section class="card p-5">
     <h2 class="font-semibold">เคส 2: ขาดเรียนติดต่อกัน</h2>
     <label class="mt-4 block">
-      <span class="mb-1 block text-sm text-slate-700">จำนวนวันที่ขาดติดต่อกัน</span>
+      <span class="mb-1 block text-sm text-ink/80">จำนวนวันที่ขาดติดต่อกัน</span>
       <?= trk_settings_input('consecutive_absent_days', $values['consecutive_absent_days'], 'วัน') ?>
     </label>
     <?= trk_settings_error($errors, 'consecutive_absent_days') ?>
   </section>
 
-  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <section class="card p-5">
     <h2 class="font-semibold">งานค้างเกินกำหนด (หน้าภาพรวม)</h2>
     <div class="mt-4 grid gap-4 sm:grid-cols-2">
       <label class="block">
-        <span class="mb-1 block text-sm text-slate-700">รอออก ขร.2 นานเกิน</span>
+        <span class="mb-1 block text-sm text-ink/80">รอออก ขร.2 นานเกิน</span>
         <?= trk_settings_input('overdue_kr2_days', $values['overdue_kr2_days'], 'วัน') ?>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-slate-700">รอบันทึกผลติดตามนานเกิน</span>
+        <span class="mb-1 block text-sm text-ink/80">รอบันทึกผลติดตามนานเกิน</span>
         <?= trk_settings_input('overdue_followup_days', $values['overdue_followup_days'], 'วัน') ?>
       </label>
     </div>
     <?= trk_settings_error($errors, 'overdue_kr2_days') ?>
   </section>
 
-  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <section class="card p-5">
     <h2 class="font-semibold">ชื่อผู้ลงนามในเอกสาร</h2>
     <div class="mt-4 grid gap-4 sm:grid-cols-2">
       <label class="block">
-        <span class="mb-1 block text-sm text-slate-700">ผู้อำนวยการโรงเรียน</span>
+        <span class="mb-1 block text-sm text-ink/80">ผู้อำนวยการโรงเรียน</span>
         <?= trk_settings_input('director_name', $values['director_name'], '', 'text') ?>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-slate-700">รองผู้อำนวยการกลุ่มบริหารวิชาการ</span>
+        <span class="mb-1 block text-sm text-ink/80">รองผู้อำนวยการกลุ่มบริหารวิชาการ</span>
         <?= trk_settings_input('deputy_academic_name', $values['deputy_academic_name'], '', 'text') ?>
       </label>
     </div>
   </section>
 
-  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <section class="card p-5">
     <h2 class="font-semibold">หนังสือถึงผู้ปกครอง (ขร.2, บค.14, ขร.5)</h2>
     <div class="mt-4 grid gap-4 sm:grid-cols-3">
       <label class="block">
-        <span class="mb-1 block text-sm text-slate-700">เลขนำหน้าหนังสือออก</span>
+        <span class="mb-1 block text-sm text-ink/80">เลขนำหน้าหนังสือออก</span>
         <?= trk_settings_input('doc_no_prefix', $values['doc_no_prefix'], '', 'text') ?>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-slate-700">รหัสไปรษณีย์โรงเรียน</span>
+        <span class="mb-1 block text-sm text-ink/80">รหัสไปรษณีย์โรงเรียน</span>
         <?= trk_settings_input('school_postcode', $values['school_postcode'], '', 'text') ?>
       </label>
       <label class="block">
-        <span class="mb-1 block text-sm text-slate-700">โทรศัพท์กลุ่มบริหารวิชาการ</span>
+        <span class="mb-1 block text-sm text-ink/80">โทรศัพท์กลุ่มบริหารวิชาการ</span>
         <?= trk_settings_input('academic_phone', $values['academic_phone'], '', 'text') ?>
       </label>
     </div>
     <?= trk_settings_error($errors, 'doc_no_prefix') ?>
   </section>
 
-  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+  <section class="card p-5">
     <h2 class="font-semibold">ชั่วโมงเรียนของรายวิชาที่ไม่มีหน่วยกิต</h2>
-    <p class="mt-1 text-sm text-slate-500">รายวิชาที่สอนในภาคเรียน <?= e(trk_semester_label()) ?> ที่หน่วยกิตเป็น 0 ต้องกำหนดชั่วโมงเอง ระบบจึงจะคำนวณเกณฑ์ได้</p>
+    <p class="mt-1 text-sm text-ink/55">รายวิชาที่สอนในภาคเรียน <?= e(trk_semester_label()) ?> ที่หน่วยกิตเป็น 0 ต้องกำหนดชั่วโมงเอง ระบบจึงจะคำนวณเกณฑ์ได้</p>
     <?= trk_settings_error($errors, 'subject_hours') ?>
     <?php if (!$customSubjects): ?>
-      <p class="mt-3 text-sm text-slate-500">ไม่มีรายวิชาที่ต้องกำหนดชั่วโมงเอง</p>
+      <p class="mt-3 text-sm text-ink/55">ไม่มีรายวิชาที่ต้องกำหนดชั่วโมงเอง</p>
     <?php else: ?>
-      <div class="mt-3 divide-y divide-slate-100">
+      <div class="mt-3 divide-y divide-sand/40">
         <?php foreach ($customSubjects as $s): ?>
           <label class="flex items-center justify-between gap-4 py-2">
-            <span class="text-sm"><span class="font-mono text-xs text-slate-500"><?= e($s['vic_subject_code']) ?></span> <?= e($s['vic_subject_name']) ?></span>
+            <span class="text-sm"><span class="font-mono text-xs text-ink/55"><?= e($s['vic_subject_code']) ?></span> <?= e($s['vic_subject_name']) ?></span>
             <?= trk_settings_input('subject_hours[' . (int) $s['vic_subject_id'] . ']', (string) ($_POST['subject_hours'][$s['vic_subject_id']] ?? $s['hours']), 'ชม.') ?>
           </label>
         <?php endforeach; ?>
@@ -198,7 +198,7 @@ trk_render_header('ตั้งค่า', 'settings');
   </section>
 
   <div class="flex justify-end">
-    <button class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700">บันทึก</button>
+    <button class="btn btn-green btn-lg">บันทึก</button>
   </div>
 </form>
 <?php

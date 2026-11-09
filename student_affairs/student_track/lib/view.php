@@ -97,21 +97,21 @@ function trk_menu(): array
              WHERE r.semester_id = ? AND r.status = 'open'",
             [$user['id'], trk_semester_id()]
         );
-        $items[] = ['key' => 'advisor', 'label' => 'งานครูที่ปรึกษา' . ($pending ? " ($pending)" : ''), 'url' => trk_url('advisor/index.php')];
+        $items[] = ['key' => 'advisor', 'label' => 'งานครูที่ปรึกษา', 'count' => $pending, 'url' => trk_url('advisor/index.php')];
         $case2 = 0;
         foreach (trk_advisor_classrooms($user['id'], trk_semester_id()) as $room) {
             foreach (trk_case2_candidates((int) $room['std_classroom_id'], trk_semester_id()) as $c) {
                 $case2 += $c['eligible'] ? 1 : 0;
             }
         }
-        $items[] = ['key' => 'case2', 'label' => 'นักเรียนขาดติดต่อกัน' . ($case2 ? " ($case2)" : ''), 'url' => trk_url('advisor/case2.php')];
+        $items[] = ['key' => 'case2', 'label' => 'นักเรียนขาดติดต่อกัน', 'count' => $case2, 'url' => trk_url('advisor/case2.php')];
         $case3 = 0;
         foreach (trk_advisor_classrooms($user['id'], trk_semester_id()) as $room) {
             foreach (trk_case3_candidates((int) $room['std_classroom_id'], trk_semester_id()) as $c) {
                 $case3 += $c['eligible'] ? 1 : 0;
             }
         }
-        $items[] = ['key' => 'case3', 'label' => 'เสนอจำหน่าย' . ($case3 ? " ($case3)" : ''), 'url' => trk_url('advisor/case3.php')];
+        $items[] = ['key' => 'case3', 'label' => 'เสนอจำหน่าย', 'count' => $case3, 'url' => trk_url('advisor/case3.php')];
     }
     if (trk_teaching_assignments($user['id'], trk_semester_id())) {
         $items[] = ['key' => 'case1', 'label' => 'นักเรียนขาดรายวิชา', 'url' => trk_url('case1/index.php')];
@@ -120,7 +120,7 @@ function trk_menu(): array
         $items[] = ['key' => 'kr6', 'label' => 'ขร.6 เสนอจำหน่าย', 'url' => trk_url('academic/kr6.php')];
     }
     $unread = trk_unread_count($user['id']);
-    $items[] = ['key' => 'notifications', 'label' => 'แจ้งเตือน' . ($unread ? " ($unread)" : ''), 'url' => trk_url('notifications.php')];
+    $items[] = ['key' => 'notifications', 'label' => 'แจ้งเตือน', 'count' => $unread, 'url' => trk_url('notifications.php')];
     if (trk_has_role('admin')) {
         $items[] = ['key' => 'roles', 'label' => 'จัดการสิทธิ์', 'url' => trk_url('admin/roles.php')];
         $items[] = ['key' => 'settings', 'label' => 'ตั้งค่า', 'url' => trk_url('admin/settings.php')];
@@ -144,10 +144,11 @@ function trk_render_footer(): void
 function trk_render_message(string $title, string $message): void
 {
     trk_render_header($title);
-    echo '<div class="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">'
-        . '<h1 class="text-lg font-semibold text-slate-800">' . e($title) . '</h1>'
-        . '<p class="mt-2 text-slate-600">' . e($message) . '</p>'
-        . '<a href="' . e(trk_url('index.php')) . '" class="mt-6 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">กลับหน้าหลัก</a>'
+    echo '<div class="card mx-auto mt-6 max-w-lg p-8 text-center">'
+        . '<div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-canvas text-2xl text-navy" aria-hidden="true">!</div>'
+        . '<h1 class="mt-4 text-lg font-semibold">' . e($title) . '</h1>'
+        . '<p class="hint mt-2">' . e($message) . '</p>'
+        . '<a href="' . e(trk_url('index.php')) . '" class="btn btn-navy mt-6">กลับหน้าหลัก</a>'
         . '</div>';
     trk_render_footer();
 }
@@ -155,16 +156,15 @@ function trk_render_message(string $title, string $message): void
 function trk_role_badges(array $roles): string
 {
     $colors = [
-        'admin' => 'bg-rose-100 text-rose-700',
-        'teacher' => 'bg-slate-100 text-slate-700',
-        'executive' => 'bg-amber-100 text-amber-800',
-        'academic' => 'bg-blue-100 text-blue-700',
-        'affairs' => 'bg-emerald-100 text-emerald-700',
+        'admin' => 'chip-red',
+        'teacher' => 'chip-sand',
+        'executive' => 'chip-yellow',
+        'academic' => 'chip-blue',
+        'affairs' => 'chip-green',
     ];
     $html = '';
     foreach ($roles as $role) {
-        $html .= '<span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium '
-            . ($colors[$role] ?? 'bg-slate-100 text-slate-700') . '">' . e(TRK_ROLES[$role] ?? $role) . '</span> ';
+        $html .= '<span class="' . ($colors[$role] ?? 'chip-sand') . '">' . e(TRK_ROLES[$role] ?? $role) . '</span> ';
     }
     return $html;
 }

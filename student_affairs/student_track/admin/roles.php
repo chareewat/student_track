@@ -78,34 +78,34 @@ trk_render_header('จัดการสิทธิ์', 'roles');
 ?>
 <div class="flex flex-wrap items-end justify-between gap-3">
   <div>
-    <h1 class="text-xl font-semibold">จัดการสิทธิ์</h1>
-    <p class="mt-1 text-sm text-slate-600">ครูประจำวิชาและครูที่ปรึกษาไม่ต้องตั้งที่นี่ ระบบอนุมานจากข้อมูลการสอนและการมอบหมายห้อง</p>
+    <h1 class="text-2xl font-semibold tracking-tight">จัดการสิทธิ์</h1>
+    <p class="mt-1 text-sm text-ink/60">ครูประจำวิชาและครูที่ปรึกษาไม่ต้องตั้งที่นี่ ระบบอนุมานจากข้อมูลการสอนและการมอบหมายห้อง</p>
   </div>
   <input type="search" placeholder="ค้นหาชื่อ" data-filter-target="#roles-table"
-         class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm sm:w-64">
+         class="input w-full sm:w-64">
 </div>
 
 <?php if ($firstSetup): ?>
-  <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+  <div class="mt-4 alert border-amber-200 bg-amber-50 text-amber-900">
     <b>ตั้งค่าครั้งแรก:</b> ระบบติ๊กสิทธิ์ให้ตามสิทธิ์ในระบบเดิม (ทุกคน = ครู, Super Admin = Admin, ฝ่ายบริหาร = ผู้บริหาร, วิชาการ = เจ้าหน้าที่วิชาการ, กิจการนักเรียน = เจ้าหน้าที่กิจการนักเรียน)
     ตรวจสอบแล้วกด "บันทึก"
   </div>
 <?php elseif ($suggestMissing): ?>
-  <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+  <div class="mt-4 alert border-amber-200 bg-amber-50 text-amber-900">
     ติ๊กสิทธิ์ที่แนะนำให้ <?= $withoutRole ?> คนที่ยังไม่มีสิทธิ์แล้ว (แถวสีเหลือง) ตรวจสอบแล้วกด "บันทึก"
   </div>
 <?php elseif ($withoutRole > 0): ?>
-  <div class="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm">
+  <div class="card mt-4 flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
     <span>มีบุคลากร <?= $withoutRole ?> คนที่ยังไม่มีสิทธิ์ใช้งาน</span>
-    <a href="<?= e(trk_url('admin/roles.php?suggest=1')) ?>" class="rounded-lg border border-blue-200 px-3 py-1 text-blue-700 hover:bg-blue-50">ติ๊กสิทธิ์ที่แนะนำให้</a>
+    <a href="<?= e(trk_url('admin/roles.php?suggest=1')) ?>" class="btn btn-yellow btn-sm">ติ๊กสิทธิ์ที่แนะนำให้</a>
   </div>
 <?php endif; ?>
 
 <form method="post" class="mt-4">
   <?= trk_csrf_field() ?>
-  <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-    <table id="roles-table" class="min-w-full text-sm">
-      <thead class="bg-slate-50 text-left text-xs text-slate-500">
+  <div class="table-wrap">
+    <table id="roles-table" class="table">
+      <thead>
         <tr>
           <th class="px-4 py-2 font-medium">บุคลากร</th>
           <th class="px-4 py-2 font-medium">สิทธิ์ในระบบเดิม</th>
@@ -114,7 +114,7 @@ trk_render_header('จัดการสิทธิ์', 'roles');
           <?php endforeach; ?>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100">
+      <tbody>
         <?php foreach ($members as $m): ?>
           <?php
             $id = (int) $m['psn_mem_id'];
@@ -124,13 +124,13 @@ trk_render_header('จัดการสิทธิ์', 'roles');
               class="<?= $prefilled ? 'bg-amber-50' : '' ?>">
             <td class="px-4 py-2">
               <div><?= e($m['full_name']) ?></div>
-              <div class="text-xs text-slate-400"><?= e($m['psn_mem_username']) ?></div>
+              <div class="text-xs text-ink/40"><?= e($m['psn_mem_username']) ?></div>
             </td>
-            <td class="px-4 py-2 text-slate-500"><?= e($m['admin_type_name'] ?: '-') ?></td>
+            <td class="px-4 py-2 text-ink/55"><?= e($m['admin_type_name'] ?: '-') ?></td>
             <?php foreach (array_keys(TRK_ROLES) as $role): ?>
               <td class="px-3 py-2 text-center">
                 <input type="checkbox" name="roles[<?= $id ?>][]" value="<?= e($role) ?>"
-                       class="h-4 w-4 rounded border-slate-300 text-blue-600"
+                      
                        <?= in_array($role, $formRoles[$id], true) ? 'checked' : '' ?>
                        <?= $id === $me['id'] && $role === 'admin' ? 'title="ถอดสิทธิ์ Admin ของตนเองไม่ได้"' : '' ?>>
               </td>
@@ -140,8 +140,8 @@ trk_render_header('จัดการสิทธิ์', 'roles');
       </tbody>
     </table>
   </div>
-  <div class="sticky bottom-0 mt-4 flex justify-end border-t border-slate-200 bg-slate-50/90 py-3 backdrop-blur">
-    <button class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700">บันทึก</button>
+  <div class="sticky bottom-0 mt-4 flex justify-end border-t border-sand/60 bg-canvas/90 py-3 backdrop-blur">
+    <button class="btn btn-green btn-lg">บันทึก</button>
   </div>
 </form>
 <?php

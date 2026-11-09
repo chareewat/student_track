@@ -154,18 +154,18 @@ $badge = [
 
 trk_render_header('ตรวจสอบระบบ', 'system');
 ?>
-<h1 class="text-xl font-semibold">ตรวจสอบความพร้อมของระบบ</h1>
-<p class="mt-1 text-sm text-slate-600">
+<h1 class="text-2xl font-semibold tracking-tight">ตรวจสอบความพร้อมของระบบ</h1>
+<p class="mt-1 text-sm text-ink/60">
   ผ่าน <?= $summary['ok'] ?> · ควรแก้ <?= $summary['warn'] ?> · ไม่ผ่าน <?= $summary['fail'] ?>
-  <?php if ($summary['fail'] === 0): ?> — <b class="text-emerald-700">พร้อมใช้งาน</b><?php endif; ?>
+  <?php if ($summary['fail'] === 0): ?> — <span class="chip-green">พร้อมใช้งาน</span><?php endif; ?>
 </p>
 
 <?php foreach ($checks as $group => $items): ?>
   <section class="mt-6">
     <h2 class="text-base font-semibold"><?= e($group) ?></h2>
-    <div class="mt-2 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-      <table class="min-w-full text-sm">
-        <tbody class="divide-y divide-slate-100">
+    <div class="mt-2 table-wrap">
+      <table class="table">
+        <tbody>
           <?php foreach ($items as $c): ?>
             <?php [$label, $cls, $icon] = $badge[$c['status']]; ?>
             <tr>
@@ -175,7 +175,7 @@ trk_render_header('ตรวจสอบระบบ', 'system');
                 </span>
               </td>
               <td class="px-4 py-2 font-medium"><?= e($c['name']) ?></td>
-              <td class="px-4 py-2 text-slate-600"><?= e($c['detail']) ?></td>
+              <td class="px-4 py-2 text-ink/60"><?= e($c['detail']) ?></td>
             </tr>
           <?php endforeach; ?>
         </tbody>

@@ -58,13 +58,13 @@ foreach ($rooms as $room) {
 
 trk_render_header('นักเรียนขาดติดต่อกัน', 'case2');
 ?>
-<h1 class="text-xl font-semibold">นักเรียนขาดเรียนติดต่อกัน</h1>
-<p class="mt-1 text-sm text-slate-600">
+<h1 class="text-2xl font-semibold tracking-tight">นักเรียนขาดเรียนติดต่อกัน</h1>
+<p class="mt-1 text-sm text-ink/60">
   นับจากการเช็คชื่อรายวัน เฉพาะสถานะ "ขาด" ตั้งแต่ <?= $minDays ?> วันติดต่อกันขึ้นไป (วันที่ไม่มีการเช็คชื่อจะถูกข้าม)
   ครั้งถัดไปนับเมื่อนักเรียนกลับมาเรียนแล้วขาดใหม่ ขร.5 ต้องมีเลขหนังสือออกรายคน
 </p>
 <?php foreach (array_diff_key($errors, array_flip(array_map('intval', array_column($rooms, 'std_classroom_id')))) as $msg): ?>
-  <div class="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800"><?= e($msg) ?></div>
+  <div class="mt-4 alert border-rose-200 bg-rose-50 text-rose-800"><?= e($msg) ?></div>
 <?php endforeach; ?>
 
 <?php foreach ($sections as $sec): ?>
@@ -73,20 +73,20 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
     $rid = (int) $room['std_classroom_id'];
     $eligible = array_filter($sec['candidates'], function ($c) { return $c['eligible']; });
   ?>
-  <section class="mt-6 rounded-xl border border-slate-200 bg-white shadow-sm">
-    <div class="border-b border-slate-100 px-4 py-3 font-semibold"><?= e(trk_classroom_label($room)) ?></div>
+  <section class="mt-6 card">
+    <div class="border-b border-sand/50 px-4 py-3 font-semibold"><?= e(trk_classroom_label($room)) ?></div>
     <?php if (isset($errors[$rid])): ?>
-      <div class="mx-4 mt-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-800"><?= e($errors[$rid]) ?></div>
+      <div class="mx-4 mt-3 alert border-rose-200 bg-rose-50 text-rose-800"><?= e($errors[$rid]) ?></div>
     <?php endif; ?>
     <?php if (!$sec['candidates']): ?>
-      <p class="px-4 py-4 text-sm text-slate-500">ไม่มีนักเรียนที่ขาดติดต่อกันถึงเกณฑ์</p>
+      <p class="px-4 py-4 text-sm text-ink/55">ไม่มีนักเรียนที่ขาดติดต่อกันถึงเกณฑ์</p>
     <?php else: ?>
       <form method="post">
         <?= trk_csrf_field() ?>
         <input type="hidden" name="classroom_id" value="<?= $rid ?>">
         <div class="overflow-x-auto">
-          <table class="min-w-full text-sm">
-            <thead class="bg-slate-50 text-left text-xs text-slate-500">
+          <table class="table">
+            <thead>
               <tr>
                 <th class="w-10 px-4 py-2"></th>
                 <th class="px-2 py-2 font-medium">นักเรียน</th>
@@ -95,22 +95,22 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
                 <th class="px-4 py-2 font-medium">เลขหนังสือออก</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100">
+            <tbody>
               <?php foreach ($sec['candidates'] as $c): ?>
                 <?php
                   $sid = (int) $c['std_student_id'];
                   $checked = $posted['classroom_id'] === $rid ? in_array($sid, $posted['student_ids'], true) : true;
                 ?>
-                <tr class="align-top <?= $c['eligible'] ? '' : 'text-slate-500' ?>">
+                <tr class="align-top <?= $c['eligible'] ? '' : 'text-ink/55' ?>">
                   <td class="px-4 py-2">
                     <?php if ($c['eligible']): ?>
                       <input type="checkbox" name="student_ids[]" value="<?= $sid ?>" <?= $checked ? 'checked' : '' ?>
-                             class="h-4 w-4 rounded border-slate-300 text-blue-600">
+                            >
                     <?php endif; ?>
                   </td>
                   <td class="px-2 py-2">
                     <div><?= e($c['full_name']) ?></div>
-                    <div class="text-xs text-slate-400"><?= e($c['std_student_code']) ?> · เลขที่ <?= (int) $c['std_student_number'] ?></div>
+                    <div class="text-xs text-ink/40"><?= e($c['std_student_code']) ?> · เลขที่ <?= (int) $c['std_student_number'] ?></div>
                   </td>
                   <td class="px-2 py-2">
                     <?php foreach ($c['episodes'] as $ep): ?>
@@ -118,7 +118,7 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
                         <?= e(trk_thai_date($ep['from'], true)) ?> – <?= e(trk_thai_date($ep['to'], true)) ?>
                         (<?= (int) $ep['days'] ?> วัน<?= $ep['ongoing'] ? ', ยังขาดอยู่' : '' ?>)
                         <?php if ($ep['round_no']): ?>
-                          <a href="<?= e(trk_url('advisor/round.php?id=' . $ep['round_id'])) ?>" class="text-emerald-700 hover:underline">ออกครั้งที่ <?= (int) $ep['round_no'] ?> แล้ว</a>
+                          <a href="<?= e(trk_url('advisor/round.php?id=' . $ep['round_id'])) ?>" class="btn btn-soft-green btn-sm">ออกครั้งที่ <?= (int) $ep['round_no'] ?> แล้ว</a>
                         <?php endif; ?>
                       </div>
                     <?php endforeach; ?>
@@ -127,17 +127,17 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
                     <?php if ($c['eligible']): ?>
                       <span class="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">รอออกครั้งที่ <?= (int) $c['next_round'] ?></span>
                     <?php elseif ($c['next_round'] === null): ?>
-                      <span class="rounded-full bg-slate-100 px-2 py-0.5">ออกครบ 3 ครั้งแล้ว</span>
+                      <span class="rounded-full bg-sand/50 px-2 py-0.5">ออกครบ 3 ครั้งแล้ว</span>
                     <?php else: ?>
                       <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-800">ออกแล้ว</span>
                     <?php endif; ?>
                   </td>
                   <td class="px-4 py-2">
                     <?php if ($c['eligible']): ?>
-                      <div class="flex items-center gap-1 text-xs text-slate-500">
+                      <div class="flex items-center gap-1 text-xs text-ink/55">
                         <?= e(trk_setting('doc_no_prefix')) ?>
                         <input name="doc_no[<?= $sid ?>]" value="<?= e($posted['doc_no'][$sid] ?? '') ?>" maxlength="30"
-                               class="w-24 rounded-lg border border-slate-300 px-2 py-1 text-sm text-slate-800">
+                               class="w-24 input px-2 py-1 text-ink">
                       </div>
                     <?php endif; ?>
                   </td>
@@ -147,14 +147,14 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
           </table>
         </div>
         <?php if ($eligible): ?>
-          <div class="flex flex-wrap items-end justify-end gap-3 border-t border-slate-100 px-4 py-3">
+          <div class="flex flex-wrap items-end justify-end gap-3 border-t border-sand/50 px-4 py-3">
             <label class="text-sm">
-              <span class="mb-1 block text-xs text-slate-500">ให้ผู้ปกครองติดต่อโรงเรียนภายในวันที่</span>
+              <span class="mb-1 block text-xs text-ink/55">ให้ผู้ปกครองติดต่อโรงเรียนภายในวันที่</span>
               <input type="date" name="deadline" min="<?= e(date('Y-m-d', strtotime('+1 day'))) ?>"
                      value="<?= e($posted['classroom_id'] === $rid ? $posted['deadline'] : $defaultDeadline) ?>"
-                     class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm">
+                     class="input py-1.5">
             </label>
-            <button class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">ออก ขร.5 ให้นักเรียนที่เลือก</button>
+            <button class="btn btn-green">ออก ขร.5 ให้นักเรียนที่เลือก</button>
           </div>
         <?php endif; ?>
       </form>

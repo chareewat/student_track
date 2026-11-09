@@ -19,27 +19,32 @@ $unread = count(array_filter($items, function ($n) { return $n['read_at'] === nu
 trk_render_header('แจ้งเตือน', 'notifications');
 ?>
 <div class="flex flex-wrap items-center justify-between gap-3">
-  <h1 class="text-xl font-semibold">แจ้งเตือน</h1>
+  <h1 class="text-2xl font-semibold tracking-tight">แจ้งเตือน</h1>
   <?php if ($unread): ?>
     <form method="post">
       <?= trk_csrf_field() ?>
-      <button class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-white">อ่านทั้งหมดแล้ว</button>
+      <button class="btn btn-yellow btn-sm">อ่านทั้งหมดแล้ว</button>
     </form>
   <?php endif; ?>
 </div>
 
 <?php if (!$items): ?>
-  <p class="mt-4 text-sm text-slate-500">ยังไม่มีการแจ้งเตือน</p>
+  <p class="mt-4 text-sm text-ink/55">ยังไม่มีการแจ้งเตือน</p>
 <?php else: ?>
-  <ul class="mt-4 divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+  <ul class="mt-4 space-y-2">
     <?php foreach ($items as $n): ?>
+      <?php $isUnread = $n['read_at'] === null; ?>
       <li>
-        <a href="<?= e(trk_url($n['link'])) ?>" class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50">
-          <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full <?= $n['read_at'] === null ? 'bg-blue-600' : 'bg-transparent' ?>"></span>
+        <a href="<?= e(trk_url($n['link'])) ?>"
+           class="card group flex items-center gap-3 px-4 py-3 transition hover:-translate-y-px hover:shadow-lift <?= $isUnread ? 'border-l-4 border-l-amber-400' : '' ?>">
           <span class="flex-1">
-            <span class="block text-sm <?= $n['read_at'] === null ? 'font-medium text-slate-900' : 'text-slate-600' ?>"><?= e($n['title']) ?></span>
-            <span class="text-xs text-slate-400"><?= e(trk_thai_date($n['created_at'], true)) ?> <?= e(substr($n['created_at'], 11, 5)) ?> น.</span>
+            <span class="block text-sm <?= $isUnread ? 'font-semibold text-ink' : 'text-ink/60' ?>"><?= e($n['title']) ?></span>
+            <span class="text-xs text-ink/40">
+              <?= e(trk_thai_date($n['created_at'], true)) ?> <?= e(substr($n['created_at'], 11, 5)) ?> น.
+              <?php if ($isUnread): ?><span class="chip-yellow ml-1">ใหม่</span><?php endif; ?>
+            </span>
           </span>
+          <span class="btn btn-soft-blue btn-sm shrink-0">เปิด</span>
         </a>
       </li>
     <?php endforeach; ?>

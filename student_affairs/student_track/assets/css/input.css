@@ -1,3 +1,109 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * ระบบ UI: modern, flat, soft round, soft light & shadow
+ * โทนสี canvas #F1EFEC · sand #D4C9BE · navy #123458 · ink #030303
+ *
+ * กติกา: ทุกจุดที่คลิกได้ต้องเป็นปุ่ม (.btn) ห้ามเป็นข้อความลิงก์เฉย ๆ
+ * ความหมายของสีปุ่ม (ใช้ให้สม่ำเสมอทั้งระบบ)
+ *   .btn-navy   นำทาง (เมนู, กลับ, หน้าหลัก)
+ *   .btn-blue   ดู / รายละเอียด / ค้นหา
+ *   .btn-green  ออกเอกสาร / บันทึก / ยืนยัน
+ *   .btn-yellow ช่วยทำงาน (อ่านทั้งหมด, ติ๊กค่าแนะนำ)
+ *   .btn-red    ยกเลิก / เสนอจำหน่าย
+ *   .btn-purple ดาวน์โหลด / พิมพ์ (PDF, Word, CSV)
+ *   .btn-sand   ปุ่มรองที่เป็นกลาง
+ * ปุ่มในแถวตารางใช้แบบอ่อน (.btn-soft-*) และขนาดเล็ก (.btn-sm)
+ */
+
+@layer base {
+  html { -webkit-tap-highlight-color: transparent; }
+  body { @apply bg-canvas font-sans text-ink antialiased; }
+  h1, h2, h3 { @apply text-navy; }
+  :focus-visible { outline: none; }
+  input[type='checkbox'] { @apply h-4 w-4 cursor-pointer rounded-md border-sand text-navy focus:ring-2 focus:ring-navy/25; }
+}
+
+@layer components {
+  /* ---------------------------------------------------------------- ปุ่ม */
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2
+           text-sm font-semibold shadow-btn transition duration-150
+           hover:-translate-y-px hover:shadow-lift active:translate-y-0 active:shadow-none
+           focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-sm { @apply rounded-lg px-3 py-1.5 text-xs; }
+  .btn-lg { @apply rounded-2xl px-5 py-2.5 text-base; }
+  .btn-block { @apply w-full; }
+
+  .btn-navy   { @apply bg-navy text-white hover:bg-navy-600 focus-visible:ring-navy/30; }
+  .btn-blue   { @apply bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-300; }
+  .btn-green  { @apply bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-300; }
+  .btn-yellow { @apply bg-amber-400 text-ink hover:bg-amber-500 focus-visible:ring-amber-200; }
+  .btn-red    { @apply bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-300; }
+  .btn-purple { @apply bg-violet-600 text-white hover:bg-violet-700 focus-visible:ring-violet-300; }
+  .btn-sand   { @apply bg-sand text-ink hover:bg-[#c7b9ab] focus-visible:ring-sand; }
+  .btn-white  { @apply bg-white text-navy ring-1 ring-sand hover:bg-canvas focus-visible:ring-navy/30; }
+
+  /* แบบอ่อน: ใช้ในแถวตาราง/รายการ */
+  .btn-soft-blue   { @apply bg-blue-50 text-blue-700 shadow-none ring-1 ring-blue-200 hover:bg-blue-100 hover:shadow-btn; }
+  .btn-soft-green  { @apply bg-emerald-50 text-emerald-700 shadow-none ring-1 ring-emerald-200 hover:bg-emerald-100 hover:shadow-btn; }
+  .btn-soft-yellow { @apply bg-amber-50 text-amber-800 shadow-none ring-1 ring-amber-200 hover:bg-amber-100 hover:shadow-btn; }
+  .btn-soft-red    { @apply bg-rose-50 text-rose-700 shadow-none ring-1 ring-rose-200 hover:bg-rose-100 hover:shadow-btn; }
+  .btn-soft-purple { @apply bg-violet-50 text-violet-700 shadow-none ring-1 ring-violet-200 hover:bg-violet-100 hover:shadow-btn; }
+  .btn-soft-navy   { @apply bg-navy-50 text-navy shadow-none ring-1 ring-navy/15 hover:bg-[#dbe3ec] hover:shadow-btn; }
+
+  /* ปุ่มเมนูด้านบน */
+  .nav-btn { @apply btn btn-sm bg-white/70 text-navy shadow-none ring-1 ring-sand hover:bg-white hover:shadow-btn; }
+  .nav-btn-active { @apply btn btn-sm btn-navy; }
+  .nav-count { @apply ml-0.5 inline-flex min-w-5 items-center justify-center rounded-full bg-amber-400 px-1.5 text-[11px] font-bold leading-5 text-ink; }
+
+  /* ---------------------------------------------------------------- พื้นผิว */
+  .card { @apply rounded-2xl border border-sand/60 bg-white shadow-soft; }
+  .card-pad { @apply card p-5; }
+  .card-head { @apply flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-sand/50 px-5 py-3.5; }
+  .section-title { @apply text-base font-semibold text-navy; }
+  .hint { @apply text-sm text-ink/60; }
+  .muted { @apply text-ink/50; }
+
+  /* ---------------------------------------------------------------- ฟอร์ม */
+  .input {
+    @apply rounded-xl border border-sand bg-white px-3 py-2 text-sm text-ink placeholder:text-ink/35
+           focus:border-navy/50 focus:outline-none focus:ring-4 focus:ring-navy/10;
+  }
+  .label { @apply mb-1 block text-sm font-medium text-ink/80; }
+  .field-error { @apply mt-1 text-sm text-rose-600; }
+
+  /* ---------------------------------------------------------------- ตาราง */
+  .table-wrap { @apply card overflow-x-auto; }
+  .table { @apply min-w-full text-sm; }
+  .table thead { @apply bg-canvas text-left text-xs text-ink/55; }
+  .table th { @apply px-4 py-2.5 font-semibold; }
+  .table td { @apply px-4 py-2.5; }
+  .table tbody { @apply divide-y divide-sand/40; }
+  .table tbody tr { @apply transition-colors hover:bg-canvas/60; }
+
+  /* ---------------------------------------------------------------- ป้ายสถานะ (ไม่ใช่ปุ่ม) */
+  .chip { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium; }
+  .chip-sand   { @apply chip bg-sand/50 text-ink/80; }
+  .chip-navy   { @apply chip bg-navy-50 text-navy; }
+  .chip-green  { @apply chip bg-emerald-100 text-emerald-800; }
+  .chip-yellow { @apply chip bg-amber-100 text-amber-900; }
+  .chip-red    { @apply chip bg-rose-100 text-rose-800; }
+  .chip-blue   { @apply chip bg-blue-100 text-blue-800; }
+  .chip-purple { @apply chip bg-violet-100 text-violet-800; }
+
+  /* ---------------------------------------------------------------- กล่องข้อความ */
+  .alert { @apply flex items-start gap-2 rounded-2xl border px-4 py-3 text-sm; }
+  .alert-info    { @apply alert border-navy/15 bg-navy-50 text-navy; }
+  .alert-success { @apply alert border-emerald-200 bg-emerald-50 text-emerald-800; }
+  .alert-warn    { @apply alert border-amber-200 bg-amber-50 text-amber-900; }
+  .alert-error   { @apply alert border-rose-200 bg-rose-50 text-rose-800; }
+
+  /* ตัวเลขสรุป */
+  .stat { @apply card-pad; }
+  .stat-label { @apply text-xs font-medium text-ink/55; }
+  .stat-value { @apply mt-1 text-3xl font-semibold tabular-nums text-navy; }
+}

@@ -41,23 +41,23 @@ if (trk_is_post()) {
 $prefix = trk_setting('doc_no_prefix');
 trk_render_header('ออก ขร.2', 'advisor');
 ?>
-<a href="<?= e(trk_url('advisor/round.php?id=' . (int) $round['id'])) ?>" class="text-sm text-blue-700 hover:underline">← รอบติดตาม</a>
-<h1 class="mt-2 text-xl font-semibold">ออก ขร.2 แจ้งพฤติกรรมการเรียนถึงผู้ปกครอง</h1>
-<p class="mt-1 text-sm text-slate-600">
+<a href="<?= e(trk_url('advisor/round.php?id=' . (int) $round['id'])) ?>" class="btn btn-navy btn-sm">← รอบติดตาม</a>
+<h1 class="mt-2 text-2xl font-semibold tracking-tight">ออก ขร.2 แจ้งพฤติกรรมการเรียนถึงผู้ปกครอง</h1>
+<p class="mt-1 text-sm text-ink/60">
   <?= e($round['full_name']) ?> (<?= e($round['std_student_code']) ?>) <?= e($round['classroom_label']) ?> ·
   ขาดรายวิชา <?= e($round['vic_subject_code'] . ' ' . $round['vic_subject_name']) ?> <?= (int) $round['absent_hours'] ?> คาบ · ครั้งที่ <?= (int) $round['round_no'] ?>
 </p>
 
-<form method="post" class="mt-6 max-w-xl space-y-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+<form method="post" class="mt-6 max-w-xl space-y-4 card p-5">
   <?= trk_csrf_field() ?>
   <input type="hidden" name="round" value="<?= (int) $round['id'] ?>">
 
   <label class="block">
     <span class="mb-1 block text-sm font-medium">เลขหนังสือออก ขร.2 <span class="text-rose-600">*</span></span>
     <div class="flex items-center gap-2">
-      <span class="text-sm text-slate-500"><?= e($prefix) ?></span>
+      <span class="text-sm text-ink/55"><?= e($prefix) ?></span>
       <input name="doc_no" value="<?= e($values['doc_no']) ?>" maxlength="30" required placeholder="เช่น 1234"
-             class="w-40 rounded-lg border border-slate-300 px-3 py-2 text-sm">
+             class="w-40 input">
     </div>
     <?php if (isset($errors['doc_no'])): ?><p class="mt-1 text-sm text-rose-600"><?= e($errors['doc_no']) ?></p><?php endif; ?>
   </label>
@@ -66,22 +66,22 @@ trk_render_header('ออก ขร.2', 'advisor');
     <label class="block">
       <span class="mb-1 block text-sm font-medium">เลขหนังสือ บค.14 (ไม่บังคับ)</span>
       <div class="flex items-center gap-2">
-        <span class="text-sm text-slate-500"><?= e($prefix) ?>ว</span>
-        <input name="bk14_doc_no" value="<?= e($values['bk14_doc_no']) ?>" maxlength="30" class="w-40 rounded-lg border border-slate-300 px-3 py-2 text-sm">
+        <span class="text-sm text-ink/55"><?= e($prefix) ?>ว</span>
+        <input name="bk14_doc_no" value="<?= e($values['bk14_doc_no']) ?>" maxlength="30" class="w-40 input">
       </div>
-      <p class="mt-1 text-xs text-slate-500">นักเรียน ม.1–3 อยู่ในการศึกษาภาคบังคับ ระบบจะออก บค.14 หนังสือเตือนผู้ปกครองคู่กับ ขร.2</p>
+      <p class="mt-1 text-xs text-ink/55">นักเรียน ม.1–3 อยู่ในการศึกษาภาคบังคับ ระบบจะออก บค.14 หนังสือเตือนผู้ปกครองคู่กับ ขร.2</p>
     </label>
   <?php endif; ?>
 
   <label class="block">
     <span class="mb-1 block text-sm font-medium">เรียน ผู้ปกครอง</span>
     <input name="guardian" value="<?= e($values['guardian']) ?>" maxlength="120" placeholder="ชื่อผู้ปกครอง (เว้นว่างได้ จะพิมพ์เป็นจุดไข่ปลา)"
-           class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm">
-    <p class="mt-1 text-xs text-slate-500">ดึงจากข้อมูลครอบครัวในระบบเดิม แก้ไขได้</p>
+           class="input w-full">
+    <p class="mt-1 text-xs text-ink/55">ดึงจากข้อมูลครอบครัวในระบบเดิม แก้ไขได้</p>
   </label>
 
   <div class="flex justify-end">
-    <button class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-medium text-white hover:bg-blue-700">
+    <button class="btn btn-green btn-lg">
       ออก ขร.2<?= $needsBk14 ? ' + บค.14' : '' ?>
     </button>
   </div>

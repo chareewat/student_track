@@ -21,13 +21,14 @@ if ($levelFilter !== '' && !in_array($levelFilter, $levels, true)) {
     $levelFilter = '';
 }
 
+// [ชื่อ, ค่า, คำอธิบาย, สีเส้นด้านบน]
 $tiles = [
-    ['รอออก ขร.1', $total['case1_waiting'], 'นักเรียน × รายวิชาที่ถึงเกณฑ์แต่ครูประจำวิชายังไม่ออก'],
-    ['รอออก ขร.5', $total['case2_waiting'], 'นักเรียนขาดติดต่อกันที่ครูที่ปรึกษายังไม่ออก'],
-    ['รอออก ขร.2', $total['need_kr2'], 'ครูที่ปรึกษาได้รับ ขร.1 แล้ว ยังไม่แจ้งผู้ปกครอง'],
-    ['รอบันทึกผลติดตาม', $total['need_followup'], 'รอลงพื้นที่และออก ขร.3'],
-    ['ปิดรอบแล้ว', $total['closed'], 'บันทึกผลและออก ขร.3 แล้วในภาคเรียนนี้'],
-    ['ขร.6 เสนอจำหน่าย', $total['kr6'], 'ส่งถึงเจ้าหน้าที่วิชาการแล้ว'],
+    ['รอออก ขร.1', $total['case1_waiting'], 'นักเรียน × รายวิชาที่ถึงเกณฑ์แต่ครูประจำวิชายังไม่ออก', 'before:bg-amber-400'],
+    ['รอออก ขร.5', $total['case2_waiting'], 'นักเรียนขาดติดต่อกันที่ครูที่ปรึกษายังไม่ออก', 'before:bg-amber-400'],
+    ['รอออก ขร.2', $total['need_kr2'], 'ครูที่ปรึกษาได้รับ ขร.1 แล้ว ยังไม่แจ้งผู้ปกครอง', 'before:bg-blue-500'],
+    ['รอบันทึกผลติดตาม', $total['need_followup'], 'รอลงพื้นที่และออก ขร.3', 'before:bg-blue-500'],
+    ['ปิดรอบแล้ว', $total['closed'], 'บันทึกผลและออก ขร.3 แล้วในภาคเรียนนี้', 'before:bg-emerald-500'],
+    ['ขร.6 เสนอจำหน่าย', $total['kr6'], 'ส่งถึงเจ้าหน้าที่วิชาการแล้ว', 'before:bg-rose-500'],
 ];
 $columns = [
     'case1_waiting' => 'รอ ขร.1',
@@ -42,24 +43,24 @@ trk_render_header('ภาพรวม', 'dashboard');
 ?>
 <div class="flex flex-wrap items-end justify-between gap-3">
   <div>
-    <h1 class="text-xl font-semibold">ภาพรวมการติดตามนักเรียน</h1>
-    <p class="mt-1 text-sm text-slate-600">ภาคเรียน <?= e(trk_semester_label()) ?> · ข้อมูล ณ <?= e(trk_thai_date(date('Y-m-d'))) ?> <?= date('H:i') ?> น.</p>
+    <h1 class="text-2xl font-semibold tracking-tight">ภาพรวมการติดตามนักเรียน</h1>
+    <p class="mt-1 text-sm text-ink/60">ภาคเรียน <?= e(trk_semester_label()) ?> · ข้อมูล ณ <?= e(trk_thai_date(date('Y-m-d'))) ?> <?= date('H:i') ?> น.</p>
   </div>
   <div class="flex flex-wrap gap-2">
     <form action="<?= e(trk_url('dashboard/student.php')) ?>" class="flex gap-2">
-      <input type="search" name="q" placeholder="ค้นหานักเรียน (ชื่อ/เลขประจำตัว)" class="w-56 rounded-lg border border-slate-300 px-3 py-2 text-sm">
-      <button class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50">ค้นหา</button>
+      <input type="search" name="q" placeholder="ค้นหานักเรียน (ชื่อ/เลขประจำตัว)" class="w-56 input">
+      <button class="btn btn-blue">ค้นหา</button>
     </form>
-    <a href="<?= e(trk_url('dashboard/export.php')) ?>" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50">ดาวน์โหลด CSV</a>
+    <a href="<?= e(trk_url('dashboard/export.php')) ?>" class="btn btn-purple">ดาวน์โหลด CSV</a>
   </div>
 </div>
 
 <section class="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-  <?php foreach ($tiles as [$label, $value, $hint]): ?>
-    <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm" title="<?= e($hint) ?>">
-      <div class="text-xs text-slate-500"><?= e($label) ?></div>
-      <div class="mt-1 text-2xl font-semibold tabular-nums text-slate-900"><?= (int) $value ?></div>
-      <div class="mt-1 text-xs leading-snug text-slate-400"><?= e($hint) ?></div>
+  <?php foreach ($tiles as [$label, $value, $hint, $accent]): ?>
+    <div class="card relative overflow-hidden p-4 pt-5 before:absolute before:inset-x-0 before:top-0 before:h-1 <?= $accent ?>" title="<?= e($hint) ?>">
+      <div class="stat-label"><?= e($label) ?></div>
+      <div class="stat-value"><?= (int) $value ?></div>
+      <div class="mt-1 text-xs leading-snug text-ink/45"><?= e($hint) ?></div>
     </div>
   <?php endforeach; ?>
 </section>
@@ -67,23 +68,23 @@ trk_render_header('ภาพรวม', 'dashboard');
 <section class="mt-8">
   <div class="flex flex-wrap items-baseline gap-2">
     <h2 class="text-base font-semibold">งานค้างเกินกำหนด</h2>
-    <span class="text-xs text-slate-500">
+    <span class="text-xs text-ink/55">
       รอ ขร.2 เกิน <?= (int) trk_setting('overdue_kr2_days') ?> วัน · รอติดตามเกิน <?= (int) trk_setting('overdue_followup_days') ?> วัน ·
       ขร.2 ต้องแจ้งผู้ปกครองภายในสัปดาห์ที่ 8 (<?= e(trk_thai_date($week8, true)) ?>)
     </span>
   </div>
   <?php if ($pastWeek8 && $total['need_kr2'] > 0): ?>
-    <div class="mt-3 flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+    <div class="mt-3 flex items-start gap-2 alert border-rose-200 bg-rose-50 text-rose-800">
       <span aria-hidden="true">⚠</span>
       <span><b>เลยสัปดาห์ที่ 8 แล้ว:</b> ยังมี <?= (int) $total['need_kr2'] ?> รอบที่ยังไม่ได้ออก ขร.2</span>
     </div>
   <?php endif; ?>
   <?php if (!$overdue): ?>
-    <p class="mt-3 text-sm text-slate-500">ไม่มีงานค้างเกินกำหนด</p>
+    <p class="mt-3 text-sm text-ink/55">ไม่มีงานค้างเกินกำหนด</p>
   <?php else: ?>
-    <div class="mt-3 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-      <table class="min-w-full text-sm">
-        <thead class="bg-slate-50 text-left text-xs text-slate-500">
+    <div class="mt-3 table-wrap">
+      <table class="table">
+        <thead>
           <tr>
             <th class="px-4 py-2 font-medium">ค้างนาน</th>
             <th class="px-4 py-2 font-medium">ขั้น</th>
@@ -93,7 +94,7 @@ trk_render_header('ภาพรวม', 'dashboard');
             <th class="px-4 py-2"></th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody>
           <?php foreach ($overdue as $r): ?>
             <tr>
               <td class="px-4 py-2 whitespace-nowrap">
@@ -102,14 +103,14 @@ trk_render_header('ภาพรวม', 'dashboard');
                 </span>
               </td>
               <td class="px-4 py-2"><?= e(TRK_STAGE_LABELS[$r['stage']]) ?></td>
-              <td class="px-4 py-2"><?= e($r['full_name']) ?> <span class="text-xs text-slate-400"><?= e($r['std_student_code']) ?></span></td>
+              <td class="px-4 py-2"><?= e($r['full_name']) ?> <span class="text-xs text-ink/40"><?= e($r['std_student_code']) ?></span></td>
               <td class="px-4 py-2"><?= e($r['classroom_label']) ?></td>
-              <td class="px-4 py-2 text-slate-600">
+              <td class="px-4 py-2 text-ink/60">
                 <?= (int) $r['case_type'] === 1
                     ? 'ขาดรายวิชา ' . e($r['vic_subject_code']) . ' ครั้งที่ ' . (int) $r['round_no']
                     : 'ขาดติดต่อกัน ครั้งที่ ' . (int) $r['round_no'] ?>
               </td>
-              <td class="px-4 py-2 text-right"><a href="<?= e(trk_url('advisor/round.php?id=' . (int) $r['id'])) ?>" class="text-blue-700 hover:underline">ดู</a></td>
+              <td class="px-4 py-2 text-right"><a href="<?= e(trk_url('advisor/round.php?id=' . (int) $r['id'])) ?>" class="btn btn-soft-blue btn-sm">ดู</a></td>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -122,8 +123,8 @@ trk_render_header('ภาพรวม', 'dashboard');
   <div class="flex flex-wrap items-center justify-between gap-3">
     <h2 class="text-base font-semibold">รายห้อง</h2>
     <form class="flex items-center gap-2 text-sm">
-      <label for="level" class="text-slate-500">ระดับชั้น</label>
-      <select id="level" name="level" onchange="this.form.submit()" class="rounded-lg border border-slate-300 px-2 py-1.5 text-sm">
+      <label for="level" class="text-ink/55">ระดับชั้น</label>
+      <select id="level" name="level" onchange="this.form.submit()" class="input px-2 py-1.5">
         <option value="">ทั้งหมด</option>
         <?php foreach ($levels as $lv): ?>
           <option value="<?= e($lv) ?>" <?= $levelFilter === $lv ? 'selected' : '' ?>>ม.<?= e($lv) ?></option>
@@ -131,9 +132,9 @@ trk_render_header('ภาพรวม', 'dashboard');
       </select>
     </form>
   </div>
-  <div class="mt-3 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-    <table class="min-w-full text-sm">
-      <thead class="bg-slate-50 text-left text-xs text-slate-500">
+  <div class="mt-3 table-wrap">
+    <table class="table">
+      <thead>
         <tr>
           <th class="px-4 py-2 font-medium">ห้อง</th>
           <th class="px-4 py-2 font-medium">ครูที่ปรึกษา</th>
@@ -142,7 +143,7 @@ trk_render_header('ภาพรวม', 'dashboard');
           <?php endforeach; ?>
         </tr>
       </thead>
-      <tbody class="divide-y divide-slate-100">
+      <tbody>
         <?php foreach ($rooms as $room): ?>
           <?php
             if ($levelFilter !== '' && $room['std_classroom_level'] !== $levelFilter) {
@@ -152,14 +153,14 @@ trk_render_header('ภาพรวม', 'dashboard');
           ?>
           <tr>
             <td class="px-4 py-2 font-medium whitespace-nowrap"><?= e(trk_classroom_label($room)) ?></td>
-            <td class="px-4 py-2 text-slate-600"><?= e($room['advisors'] ?: '-') ?></td>
+            <td class="px-4 py-2 text-ink/60"><?= e($room['advisors'] ?: '-') ?></td>
             <?php foreach (array_keys($columns) as $key): ?>
-              <td class="px-3 py-2 text-right tabular-nums <?= $c[$key] ? 'font-medium text-slate-900' : 'text-slate-300' ?>"><?= (int) $c[$key] ?></td>
+              <td class="px-3 py-2 text-right tabular-nums <?= $c[$key] ? 'font-medium text-ink' : 'text-ink/25' ?>"><?= (int) $c[$key] ?></td>
             <?php endforeach; ?>
           </tr>
         <?php endforeach; ?>
       </tbody>
-      <tfoot class="border-t border-slate-200 bg-slate-50 text-sm">
+      <tfoot class="border-t border-sand/60 bg-canvas text-sm">
         <tr>
           <td class="px-4 py-2 font-semibold" colspan="2">รวมทั้งโรงเรียน</td>
           <?php foreach (array_keys($columns) as $key): ?>
