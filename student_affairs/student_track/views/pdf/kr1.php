@@ -136,7 +136,7 @@ $cancelled = $doc['status'] === 'cancelled';
 <pagebreak />
 
 <div class="form-code">เอกสารแนบ แบบ ขร.๑</div>
-<div style="text-align: center; font-size: 14pt; font-weight: bold;">วันที่นักเรียนขาดเรียน</div>
+<div style="text-align: center; font-size: 13pt; font-weight: bold;">วันที่นักเรียนขาดเรียน</div>
 <div style="text-align: center;">
   รายวิชา <?= e($d['subject']['code']) ?> <?= e($d['subject']['name']) ?> ชั้นมัธยมศึกษาปีที่ <?= e($classLabel) ?>
   ภาคเรียนที่ <?= e($d['semester']['term']) ?>/<?= e($d['semester']['year']) ?>

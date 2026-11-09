@@ -1,6 +1,6 @@
 <?php
 /**
- * สร้าง PDF ด้วย mPDF ฟอนต์ Sarabun เนื้อหา 11pt
+ * สร้าง PDF ด้วย mPDF ฟอนต์ Sarabun เนื้อหา 10pt เลขไทย
  */
 
 function trk_pdf_new(string $title): \Mpdf\Mpdf
@@ -25,7 +25,7 @@ function trk_pdf_new(string $title): \Mpdf\Mpdf
             ],
         ],
         'default_font' => 'sarabun',
-        'default_font_size' => 11,
+        'default_font_size' => 10,
         'margin_left' => 25,
         'margin_right' => 18,
         'margin_top' => 12,
@@ -50,7 +50,7 @@ function trk_pdf_template(string $name, array $vars): string
 /** ช่องติ๊ก ☐ / ☑ (ใช้ฟอนต์ DejaVu เพราะ Sarabun ไม่มีสัญลักษณ์นี้) */
 function trk_pdf_checkbox(bool $checked): string
 {
-    return '<span style="font-family: dejavusans; font-size: 10pt;">' . ($checked ? '☑' : '☐') . '</span>';
+    return '<span style="font-family: dejavusans; font-size: 9pt;">' . ($checked ? '☑' : '☐') . '</span>';
 }
 
 /** ข้อความในช่องเติม ถ้าว่างให้เป็นจุดไข่ปลา */

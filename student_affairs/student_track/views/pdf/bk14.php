@@ -57,7 +57,7 @@ $fullNo = $docNoPrefix . ($doc['doc_no'] ?? '');
 
 <div style="margin-top: 10pt; text-align: center;"><b>หลักฐานการติดตามนักเรียนขาดเรียน ครั้งที่ <?= (int) $d['round_no'] ?></b></div>
 <div style="text-align: center;">วันที่ .......... เดือน ................................ พ.ศ. ..............</div>
-<table width="100%" class="sign" style="font-size: 10.5pt;">
+<table width="100%" class="sign" style="font-size: 9.5pt;">
   <tr>
     <td width="33%">ลงชื่อ ..............................<br>(..........................................)<br>ครูที่ปรึกษา</td>
     <td width="33%">ลงชื่อ ..............................<br>(..........................................)<br>ผู้ปกครอง</td>

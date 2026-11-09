@@ -2,8 +2,8 @@
 /**
  * สร้างเอกสาร ขร. เป็น Word (.docx) ด้วย PhpWord ให้ครูแก้ไขต่อได้
  *
- * เนื้อหาเหมือนเทมเพลต PDF (views/pdf/*.php) แต่ใช้ฟอนต์ TH SarabunIT๙ 16pt ตามแบบฟอร์มต้นฉบับ
- * (ฟอนต์มาตรฐานหนังสือราชการที่มีในเครื่องของโรงเรียน ส่วน PDF ฝังฟอนต์ Sarabun ไว้ในไฟล์)
+ * เนื้อหาเหมือนเทมเพลต PDF (views/pdf/*.php) ใช้ฟอนต์ TH Sarabun New 16pt และเลขไทย
+ * (ฟอนต์ไม่ได้ฝังในไฟล์ เครื่องที่เปิดต้องมี TH Sarabun New ส่วน PDF ฝังฟอนต์ Sarabun ไว้ในไฟล์)
  */
 
 use PhpOffice\PhpWord\IOFactory;
@@ -15,7 +15,7 @@ use PhpOffice\PhpWord\Style\Language;
 
 class TrkDocx
 {
-    const FONT = 'TH SarabunIT๙';
+    const FONT = 'TH Sarabun New';
     const SIZE = 16;
     const SYMBOL_FONT = 'Segoe UI Symbol';
 
@@ -23,6 +23,8 @@ class TrkDocx
     public $word;
     /** @var \PhpOffice\PhpWord\Element\Section */
     public $section;
+    /** ย่อหน้าถัดไปขึ้นหน้าใหม่ (ใช้แทนตัวแบ่งหน้า เพื่อไม่ให้เกิดหน้าว่างเมื่อหน้าก่อนเต็มพอดี) */
+    private $breakNext = false;
 
     public function __construct(string $title)
     {
@@ -49,6 +51,10 @@ class TrkDocx
     public function p($runs, array $para = [], $container = null)
     {
         $container = $container ?: $this->section;
+        if ($this->breakNext && $container === $this->section) {
+            $para['pageBreakBefore'] = true;
+            $this->breakNext = false;
+        }
         $tr = $container->addTextRun($para);
         foreach ((array) $runs as $run) {
             if (is_array($run)) {
@@ -166,7 +172,7 @@ class TrkDocx
         // ไม่ใช้เส้นขอบย่อหน้า เพราะ Word รวมย่อหน้าที่มีเส้นขอบเหมือนกันเป็นกรอบเดียว
         $t = $this->section->addTable(['cellMargin' => 0]);
         for ($i = 0; $i < $n; $i++) {
-            $t->addRow(Converter::cmToTwip(0.85), ['exactHeight' => true]);
+            $t->addRow(Converter::cmToTwip(0.75), ['exactHeight' => true]);
             $t->addCell(Converter::cmToTwip(16), ['borderBottomSize' => 4, 'borderBottomColor' => '000000', 'borderBottomStyle' => 'dotted'])
                 ->addText('');
         }
@@ -187,14 +193,41 @@ class TrkDocx
 
     public function pageBreak(): void
     {
-        $this->section->addPageBreak();
+        $this->breakNext = true;
+    }
+
+    /** บันทึกเป็นไฟล์ .docx (ตัวเลขทั้งหมดเป็นเลขไทย) */
+    public function save(string $path): void
+    {
+        IOFactory::createWriter($this->word, 'Word2007')->save($path);
+        self::thaiDigits($path);
+    }
+
+    /**
+     * แปลงเลขอารบิกเป็นเลขไทยเฉพาะข้อความในเอกสาร (<w:t>) ของ word/document.xml
+     * ไม่แตะค่าใน XML อื่น ๆ เช่น ขนาดรูป ระยะขอบ
+     */
+    public static function thaiDigits(string $path): void
+    {
+        $zip = new \ZipArchive();
+        if ($zip->open($path) !== true) {
+            return;
+        }
+        $xml = $zip->getFromName('word/document.xml');
+        if ($xml !== false) {
+            $xml = preg_replace_callback('#(<w:t(?:\s[^>]*)?>)([^<]*)(</w:t>)#', function ($m) {
+                return $m[1] . trk_thai_digits_html($m[2]) . $m[3]; // ข้าม entity เช่น &#039;
+            }, $xml);
+            $zip->addFromString('word/document.xml', $xml);
+        }
+        $zip->close();
     }
 
     /** ส่งไฟล์ให้ดาวน์โหลด */
     public function download(string $filename): void
     {
         $tmp = tempnam(TRK_ROOT . '/storage/tmp', 'docx');
-        IOFactory::createWriter($this->word, 'Word2007')->save($tmp);
+        $this->save($tmp);
         header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         header("Content-Disposition: attachment; filename=\"document.docx\"; filename*=UTF-8''" . rawurlencode($filename));
         header('Content-Length: ' . filesize($tmp));

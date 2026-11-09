@@ -127,7 +127,7 @@ if (is_file(TRK_ROOT . '/vendor/autoload.php') && class_exists('ZipArchive')) {
         $w = new TrkDocx('test');
         $w->p('ทดสอบภาษาไทย ผู้ปกครอง');
         $tmp = tempnam(TRK_ROOT . '/storage/tmp', 'chk');
-        \PhpOffice\PhpWord\IOFactory::createWriter($w->word, 'Word2007')->save($tmp);
+        $w->save($tmp);
         $bytes = filesize($tmp);
         @unlink($tmp);
         $docxOk = $bytes > 1000;

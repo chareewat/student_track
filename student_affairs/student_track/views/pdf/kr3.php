@@ -99,7 +99,7 @@ $isCase1 = (int) $d['case_type'] === 1;
 <pagebreak />
 
 <div class="form-code">แบบ ขร.๓ (ต่อ)</div>
-<div style="text-align: center; font-size: 14pt; font-weight: bold;">หลักฐานการติดตามนักเรียนขาดเรียน ครั้งที่ <?= (int) $d['round_no'] ?></div>
+<div style="text-align: center; font-size: 13pt; font-weight: bold;">หลักฐานการติดตามนักเรียนขาดเรียน ครั้งที่ <?= (int) $d['round_no'] ?></div>
 <div style="text-align: center;"><?= e($s['name']) ?> เลขประจำตัว <?= e($s['code']) ?> ชั้น ม.<?= e($s['level'] . '/' . $s['room']) ?></div>
 <div style="text-align: center;">วันที่ติดตาม <?= e(trk_thai_date($f['date'])) ?></div>
 
