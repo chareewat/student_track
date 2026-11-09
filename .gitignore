@@ -1,0 +1,25 @@
+# ความลับและ config ของแต่ละเครื่อง
+global_config.php
+global_config.server.php
+
+# ข้อมูลจริง / ไฟล์ขนาดใหญ่ (ห้ามขึ้น repo)
+*.sql
+!dev/sql/*.sql
+*.zip
+
+# โค้ดระบบเดิมที่ใช้อ้างอิงเท่านั้น (มีรูปบุคลากรจริง)
+/src/
+/checkinrow/
+/advisor/
+
+# runtime
+error_log
+*.log
+/student_affairs/*/storage/uploads/*
+!/student_affairs/*/storage/uploads/.gitkeep
+/student_affairs/*/storage/tmp/*
+!/student_affairs/*/storage/tmp/.gitkeep
+
+# dependencies
+node_modules/
+/student_affairs/*/vendor/

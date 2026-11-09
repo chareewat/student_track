@@ -1,0 +1,12 @@
+{
+  "name": "student-track",
+  "private": true,
+  "description": "ระบบติดตามนักเรียน: เครื่องมือ build CSS (Tailwind)",
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.js -i student_affairs/student_track/assets/css/input.css -o student_affairs/student_track/assets/css/app.css --minify",
+    "watch:css": "tailwindcss -c tailwind.config.js -i student_affairs/student_track/assets/css/input.css -o student_affairs/student_track/assets/css/app.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}

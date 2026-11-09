@@ -1,0 +1,51 @@
+<?php
+// คัดลอกไฟล์นี้เป็น global_config.php แล้วแก้ค่าให้ตรงกับเครื่อง (global_config.php ไม่ขึ้น git)
+$ip_server = "http://localhost/student_track/login.php";
+$ip_server_global = "localhost/student_track";
+$school_name = "โรงเรียนระหานวิทยา";
+$obec_area_name = "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษากำแพงเพชร";
+$khet_name = "สำนักงานเขตพื้นที่การศึกษามัธยมศึกษากำแพงเพชร";
+$creditname = "&copy; โรงเรียนระหานวิทยา";
+$titlename = "RWS (local)";
+$systemname = "RWS (local)";
+$director = "...";
+$director_title = "...";
+$vice1_director = "...";
+$province = "กำแพงเพชร";
+$amphur = "บึงสามัคคี";
+//ฐานข้อมูล
+$charset = "utf8";
+$db_global = "zpqmmpsz_";
+$db_prefix = $db_global . "db";
+$dbtype = "mysql";
+$dbhost = "localhost";
+$dbuser = "root";
+$dbpass = "";
+$dbname = "zpqmmpsz_db";
+$sch_key = "local-dev-key";
+//css
+$hrdcolor = "#ffffff";
+$hrdbg = "#0f8ce0";
+$activecolor = "#ffffff";
+$navcolor = "#106AB5";
+$bg = "#106AB5";
+$bg1 = "#106AB5";
+$bg2 = "#333333";
+$ft = "#ffffff";
+$bk = "#333333";
+$nv = "#333333";
+$nv1 = "#222222";
+$nv2 = "#106AB5";
+$nv3 = "#E54906";
+$nv4 = "#F90143";
+$ftnv = "#ffffff";
+$ftnv1 = "#ffffff";
+$ftnv2 = "#ffffff";
+$lnv = "#06509E";
+$lftnv = "#ffffff";
+$footercolor = "#222222";
+$skin = "skin-1";
+$tel1 = "000-000-000";
+$tel2 = "000-000-0000";
+$tel3 = "000-000-000";
+$behavior_score = 100;
