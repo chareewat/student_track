@@ -25,7 +25,7 @@ $groupInfo = [
 
 trk_render_header('งานครูที่ปรึกษา', 'advisor');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('clipboard', 'h-5 w-5') ?></span>งานครูที่ปรึกษา</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('clipboard', 'h-5 w-5') ?></span>งานครูที่ปรึกษา</h1>
 <p class="mt-1 text-sm text-ink/60">
   ห้อง <?= e(implode(', ', array_map('trk_classroom_label', $rooms))) ?> · ภาคเรียน <?= e(trk_semester_label()) ?>
 </p>

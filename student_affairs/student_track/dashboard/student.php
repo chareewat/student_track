@@ -105,7 +105,7 @@ trk_render_header($student ? $student['full_name'] : 'ค้นหานัก�
   <p class="mt-4 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('search', 'h-4 w-4 text-ink/35') ?>ไม่พบนักเรียน</p>
 <?php elseif ($student): ?>
   <div class="mt-6 card p-4">
-    <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('user', 'h-5 w-5') ?></span><?= e($student['full_name']) ?></h1>
+    <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('user', 'h-5 w-5') ?></span><?= e($student['full_name']) ?></h1>
     <dl class="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[9rem_1fr]">
       <dt class="text-ink/55">เลขประจำตัว</dt><dd><?= e($student['std_student_code']) ?></dd>
       <dt class="text-ink/55">ห้องปัจจุบัน</dt><dd><?= $student['std_classroom_level'] ? 'ม.' . e($student['std_classroom_level'] . '/' . $student['std_classroom_room']) : '-' ?> (เลขที่ <?= (int) $student['std_student_number'] ?>)</dd>

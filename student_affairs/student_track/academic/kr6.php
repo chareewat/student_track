@@ -26,7 +26,7 @@ foreach (trk_db_all('SELECT document_id FROM trk_notifications WHERE recipient_i
 
 trk_render_header('ขร.6 เสนอจำหน่าย', 'kr6');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('file-warning', 'h-5 w-5') ?></span>ขร.6 ขอให้จำหน่ายนักเรียน</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('file-warning', 'h-5 w-5') ?></span>ขร.6 ขอให้จำหน่ายนักเรียน</h1>
 <p class="mt-1 text-sm text-ink/60">ครูที่ปรึกษาส่งมาหลังติดตามครบ 3 ครั้งแล้วนักเรียนยังไม่มาเรียน · ภาคเรียน <?= e(trk_semester_label()) ?></p>
 
 <?php if (!$docs): ?>
@@ -50,7 +50,7 @@ trk_render_header('ขร.6 เสนอจำหน่าย', 'kr6');
           <?php $data = json_decode($d['data'], true); ?>
           <tr class="<?= $d['status'] === 'cancelled' ? 'text-ink/40' : '' ?>">
             <td class="px-4 py-2">
-              <?php if (isset($unread[(int) $d['id']])): ?><span class="mr-1 inline-block h-2 w-2 rounded-full bg-amber-400"></span><?php endif; ?>
+              <?php if (isset($unread[(int) $d['id']])): ?><span class="mr-1 inline-block h-2 w-2 rounded-full bg-accent"></span><?php endif; ?>
               <?= e(trk_thai_date($d['issued_at'], true)) ?>
             </td>
             <td class="px-4 py-2"><?= e($data['student']['name']) ?> <span class="text-xs text-ink/40"><?= e($data['student']['code']) ?></span></td>

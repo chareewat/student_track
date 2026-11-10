@@ -19,7 +19,7 @@ $unread = count(array_filter($items, function ($n) { return $n['read_at'] === nu
 trk_render_header('แจ้งเตือน', 'notifications');
 ?>
 <div class="flex flex-wrap items-center justify-between gap-3">
-  <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('bell', 'h-5 w-5') ?></span>แจ้งเตือน</h1>
+  <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('bell', 'h-5 w-5') ?></span>แจ้งเตือน</h1>
   <?php if ($unread): ?>
     <form method="post">
       <?= trk_csrf_field() ?>
@@ -36,12 +36,12 @@ trk_render_header('แจ้งเตือน', 'notifications');
       <?php $isUnread = $n['read_at'] === null; ?>
       <li>
         <a href="<?= e(trk_url($n['link'])) ?>"
-           class="card group flex items-center gap-3 px-4 py-3 transition hover:-translate-y-px hover:shadow-lift <?= $isUnread ? 'border-l-4 border-l-amber-400' : '' ?>">
+           class="card group flex items-center gap-3 px-4 py-3 transition hover:-translate-y-px hover:shadow-lift <?= $isUnread ? 'border-l-4 border-l-accent' : '' ?>">
           <span class="flex-1">
             <span class="block text-sm <?= $isUnread ? 'font-semibold text-ink' : 'text-ink/60' ?>"><?= e($n['title']) ?></span>
             <span class="text-xs text-ink/40">
               <?= e(trk_thai_date($n['created_at'], true)) ?> <?= e(substr($n['created_at'], 11, 5)) ?> น.
-              <?php if ($isUnread): ?><span class="chip-yellow ml-1">ใหม่</span><?php endif; ?>
+              <?php if ($isUnread): ?><span class="chip-orange ml-1">ใหม่</span><?php endif; ?>
             </span>
           </span>
           <span class="btn btn-soft-blue btn-sm shrink-0">เปิด<?= trk_icon('chevron-right') ?></span>

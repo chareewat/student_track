@@ -34,7 +34,7 @@ $issuedDocs = trk_db_all(
 
 trk_render_header('นักเรียนขาดรายวิชา', 'case1');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('book', 'h-5 w-5') ?></span>นักเรียนขาดรายวิชา</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('book', 'h-5 w-5') ?></span>นักเรียนขาดรายวิชา</h1>
 <p class="mt-1 text-sm text-ink/60">
   นับชั่วโมง ขาด + ลา + หนี เทียบกับเวลาเรียนทั้งหมด เกณฑ์ครั้งที่ 1/2/3 = <?= implode('/', $thresholds) ?>%
   แสดงเฉพาะนักเรียนที่ถึงเกณฑ์ครั้งที่ 1 ขึ้นไป ต้องออก ขร.1 เรียงตามครั้ง

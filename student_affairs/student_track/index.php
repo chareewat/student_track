@@ -19,7 +19,7 @@ $teaching = trk_teaching_assignments($user['id'], $semesterId);
 
 trk_render_header('หน้าหลัก', 'home');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('home', 'h-5 w-5') ?></span>สวัสดี <?= e($user['name']) ?></h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('home', 'h-5 w-5') ?></span>สวัสดี <?= e($user['name']) ?></h1>
 <p class="mt-1 text-sm text-ink/60">หน้าที่ของคุณในภาคเรียน <?= e(trk_semester_label()) ?> ระบบดึงจากข้อมูลครูที่ปรึกษาและการเช็คชื่อรายวิชา</p>
 
 <?php if (trk_sees_all_rooms()): ?>

@@ -31,7 +31,7 @@ trk_render_header('รอบติดตาม', 'advisor');
   รอบติดตาม<?= (int) $round['case_type'] === 1 ? 'ขาดรายวิชา' : 'ขาดติดต่อกัน' ?> ครั้งที่ <?= (int) $round['round_no'] ?>
   · <span class="rounded-full bg-sand/50 px-2 py-0.5 text-xs"><?= e(TRK_STAGE_LABELS[$round['stage']]) ?></span>
 </div>
-<h1 class="mt-1 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('user', 'h-5 w-5') ?></span><?= e($round['full_name']) ?></h1>
+<h1 class="mt-1 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('user', 'h-5 w-5') ?></span><?= e($round['full_name']) ?></h1>
 <p class="mt-1 text-sm text-ink/60">
   <?= e($round['std_student_code']) ?> · <?= e($round['classroom_label']) ?>
   <?php if ((int) $round['case_type'] === 1): ?>

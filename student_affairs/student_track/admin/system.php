@@ -154,7 +154,7 @@ $badge = [
 
 trk_render_header('ตรวจสอบระบบ', 'system');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('activity', 'h-5 w-5') ?></span>ตรวจสอบความพร้อมของระบบ</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('activity', 'h-5 w-5') ?></span>ตรวจสอบความพร้อมของระบบ</h1>
 <p class="mt-1 text-sm text-ink/60">
   ผ่าน <?= $summary['ok'] ?> · ควรแก้ <?= $summary['warn'] ?> · ไม่ผ่าน <?= $summary['fail'] ?>
   <?php if ($summary['fail'] === 0): ?> — <span class="chip-green">พร้อมใช้งาน</span><?php endif; ?>

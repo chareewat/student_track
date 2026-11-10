@@ -33,7 +33,7 @@ trk_render_header(trk_document_title($doc));
 <div class="flex flex-wrap items-start justify-between gap-3">
   <div>
     <div class="text-sm text-ink/55"><?= e(trk_document_title($doc)) ?><?= $doc['doc_no'] ? ' · ที่ ' . e($doc['doc_no']) : '' ?></div>
-    <h1 class="mt-1 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('file-text', 'h-5 w-5') ?></span><?= e($heading) ?></h1>
+    <h1 class="mt-1 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('file-text', 'h-5 w-5') ?></span><?= e($heading) ?></h1>
     <p class="mt-1 text-sm text-ink/60">
       ออกโดย <?= e($doc['issued_by_name']) ?> เมื่อ <?= e(trk_thai_date($doc['issued_at'])) ?> <?= e(substr($doc['issued_at'], 11, 5)) ?> น.
     </p>

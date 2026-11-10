@@ -14,13 +14,14 @@
 </head>
 <body class="min-h-screen">
   <header class="sticky top-0 z-30 px-3 pt-3 sm:px-4">
-    <div class="mx-auto max-w-6xl rounded-3xl border border-sand/60 bg-white/90 shadow-soft backdrop-blur">
+    <div class="mx-auto max-w-6xl overflow-hidden rounded-3xl border border-sand/60 bg-white/90 shadow-soft backdrop-blur">
+      <div class="h-1 bg-gradient-to-r from-navy via-navy to-accent" aria-hidden="true"></div>
       <div class="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3">
         <a href="<?= e(trk_url('index.php')) ?>" class="btn btn-white -ml-1 gap-2.5 px-2.5 py-1.5 shadow-none ring-0 hover:shadow-btn">
-          <span class="grid h-9 w-9 place-items-center rounded-xl bg-navy text-white"><?= trk_icon('cap', 'h-5 w-5') ?></span>
+          <span class="grid h-9 w-9 place-items-center rounded-xl bg-navy text-accent"><?= trk_icon('cap', 'h-5 w-5') ?></span>
           <span class="text-left leading-tight">
             <span class="block text-sm font-semibold text-navy">ระบบติดตามนักเรียน</span>
-            <span class="block text-[11px] font-medium text-ink/50">ภาคเรียน <?= e(trk_semester_label()) ?></span>
+            <span class="block text-[12px] font-medium text-ink/50">ภาคเรียน <?= e(trk_semester_label()) ?></span>
           </span>
         </a>
         <div class="ml-auto flex flex-wrap items-center justify-end gap-2">

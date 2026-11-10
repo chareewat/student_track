@@ -43,7 +43,7 @@ trk_render_header('ภาพรวม', 'dashboard');
 ?>
 <div class="flex flex-wrap items-end justify-between gap-3">
   <div>
-    <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('dashboard', 'h-5 w-5') ?></span>ภาพรวมการติดตามนักเรียน</h1>
+    <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('dashboard', 'h-5 w-5') ?></span>ภาพรวมการติดตามนักเรียน</h1>
     <p class="mt-1 text-sm text-ink/60">ภาคเรียน <?= e(trk_semester_label()) ?> · ข้อมูล ณ <?= e(trk_thai_date(date('Y-m-d'))) ?> <?= date('H:i') ?> น.</p>
   </div>
   <div class="flex flex-wrap gap-2">
@@ -101,7 +101,7 @@ trk_render_header('ภาพรวม', 'dashboard');
           <?php foreach ($overdue as $r): ?>
             <tr>
               <td class="px-4 py-2 whitespace-nowrap">
-                <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900">
+                <span class="inline-flex items-center gap-1 chip-orange">
                   <?= trk_icon('clock', 'h-3.5 w-3.5') ?> <?= (int) $r['age_days'] ?> วัน
                 </span>
               </td>

@@ -42,7 +42,7 @@ $prefix = trk_setting('doc_no_prefix');
 trk_render_header('ออก ขร.2', 'advisor');
 ?>
 <a href="<?= e(trk_url('advisor/round.php?id=' . (int) $round['id'])) ?>" class="btn btn-navy btn-sm"><?= trk_icon('arrow-left') ?>รอบติดตาม</a>
-<h1 class="mt-2 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('file-plus', 'h-5 w-5') ?></span>ออก ขร.2 แจ้งพฤติกรรมการเรียนถึงผู้ปกครอง</h1>
+<h1 class="mt-2 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('file-plus', 'h-5 w-5') ?></span>ออก ขร.2 แจ้งพฤติกรรมการเรียนถึงผู้ปกครอง</h1>
 <p class="mt-1 text-sm text-ink/60">
   <?= e($round['full_name']) ?> (<?= e($round['std_student_code']) ?>) <?= e($round['classroom_label']) ?> ·
   ขาดรายวิชา <?= e($round['vic_subject_code'] . ' ' . $round['vic_subject_name']) ?> <?= (int) $round['absent_hours'] ?> คาบ · ครั้งที่ <?= (int) $round['round_no'] ?>

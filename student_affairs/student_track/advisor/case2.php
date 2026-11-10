@@ -58,7 +58,7 @@ foreach ($rooms as $room) {
 
 trk_render_header('นักเรียนขาดติดต่อกัน', 'case2');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('calendar-x', 'h-5 w-5') ?></span>นักเรียนขาดเรียนติดต่อกัน</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('calendar-x', 'h-5 w-5') ?></span>นักเรียนขาดเรียนติดต่อกัน</h1>
 <p class="mt-1 text-sm text-ink/60">
   นับจากการเช็คชื่อรายวัน เฉพาะสถานะ "ขาด" ตั้งแต่ <?= $minDays ?> วันติดต่อกันขึ้นไป (วันที่ไม่มีการเช็คชื่อจะถูกข้าม)
   ครั้งถัดไปนับเมื่อนักเรียนกลับมาเรียนแล้วขาดใหม่ ขร.5 ต้องมีเลขหนังสือออกรายคน

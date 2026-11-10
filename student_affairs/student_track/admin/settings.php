@@ -98,7 +98,7 @@ function trk_settings_error(array $errors, string $key): string
 
 trk_render_header('ตั้งค่า', 'settings');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('sliders', 'h-5 w-5') ?></span>ตั้งค่า</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('sliders', 'h-5 w-5') ?></span>ตั้งค่า</h1>
 
 <form method="post" class="mt-4 space-y-6">
   <?= trk_csrf_field() ?>

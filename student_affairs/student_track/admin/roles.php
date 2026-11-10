@@ -78,7 +78,7 @@ trk_render_header('จัดการสิทธิ์', 'roles');
 ?>
 <div class="flex flex-wrap items-end justify-between gap-3">
   <div>
-    <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('shield', 'h-5 w-5') ?></span>จัดการสิทธิ์</h1>
+    <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('shield', 'h-5 w-5') ?></span>จัดการสิทธิ์</h1>
     <p class="mt-1 text-sm text-ink/60">ครูประจำวิชาและครูที่ปรึกษาไม่ต้องตั้งที่นี่ ระบบอนุมานจากข้อมูลการสอนและการมอบหมายห้อง</p>
   </div>
   <input type="search" placeholder="ค้นหาชื่อ" data-filter-target="#roles-table"

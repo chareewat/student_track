@@ -31,7 +31,7 @@ if (trk_is_post()) {
 
 trk_render_header('เสนอจำหน่าย (ขร.6)', 'case3');
 ?>
-<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-navy shadow-soft ring-1 ring-sand/60"><?= trk_icon('user-x', 'h-5 w-5') ?></span>นักเรียนที่ติดตามครบ 3 ครั้ง</h1>
+<h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('user-x', 'h-5 w-5') ?></span>นักเรียนที่ติดตามครบ 3 ครั้ง</h1>
 <p class="mt-1 text-sm text-ink/60">
   นับบันทึกผลติดตามของเคสขาดรายวิชาและเคสขาดติดต่อกันรวมกันในภาคเรียนนี้
   ถ้าหลังวันที่ติดตามครั้งล่าสุดนักเรียนยังไม่มาโรงเรียนเลย ให้ยืนยันส่ง ขร.6 ขอให้จำหน่ายนักเรียนถึงเจ้าหน้าที่วิชาการ
