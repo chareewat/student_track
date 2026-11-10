@@ -3,6 +3,7 @@ module.exports = {
   content: [
     './student_affairs/student_track/**/*.php',
     './student_affairs/student_track/assets/js/**/*.js',
+    './demo/**/*.php', // โหมดสาธิต (เฉพาะเครื่องพัฒนา)
   ],
   theme: {
     extend: {

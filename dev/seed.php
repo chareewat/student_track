@@ -10,7 +10,8 @@
  * เขียนให้รันได้บน PHP 7.4
  */
 
-if (PHP_SAPI !== 'cli') {
+// เรียกจากโหมดสาธิต (demo/build.php) ได้ด้วย โดยกำหนด TRK_DEMO_SEED และ $GLOBALS['TRK_SEED_ARGS']
+if (PHP_SAPI !== 'cli' && !defined('TRK_DEMO_SEED')) {
     exit("CLI only\n");
 }
 
@@ -21,7 +22,7 @@ if ($dbhost !== 'localhost' && $dbhost !== '127.0.0.1') {
 
 $until = date('Y-m-d');
 $resetTracking = false;
-foreach ($argv as $arg) {
+foreach ($GLOBALS['TRK_SEED_ARGS'] ?? ($argv ?? []) as $arg) {
     if (strpos($arg, '--until=') === 0) {
         $until = substr($arg, 8);
     }
@@ -312,6 +313,8 @@ $scenarios = [
     '900031' => ['dailyAbsent' => [['2026-11-02', '2026-11-03'], ['2026-11-05', '2026-11-09']]],
     // เคส 2 ม.4 ขาดยาวตั้งแต่ 27 ต.ค. ไม่กลับมาเลย (ต้นแบบของเคส 3 เมื่อติดตามครบ 3 ครั้ง)
     '900048' => ['dailyAbsent' => [['2026-10-27', '2027-12-31']]],
+    // เคส 3 ม.6 ขาดยาวตั้งแต่วันเปิดภาคเรียน (โหมดสาธิตใช้เป็นตัวอย่างที่ส่ง ขร.6 แล้ว)
+    '900077' => ['dailyAbsent' => [['2026-10-19', '2027-12-31']]],
 ];
 $prefixOf = function (string $subjectCode): string {
     return mb_substr($subjectCode, 0, 1);

@@ -27,3 +27,7 @@ node_modules/
 
 # ชุดไฟล์ขึ้น production (สร้างด้วย tools/build-release.php)
 /dist/
+
+# โหมดสาธิต: สถานะและรูปที่สร้างตอนรีเซ็ต
+/demo/state.json
+/demo/photos/
