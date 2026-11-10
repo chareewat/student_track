@@ -15,3 +15,13 @@ document.addEventListener('change', function (event) {
   var row = event.target.closest('tr[data-dirty-track]');
   if (row) row.classList.add('bg-amber-50');
 });
+
+// จอเล็ก: เมนูด้านบนเลื่อนแนวนอนได้ ให้เลื่อนเมนูที่เลือกอยู่มาให้เห็นเสมอ
+(function () {
+  var active = document.querySelector('nav[aria-label="เมนูหลัก"] [aria-current="page"]');
+  if (!active) return;
+  var nav = active.parentElement;
+  if (nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = active.offsetLeft - (nav.clientWidth - active.offsetWidth) / 2;
+  }
+})();
