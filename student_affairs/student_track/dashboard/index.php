@@ -30,6 +30,7 @@ $tiles = [
     ['ปิดรอบแล้ว', $total['closed'], 'บันทึกผลและออก ขร.3 แล้วในภาคเรียนนี้', 'before:bg-emerald-500', 'folder-check'],
     ['ขร.6 เสนอจำหน่าย', $total['kr6'], 'ส่งถึงเจ้าหน้าที่วิชาการแล้ว', 'before:bg-rose-500', 'file-warning'],
 ];
+$canSeeRoom = trk_has_role(...TRK_ROLES_ROOM_DETAIL);
 $columns = [
     'case1_waiting' => 'รอ ขร.1',
     'case2_waiting' => 'รอ ขร.5',
@@ -135,6 +136,9 @@ trk_render_header('ภาพรวม', 'dashboard');
       </select>
     </form>
   </div>
+  <?php if ($canSeeRoom): ?>
+    <p class="mt-1 text-xs text-ink/55">กดปุ่ม "รายชื่อรอออก" เพื่อดูรายชื่อนักเรียนที่รอออก ขร.1, ขร.2, ขร.5 ของห้องนั้น</p>
+  <?php endif; ?>
   <div class="mt-3 table-wrap">
     <table class="table">
       <thead>
@@ -144,6 +148,7 @@ trk_render_header('ภาพรวม', 'dashboard');
           <?php foreach ($columns as $label): ?>
             <th class="px-3 py-2 text-right font-medium"><?= e($label) ?></th>
           <?php endforeach; ?>
+          <?php if ($canSeeRoom): ?><th class="px-3 py-2"></th><?php endif; ?>
         </tr>
       </thead>
       <tbody>
@@ -160,6 +165,13 @@ trk_render_header('ภาพรวม', 'dashboard');
             <?php foreach (array_keys($columns) as $key): ?>
               <td class="px-3 py-2 text-right tabular-nums <?= $c[$key] ? 'font-medium text-ink' : 'text-ink/25' ?>"><?= (int) $c[$key] ?></td>
             <?php endforeach; ?>
+            <?php if ($canSeeRoom): ?>
+              <td class="px-3 py-2 text-right">
+                <?php if ($c['case1_waiting'] + $c['need_kr2'] + $c['case2_waiting'] > 0): ?>
+                  <a href="<?= e(trk_url('dashboard/room.php?id=' . (int) $room['std_classroom_id'])) ?>" class="btn btn-soft-blue btn-sm"><?= trk_icon('eye') ?>รายชื่อรอออก</a>
+                <?php endif; ?>
+              </td>
+            <?php endif; ?>
           </tr>
         <?php endforeach; ?>
       </tbody>
@@ -169,6 +181,7 @@ trk_render_header('ภาพรวม', 'dashboard');
           <?php foreach (array_keys($columns) as $key): ?>
             <td class="px-3 py-2 text-right font-semibold tabular-nums"><?= (int) $total[$key] ?></td>
           <?php endforeach; ?>
+          <?php if ($canSeeRoom): ?><td></td><?php endif; ?>
         </tr>
       </tfoot>
     </table>

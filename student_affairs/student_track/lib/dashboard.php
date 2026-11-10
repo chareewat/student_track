@@ -9,18 +9,47 @@
  */
 function trk_dashboard_case1_waiting(int $semesterId): array
 {
+    $waiting = [];
+    foreach (trk_dashboard_case1_waiting_rows($semesterId) as $r) {
+        $cid = (int) $r['std_classroom_id'];
+        $waiting[$cid] = ($waiting[$cid] ?? 0) + 1;
+    }
+    return $waiting;
+}
+
+/**
+ * รายการ (นักเรียน × รายวิชา) ที่ถึงเกณฑ์ ขร.1 ครั้งถัดไปแต่ครูประจำวิชายังไม่ออก
+ * ระบุ $classroomId เพื่อดูเฉพาะห้อง (ห้องปัจจุบันของนักเรียน)
+ * แต่ละแถว: นักเรียน, รายวิชา, teachers (ครูที่เช็คชื่อ), absent_hours, total_hours, percent, next_round
+ */
+function trk_dashboard_case1_waiting_rows(int $semesterId, ?int $classroomId = null): array
+{
     $thresholds = trk_kr1_thresholds();
+    $params = [$semesterId];
+    $roomSql = '';
+    if ($classroomId !== null) {
+        $roomSql = ' AND st.std_classroom_id = ?';
+        $params[] = $classroomId;
+    }
     $rows = trk_db_all(
-        "SELECT st.std_student_id, st.std_classroom_id, t.vic_subject_id, s.vic_subject_credit,
+        "SELECT st.std_student_id, st.std_classroom_id, st.std_student_code, st.std_student_number,
+                CONCAT(IFNULL(ti.psn_title_name, ''), st.std_student_name, ' ', st.std_student_surname) AS full_name,
+                t.vic_subject_id, s.vic_subject_code, s.vic_subject_name, s.vic_subject_credit,
+                GROUP_CONCAT(DISTINCT CONCAT(m.psn_mem_name, ' ', m.psn_mem_surname) SEPARATOR ', ') AS teachers,
                 SUM(a.vic_att_subject_check_status IN (2, 3, 4)) AS absent_hours
          FROM vic_attendance_teach t
          JOIN vic_attendance_subject a ON a.vic_att_teach_id = t.vic_att_teach_id
          JOIN std_student st ON st.std_student_code = a.std_student_code AND st.std_status_id = 1
+         LEFT JOIN psn_title ti ON ti.psn_title_id = st.psn_title_id
          JOIN vic_subject s ON s.vic_subject_id = t.vic_subject_id
-         WHERE t.std_semester_id = ?
-         GROUP BY st.std_student_id, st.std_classroom_id, t.vic_subject_id, s.vic_subject_credit, t.vic_att_classroom
-         HAVING absent_hours > 0",
-        [$semesterId]
+         LEFT JOIN psn_member m ON m.psn_mem_id = t.psn_mem_id
+         WHERE t.std_semester_id = ?$roomSql
+         GROUP BY st.std_student_id, st.std_classroom_id, st.std_student_code, st.std_student_number,
+                  ti.psn_title_name, st.std_student_name, st.std_student_surname,
+                  t.vic_subject_id, s.vic_subject_code, s.vic_subject_name, s.vic_subject_credit, t.vic_att_classroom
+         HAVING absent_hours > 0
+         ORDER BY st.std_student_number, s.vic_subject_code",
+        $params
     );
     $issued = [];
     foreach (trk_db_all(
@@ -42,12 +71,17 @@ function trk_dashboard_case1_waiting(int $semesterId): array
         $level = trk_case1_level((int) $r['absent_hours'], $total, $thresholds);
         $next = ($issued[$r['std_student_id'] . ':' . $r['vic_subject_id']] ?? 0) + 1;
         if ($next <= 3 && $level >= $next) {
-            $cid = (int) $r['std_classroom_id'];
-            $waiting[$cid] = ($waiting[$cid] ?? 0) + 1;
+            $r['total_hours'] = $total;
+            $r['percent'] = $total > 0 ? round((int) $r['absent_hours'] * 100 / $total, 1) : 0;
+            $r['next_round'] = $next;
+            $waiting[] = $r;
         }
     }
     return $waiting;
 }
+
+/** role ที่เปิดดูรายชื่อนักเรียนที่รอออกเอกสารรายห้องได้ */
+const TRK_ROLES_ROOM_DETAIL = ['admin', 'academic', 'affairs'];
 
 /** ห้องเรียนที่เปิดใช้งาน พร้อมรายชื่อครูที่ปรึกษา */
 function trk_dashboard_classrooms(int $semesterId): array
