@@ -20,7 +20,8 @@ function trk_dashboard_case1_waiting(int $semesterId): array
 /**
  * รายการ (นักเรียน × รายวิชา) ที่ถึงเกณฑ์ ขร.1 ครั้งถัดไปแต่ครูประจำวิชายังไม่ออก
  * ระบุ $classroomId เพื่อดูเฉพาะห้อง (ห้องปัจจุบันของนักเรียน)
- * แต่ละแถว: นักเรียน, รายวิชา, teachers (ครูที่เช็คชื่อ), absent_hours, total_hours, percent, next_round
+ * แต่ละแถว: นักเรียน, รายวิชา, teachers (ครูประจำวิชาตามตารางสอน ถ้าไม่มีในตารางสอนใช้ครูที่เช็คชื่อ),
+ *           absent_hours, total_hours, percent, next_round
  */
 function trk_dashboard_case1_waiting_rows(int $semesterId, ?int $classroomId = null): array
 {
@@ -35,6 +36,7 @@ function trk_dashboard_case1_waiting_rows(int $semesterId, ?int $classroomId = n
         "SELECT st.std_student_id, st.std_classroom_id, st.std_student_code, st.std_student_number,
                 CONCAT(IFNULL(ti.psn_title_name, ''), st.std_student_name, ' ', st.std_student_surname) AS full_name,
                 t.vic_subject_id, s.vic_subject_code, s.vic_subject_name, s.vic_subject_credit,
+                t.vic_att_classroom AS teach_room,
                 GROUP_CONCAT(DISTINCT CONCAT(m.psn_mem_name, ' ', m.psn_mem_surname) SEPARATOR ', ') AS teachers,
                 SUM(a.vic_att_subject_check_status IN (2, 3, 4)) AS absent_hours
          FROM vic_attendance_teach t
@@ -64,6 +66,20 @@ function trk_dashboard_case1_waiting_rows(int $semesterId, ?int $classroomId = n
         $customHours[(int) $h['vic_subject_id']] = (int) $h['hours'];
     }
     $perCredit = (int) trk_setting('hours_per_credit');
+    $label = TRK_SQL_ROOM_LABEL;
+    $timetable = [];
+    foreach (trk_db_all(
+        "SELECT tt.vic_subject_id, $label AS room,
+                GROUP_CONCAT(DISTINCT CONCAT(m.psn_mem_name, ' ', m.psn_mem_surname) SEPARATOR ', ') AS teachers
+         FROM t_teachtable tt
+         JOIN std_classroom c ON c.std_classroom_id = tt.std_classroom_id
+         JOIN psn_member m ON m.psn_mem_id = tt.psn_mem_id
+         WHERE tt.std_semester_id = ? AND tt.t_teachtable_status = 1 AND tt.vic_subject_id > 0
+         GROUP BY tt.vic_subject_id, c.std_classroom_level, c.std_classroom_room",
+        [$semesterId]
+    ) as $t) {
+        $timetable[$t['vic_subject_id'] . ':' . $t['room']] = $t['teachers'];
+    }
 
     $waiting = [];
     foreach ($rows as $r) {
@@ -74,6 +90,7 @@ function trk_dashboard_case1_waiting_rows(int $semesterId, ?int $classroomId = n
             $r['total_hours'] = $total;
             $r['percent'] = $total > 0 ? round((int) $r['absent_hours'] * 100 / $total, 1) : 0;
             $r['next_round'] = $next;
+            $r['teachers'] = $timetable[$r['vic_subject_id'] . ':' . $r['teach_room']] ?? $r['teachers'];
             $waiting[] = $r;
         }
     }

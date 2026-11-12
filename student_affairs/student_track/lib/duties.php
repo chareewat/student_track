@@ -51,7 +51,9 @@ function trk_classroom_advisors(int $classroomId, int $semesterId): array
 }
 
 /**
- * รายวิชา × ห้อง ที่บุคลากรสอนในภาคเรียน
+ * รายวิชา × ห้อง ที่บุคลากรสอนในภาคเรียน ตามตารางสอน (t_teachtable) เท่านั้น
+ * ไม่ดึงจากประวัติเช็คชื่อ เพราะครูที่เคยเช็คชื่อแทน หรือเคยสอนก่อนเปลี่ยนตารางสอน จะเห็นวิชาที่ไม่ได้สอนแล้ว
+ * ชั่วโมงขาดยังนับจากการเช็คชื่อของรายวิชา × ห้อง ทั้งหมด ไม่ว่าใครเป็นคนเช็ค
  * คืน: vic_subject_id, vic_subject_code, vic_subject_name, vic_subject_credit,
  *      std_classroom_id, std_classroom_level, std_classroom_room, periods_checked
  */
@@ -63,12 +65,7 @@ function trk_teaching_assignments(int $memberId, int $semesterId): array
                 c.std_classroom_id, c.std_classroom_level, c.std_classroom_room,
                 COUNT(DISTINCT t.vic_att_teach_id) AS periods_checked
          FROM (
-             SELECT t.vic_subject_id, c.std_classroom_id
-             FROM vic_attendance_teach t
-             JOIN std_classroom c ON $label = t.vic_att_classroom AND c.std_classroom_status = 1
-             WHERE t.psn_mem_id = ? AND t.std_semester_id = ?
-             UNION
-             SELECT tt.vic_subject_id, tt.std_classroom_id
+             SELECT DISTINCT tt.vic_subject_id, tt.std_classroom_id
              FROM t_teachtable tt
              WHERE tt.psn_mem_id = ? AND tt.std_semester_id = ? AND tt.t_teachtable_status = 1 AND tt.vic_subject_id > 0
          ) a
@@ -79,7 +76,7 @@ function trk_teaching_assignments(int $memberId, int $semesterId): array
          GROUP BY s.vic_subject_id, s.vic_subject_code, s.vic_subject_name, s.vic_subject_credit,
                   c.std_classroom_id, c.std_classroom_level, c.std_classroom_room, c.std_classroom_priority
          ORDER BY s.vic_subject_code, c.std_classroom_priority",
-        [$memberId, $semesterId, $memberId, $semesterId, $semesterId]
+        [$memberId, $semesterId, $semesterId]
     );
 }
 
