@@ -371,7 +371,8 @@ function trk_docx_kr2(TrkDocx $w, array $doc, array $ctx): void
         . ' ซึ่งเป็นนักเรียนในความปกครองของท่าน มีพฤติกรรมการขาดเรียนที่คาดว่าจะทำให้เกิดปัญหาทางการเรียนตามรายวิชา ดังนี้');
     foreach ($d['subjects'] as $i => $subj) {
         $w->p([$i === 0 ? $w->checkbox(true) : '    ', ($i === 0 ? ' ขาดเรียน ' : '              ')
-            . 'รหัสวิชา ' . $subj['code'] . ' รายวิชา ' . $subj['name'] . ' จำนวน ' . (int) $subj['absent_hours'] . ' คาบ'],
+            . 'รหัสวิชา ' . $subj['code'] . ' รายวิชา ' . $subj['name'] . ' จำนวน ' . (int) $subj['absent_hours'] . ' คาบ'
+            . (isset($subj['round_no']) ? ' (ขร.1 ครั้งที่ ' . (int) $subj['round_no'] . ')' : '')],
             ['indentation' => ['left' => Converter::cmToTwip(1.25)]]);
     }
     $w->body('ซึ่งหากนักเรียนมีเวลาเรียนไม่ถึงร้อยละ 80 ของเวลาเรียนทั้งหมด ตามแนวปฏิบัติการวัดและประเมินผลการเรียนรู้'
@@ -426,11 +427,12 @@ function trk_docx_kr3(TrkDocx $w, array $doc, array $ctx): void
     $s = $d['student'];
     $f = $d['followup'];
     $isCase1 = (int) $d['case_type'] === 1;
+    $subjects = $isCase1 ? trk_kr3_subjects($d) : [];
     $days = (int) ($d['consecutive_days'] ?? 5);
 
     $w->formCode('แบบ ขร.๓');
     $subject = [$isCase1
-        ? 'นักเรียนขาดเรียนรายวิชา ' . $d['subject']['code'] . ' ' . $d['subject']['name'] . ' ('
+        ? trk_kr3_case1_title($subjects) . ' ('
         : 'นักเรียนขาดเรียนนานติดต่อกัน ' . $days . ' วันทำการ ('];
     foreach ([1, 2, 3] as $n) {
         $subject[] = $w->checkbox((int) $d['round_no'] === $n);
@@ -441,8 +443,7 @@ function trk_docx_kr3(TrkDocx $w, array $doc, array $ctx): void
     $w->blank();
     $intro = 'ด้วย ' . $s['name'] . ' เลขประจำตัว ' . $s['code'] . ' นักเรียนระดับชั้น ม.' . $s['level'] . ' ห้อง ' . $s['room'];
     if ($isCase1) {
-        $intro .= ' ได้ขาดเรียนรายวิชา ' . $d['subject']['code'] . ' ' . $d['subject']['name'] . ' สะสม ' . (int) $d['absent_hours']
-            . ' ชั่วโมง จากเวลาเรียนทั้งหมด ' . (int) $d['subject']['total_hours'] . ' ชั่วโมง ตามที่ครูประจำวิชารายงานด้วยแบบ ขร.1 ครั้งที่ ' . (int) $d['round_no'];
+        $intro .= ' ได้' . trk_kr3_case1_detail($subjects);
     } else {
         $intro .= ' ได้ขาดเรียนติดต่อกัน ' . $days . ' วันทำการ ตั้งแต่วันที่ ' . trk_thai_date($d['absent_from']) . ' ถึงวันที่ ' . trk_thai_date($d['absent_to']);
     }
@@ -532,7 +533,7 @@ function trk_docx_kr6(TrkDocx $w, array $doc, array $ctx): void
         } elseif ((int) $o['case_type'] === 2) {
             $text = ' ครั้งที่ ' . ($i + 1) . ' ตั้งแต่วันที่ ' . trk_thai_date($o['from']) . ' ถึงวันที่ ' . trk_thai_date($o['to']) . ' เป็นเวลารวม ' . (int) $o['days'] . ' วัน';
         } else {
-            $text = ' ครั้งที่ ' . ($i + 1) . ' ขาดเรียนรายวิชา ' . $o['subject'] . ' สะสม ' . (int) $o['absent_hours'] . ' ชั่วโมง (รายงานตาม ขร.1 ครั้งที่ ' . (int) $o['round_no'] . ')';
+            $text = ' ครั้งที่ ' . ($i + 1) . ' ขาดเรียนรายวิชา ' . trk_kr6_case1_text($o);
         }
         $w->p([$w->checkbox($o !== null), $text], ['indentation' => ['left' => Converter::cmToTwip(1.25)]]);
     }

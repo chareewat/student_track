@@ -80,7 +80,7 @@ trk_render_header('ภาพรวม', 'dashboard');
   <?php if ($pastWeek8 && $total['need_kr2'] > 0): ?>
     <div class="mt-3 flex items-start gap-2 alert border-rose-200 bg-rose-50 text-rose-800">
       <?= trk_icon('alert', 'mt-0.5 h-4 w-4') ?>
-      <span><b>เลยสัปดาห์ที่ 8 แล้ว:</b> ยังมี <?= (int) $total['need_kr2'] ?> รอบที่ยังไม่ได้ออก ขร.2</span>
+      <span><b>เลยสัปดาห์ที่ 8 แล้ว:</b> ยังมี <?= (int) $total['need_kr2'] ?> คนที่ยังไม่ได้ออก ขร.2</span>
     </div>
   <?php endif; ?>
   <?php if (!$overdue): ?>

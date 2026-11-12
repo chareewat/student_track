@@ -82,12 +82,14 @@ function trk_demo_build(): array
     $state['kr1_subject'] = $w['vic_subject_code'] . ' ' . $w['vic_subject_name'];
     $state['kr1_teacher'] = trk_demo_username(trk_demo_teacher((int) $w['vic_subject_id'], (int) $w['std_classroom_id']));
 
-    // 1.2 รอครูที่ปรึกษาออก ขร.2 + บค.14 (ม.1/1): 900003 คณิตศาสตร์
+    // 1.2 รอครูที่ปรึกษาออก ขร.2 + บค.14 (ม.1/1): 900003 คณิตศาสตร์ + ภาษาไทย (รวมใน ขร.2 ใบเดียวได้)
     $state['kr2_round'] = trk_demo_kr1('900003', 'ค', '2026-11-06');
+    trk_demo_kr1('900003', 'ท', '2026-11-06');
 
-    // 1.3 รอบันทึกผลติดตาม (ม.1/2): 900017 ภาษาไทย ได้ ขร.2 + บค.14 แล้ว
+    // 1.3 รอบันทึกผลติดตาม (ม.1/2): 900017 ภาษาไทย + สุขศึกษา ได้ ขร.2 ใบเดียว + บค.14 แล้ว
     $r = trk_demo_kr1('900017', 'ท', '2026-11-04');
-    trk_demo_kr2($r, '2026-11-05');
+    $r2 = trk_demo_kr1('900017', 'พ', '2026-11-04');
+    trk_demo_kr2([$r, $r2], '2026-11-05');
     $state['followup1_round'] = $r;
 
     // 1.4 ปิดรอบแล้ว มี ขร.3 พร้อมรูปเยี่ยมบ้าน (ม.1/2): 900016 สุขศึกษา
@@ -208,12 +210,13 @@ function trk_demo_kr1(string $code, string $prefix, string $date): int
     return $roundId;
 }
 
-/** ครูที่ปรึกษาออก ขร.2 (+ บค.14 ถ้า ม.ต้น) */
-function trk_demo_kr2(int $roundId, string $date): void
+/** ครูที่ปรึกษาออก ขร.2 (+ บค.14 ถ้า ม.ต้น) ใบเดียวให้รอบที่ระบุ (หลายรายวิชาได้) */
+function trk_demo_kr2($roundIds, string $date): void
 {
-    $round = trk_round_get($roundId);
+    $rounds = array_map('trk_round_get', (array) $roundIds);
+    $round = $rounds[0];
     $guardian = trk_student_guardian_name((int) $round['std_student_id']) ?: 'ผู้ปกครอง';
-    [$kr2, $bk14] = trk_issue_kr2($round, trk_demo_advisor((int) $round['std_classroom_id']), trk_demo_doc_no(),
+    [$kr2, $bk14] = trk_issue_kr2($rounds, trk_demo_advisor((int) $round['std_classroom_id']), trk_demo_doc_no(),
         trk_requires_bk14($round) ? trk_demo_doc_no() : '', $guardian);
     trk_demo_backdate_doc($kr2, $date, '13:00:00');
     if ($bk14) {
@@ -235,7 +238,8 @@ function trk_demo_followup(int $roundId, string $date, string $method, string $f
         trk_demo_make_photo(TRK_ROOT . '/storage/uploads/' . $rel, $roundId % 2 + 1);
         $photos[] = ['path' => $rel, 'name' => 'เยี่ยมบ้าน.jpg'];
     }
-    $kr3 = trk_record_followup($round, (int) $advisors[0]['psn_mem_id'], [
+    $batch = trk_round_batch($round);
+    $kr3 = trk_record_followup($batch, (int) $advisors[0]['psn_mem_id'], [
         'followup_date' => $date,
         'method' => $method,
         'visitors' => implode(', ', array_column($advisors, 'full_name')) . ', เจ้าหน้าที่ฝ่ายกิจการนักเรียน',
@@ -244,7 +248,9 @@ function trk_demo_followup(int $roundId, string $date, string $method, string $f
     ], $photos);
     $ts = "$date 15:30:00";
     trk_demo_backdate_doc($kr3, $date, '15:30:00');
-    trk_db_exec('UPDATE trk_rounds SET closed_at = ? WHERE id = ?', [$ts, $roundId]);
+    foreach ($batch as $b) {
+        trk_db_exec('UPDATE trk_rounds SET closed_at = ? WHERE id = ?', [$ts, (int) $b['id']]);
+    }
     trk_db_exec('UPDATE trk_followups SET created_at = ? WHERE round_id = ?', [$ts, $roundId]);
     return $kr3;
 }

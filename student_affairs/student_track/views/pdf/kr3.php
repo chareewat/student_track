@@ -12,6 +12,7 @@ $f = $d['followup'];
 $date = trk_thai_date_parts($d['issued_date']);
 $days = (int) ($d['consecutive_days'] ?? trk_setting('consecutive_absent_days'));
 $isCase1 = (int) $d['case_type'] === 1;
+$subjects = $isCase1 ? trk_kr3_subjects($d) : [];
 ?>
 <?php require __DIR__ . '/_style.php'; ?>
 
@@ -37,7 +38,7 @@ $isCase1 = (int) $d['case_type'] === 1;
 <div class="rule">
   <span class="label">เรื่อง</span>
   <?php if ($isCase1): ?>
-    นักเรียนขาดเรียนรายวิชา <?= e($d['subject']['code'] . ' ' . $d['subject']['name']) ?>
+    <?= e(trk_kr3_case1_title($subjects)) ?>
   <?php else: ?>
     นักเรียนขาดเรียนนานติดต่อกัน <?= $days ?> วันทำการ
   <?php endif; ?>
@@ -49,9 +50,7 @@ $isCase1 = (int) $d['case_type'] === 1;
 <p class="indent">
   ด้วย <?= e($s['name']) ?> เลขประจำตัว <?= e($s['code']) ?> นักเรียนระดับชั้น ม.<?= e($s['level']) ?> ห้อง <?= e($s['room']) ?>
   <?php if ($isCase1): ?>
-    ได้ขาดเรียนรายวิชา <?= e($d['subject']['code'] . ' ' . $d['subject']['name']) ?>
-    สะสม <?= (int) $d['absent_hours'] ?> ชั่วโมง จากเวลาเรียนทั้งหมด <?= (int) $d['subject']['total_hours'] ?> ชั่วโมง
-    ตามที่ครูประจำวิชารายงานด้วยแบบ ขร.1 ครั้งที่ <?= (int) $d['round_no'] ?>
+    ได้<?= e(trk_kr3_case1_detail($subjects)) ?>
   <?php else: ?>
     ได้ขาดเรียนติดต่อกัน <?= $days ?> วันทำการ ตั้งแต่วันที่ <?= e(trk_thai_date($d['absent_from'])) ?>
     ถึงวันที่ <?= e(trk_thai_date($d['absent_to'])) ?>

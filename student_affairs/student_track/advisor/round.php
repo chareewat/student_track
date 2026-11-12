@@ -24,6 +24,7 @@ $docs = trk_db_all(
     [(int) $round['id']]
 );
 $followup = trk_round_followup((int) $round['id']);
+$batch = trk_round_batch($round);
 
 trk_render_header('รอบติดตาม', 'advisor');
 ?>
@@ -41,6 +42,19 @@ trk_render_header('รอบติดตาม', 'advisor');
     · ขาดติดต่อกันตั้งแต่ <?= e(trk_thai_date($round['absent_from'])) ?> ถึง <?= e(trk_thai_date($round['absent_to'])) ?> (ณ วันที่ออก ขร.5)
   <?php endif; ?>
 </p>
+
+<?php if (count($batch) > 1): ?>
+  <div class="mt-3 text-sm text-ink/70">
+    ออก ขร.2 รวมกับรายวิชา:
+    <?php foreach ($batch as $b): ?>
+      <?php if ((int) $b['id'] !== (int) $round['id']): ?>
+        <a href="<?= e(trk_url('advisor/round.php?id=' . (int) $b['id'])) ?>" class="underline decoration-dotted"><?= e($b['vic_subject_code'] . ' ' . $b['vic_subject_name']) ?></a>
+        <span class="text-xs text-ink/55">(ขร.1 ครั้งที่ <?= (int) $b['round_no'] ?>)</span>
+      <?php endif; ?>
+    <?php endforeach; ?>
+    · ติดตามและออก ขร.3 พร้อมกันทั้งชุด
+  </div>
+<?php endif; ?>
 
 <?php if ($canAct && $round['stage'] === 'need_kr2'): ?>
   <a href="<?= e(trk_url('advisor/kr2.php?round=' . (int) $round['id'])) ?>" class="btn btn-green mt-4"><?= trk_icon('file-plus') ?>ออก ขร.2</a>

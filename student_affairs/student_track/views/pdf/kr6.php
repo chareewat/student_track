@@ -48,7 +48,7 @@ $occasions = array_values($d['occasions']);
       <?php elseif ((int) $o['case_type'] === 2): ?>
         ตั้งแต่วันที่ <?= e(trk_thai_date($o['from'])) ?> ถึงวันที่ <?= e(trk_thai_date($o['to'])) ?> เป็นเวลารวม <?= (int) $o['days'] ?> วัน
       <?php else: ?>
-        ขาดเรียนรายวิชา <?= e($o['subject']) ?> สะสม <?= (int) $o['absent_hours'] ?> ชั่วโมง (รายงานตาม ขร.1 ครั้งที่ <?= (int) $o['round_no'] ?>)
+        ขาดเรียนรายวิชา <?= e(trk_kr6_case1_text($o)) ?>
       <?php endif; ?>
     </div>
   <?php endforeach; ?>

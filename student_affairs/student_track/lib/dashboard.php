@@ -118,6 +118,7 @@ function trk_dashboard_classrooms(int $semesterId): array
 
 /**
  * ตัวเลขรายห้อง: case1_waiting, case2_waiting, need_kr2, need_followup, closed, kr6
+ * need_kr2 นับเป็นรายคน, need_followup และ closed นับเป็นรายชุด ขร.2 (ดู trk_round_batch_key)
  * คืน [std_classroom_id => [...]] และผลรวมทั้งโรงเรียนใน ['total']
  */
 function trk_dashboard_counts(int $semesterId, array $rooms): array
@@ -139,9 +140,12 @@ function trk_dashboard_counts(int $semesterId, array $rooms): array
             $counts[$cid]['case2_waiting'] += $c['eligible'] ? 1 : 0;
         }
     }
+    $seen = [];
     foreach (trk_rounds_for_classrooms(array_keys($counts), $semesterId) as $r) {
         $cid = (int) $r['std_classroom_id'];
-        if (isset($counts[$cid][$r['stage']])) {
+        $key = $r['stage'] . ':' . trk_round_batch_key($r);
+        if (isset($counts[$cid][$r['stage']]) && !isset($seen[$key])) {
+            $seen[$key] = true;
             $counts[$cid][$r['stage']]++;
         }
     }

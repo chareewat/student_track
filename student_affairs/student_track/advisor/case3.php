@@ -60,7 +60,7 @@ trk_render_header('เสนอจำหน่าย (ขร.6)', 'case3');
                 <li>
                   <?= $i + 1 ?>. <?= e(trk_thai_date($f['followup_date'], true)) ?> · <?= e($f['method']) ?> ·
                   <?php if ((int) $f['case_type'] === 1): ?>
-                    ขาดรายวิชา <?= e($f['vic_subject_code']) ?> ครั้งที่ <?= (int) $f['round_no'] ?>
+                    ขาดรายวิชา <?= e($f['subject_codes'] ?: $f['vic_subject_code']) ?> ครั้งที่ <?= (int) $f['round_no'] ?>
                   <?php else: ?>
                     ขาดติดต่อกัน ครั้งที่ <?= (int) $f['round_no'] ?>
                   <?php endif; ?>

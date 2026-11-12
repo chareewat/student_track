@@ -141,3 +141,58 @@ function trk_document_title(array $doc): string
     }
     return $title;
 }
+
+/**
+ * รายวิชาใน ขร.3 เคส 1 [{code, name, absent_hours, total_hours, round_no}]
+ * ขร.3 ที่ออกก่อนรองรับหลายรายวิชาเก็บเป็น subject เดียว (ครั้งที่ของ ขร.1 = round_no ของเอกสาร)
+ */
+function trk_kr3_subjects(array $d): array
+{
+    if (!empty($d['subjects'])) {
+        return $d['subjects'];
+    }
+    if (!empty($d['subject'])) {
+        return [[
+            'code' => $d['subject']['code'],
+            'name' => $d['subject']['name'],
+            'absent_hours' => (int) ($d['absent_hours'] ?? 0),
+            'total_hours' => (int) ($d['subject']['total_hours'] ?? 0),
+            'round_no' => (int) $d['round_no'],
+        ]];
+    }
+    return [];
+}
+
+/** หัวเรื่อง ขร.3 เคส 1 */
+function trk_kr3_case1_title(array $subjects): string
+{
+    if (count($subjects) === 1) {
+        return 'นักเรียนขาดเรียนรายวิชา ' . $subjects[0]['code'] . ' ' . $subjects[0]['name'];
+    }
+    return 'นักเรียนขาดเรียนรายวิชา จำนวน ' . count($subjects) . ' รายวิชา';
+}
+
+/** ข้อความต่อจาก "ได้" ในย่อหน้าแรกของ ขร.3 เคส 1 */
+function trk_kr3_case1_detail(array $subjects): string
+{
+    if (count($subjects) === 1) {
+        $s = $subjects[0];
+        return 'ขาดเรียนรายวิชา ' . $s['code'] . ' ' . $s['name'] . ' สะสม ' . (int) $s['absent_hours']
+            . ' ชั่วโมง จากเวลาเรียนทั้งหมด ' . (int) $s['total_hours'] . ' ชั่วโมง ตามที่ครูประจำวิชารายงานด้วยแบบ ขร.1 ครั้งที่ ' . (int) $s['round_no'];
+    }
+    $items = array_map(function ($s) {
+        return 'รายวิชา ' . $s['code'] . ' ' . $s['name'] . ' สะสม ' . (int) $s['absent_hours'] . ' จาก ' . (int) $s['total_hours']
+            . ' ชั่วโมง (ขร.1 ครั้งที่ ' . (int) $s['round_no'] . ')';
+    }, $subjects);
+    return 'ขาดเรียน ' . count($subjects) . ' รายวิชา ตามที่ครูประจำวิชารายงานด้วยแบบ ขร.1 ได้แก่ ' . implode(', ', $items);
+}
+
+/** รายละเอียดรายวิชาของการติดตามเคส 1 ใน ขร.6 (ต่อจาก "ขาดเรียนรายวิชา ") */
+function trk_kr6_case1_text(array $o): string
+{
+    $subjects = $o['subjects'] ?? [['label' => $o['subject'], 'absent_hours' => $o['absent_hours'], 'round_no' => $o['round_no']]];
+    return implode(', ', array_map(function ($s) {
+        $label = $s['label'] ?? ($s['code'] . ' ' . $s['name']);
+        return $label . ' สะสม ' . (int) $s['absent_hours'] . ' ชั่วโมง (รายงานตาม ขร.1 ครั้งที่ ' . (int) $s['round_no'] . ')';
+    }, $subjects));
+}

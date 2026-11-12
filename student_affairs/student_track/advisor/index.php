@@ -1,6 +1,7 @@
 <?php
 /**
  * ครูที่ปรึกษา: รอบติดตามของห้องตนเอง แยกตามขั้นที่ต้องทำ
+ * แสดงเป็นกลุ่ม: รอออก ขร.2 = รายคน (รวมทุกวิชา), รอติดตาม/ปิดแล้ว = รายชุด ขร.2
  */
 require __DIR__ . '/../bootstrap.php';
 
@@ -16,6 +17,9 @@ $rounds = trk_rounds_for_classrooms(array_column($rooms, 'std_classroom_id'), $s
 $groups = ['need_kr2' => [], 'need_followup' => [], 'closed' => []];
 foreach ($rounds as $r) {
     $groups[$r['stage']][] = $r;
+}
+foreach ($groups as $stage => $list) {
+    $groups[$stage] = array_values(trk_rounds_group($list));
 }
 $groupInfo = [
     'need_kr2' => ['รอออก ขร.2 แจ้งผู้ปกครอง', 'ครูประจำวิชาส่ง ขร.1 มาแล้ว ให้ขอเลขหนังสือจากงานสารบรรณแล้วออก ขร.2 (ม.1–3 ออก บค.14 คู่กัน)', 'bg-amber-100 text-amber-800'],
@@ -52,7 +56,8 @@ trk_render_header('งานครูที่ปรึกษา', 'advisor');
             </tr>
           </thead>
           <tbody>
-            <?php foreach ($groups[$stage] as $r): ?>
+            <?php foreach ($groups[$stage] as $batch): ?>
+              <?php $r = $batch[0]; ?>
               <tr>
                 <td class="px-4 py-2">
                   <div><?= e($r['full_name']) ?></div>
@@ -61,13 +66,17 @@ trk_render_header('งานครูที่ปรึกษา', 'advisor');
                 <td class="hidden px-4 py-2 sm:table-cell"><?= e($r['classroom_label']) ?></td>
                 <td class="px-4 py-2">
                   <?php if ((int) $r['case_type'] === 1): ?>
-                    ขาดรายวิชา <span class="font-mono text-xs"><?= e($r['vic_subject_code']) ?></span> <?= e($r['vic_subject_name']) ?>
-                    <span class="text-xs text-ink/55">(<?= (int) $r['absent_hours'] ?>/<?= (int) $r['total_hours'] ?> ชม.)</span>
+                    <?php foreach ($batch as $i => $b): ?>
+                      <div><?= $i === 0 ? 'ขาดรายวิชา ' : '' ?><span class="font-mono text-xs"><?= e($b['vic_subject_code']) ?></span> <?= e($b['vic_subject_name']) ?>
+                        <span class="text-xs text-ink/55">(<?= (int) $b['absent_hours'] ?>/<?= (int) $b['total_hours'] ?> ชม.<?= count($batch) > 1 ? ' · ขร.1 ครั้งที่ ' . (int) $b['round_no'] : '' ?>)</span></div>
+                    <?php endforeach; ?>
                   <?php else: ?>
                     ขาดติดต่อกัน <span class="text-xs text-ink/55"><?= e(trk_thai_date($r['absent_from'], true)) ?> – <?= e(trk_thai_date($r['absent_to'], true)) ?></span>
                   <?php endif; ?>
                 </td>
-                <td class="px-4 py-2"><?= (int) $r['round_no'] ?></td>
+                <td class="px-4 py-2"><?= e(implode(', ', array_unique(array_map(function ($b) {
+                    return (int) $b['round_no'];
+                }, $batch)))) ?></td>
                 <td class="hidden px-4 py-2 text-ink/60 md:table-cell"><?= e(trk_thai_date($r['opened_at'], true)) ?></td>
                 <td class="px-4 py-2 text-right"><div class="flex flex-col items-end gap-1.5 sm:flex-row sm:justify-end">
                   <?php if ($stage === 'need_kr2'): ?>

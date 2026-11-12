@@ -17,7 +17,12 @@ function trk_student_followups(int $studentId, int $semesterId): array
 {
     return trk_db_all(
         "SELECT f.*, r.case_type, r.round_no, r.absent_from, r.absent_to, r.absent_hours, r.total_hours,
-                s.vic_subject_code, s.vic_subject_name
+                s.vic_subject_code, s.vic_subject_name,
+                (SELECT GROUP_CONCAT(s2.vic_subject_code ORDER BY s2.vic_subject_code SEPARATOR ', ')
+                 FROM trk_document_rounds dr2
+                 JOIN trk_rounds r2 ON r2.id = dr2.round_id
+                 JOIN vic_subject s2 ON s2.vic_subject_id = r2.vic_subject_id
+                 WHERE f.document_id IS NOT NULL AND dr2.document_id = f.document_id) AS subject_codes
          FROM trk_followups f
          JOIN trk_rounds r ON r.id = f.round_id
          LEFT JOIN vic_subject s ON s.vic_subject_id = r.vic_subject_id
@@ -143,6 +148,12 @@ function trk_case3_issue(int $advisorId, int $studentId, string $docNo): int
             } else {
                 $item['subject'] = $f['vic_subject_code'] . ' ' . $f['vic_subject_name'];
                 $item['absent_hours'] = (int) $f['absent_hours'];
+                $kr3 = $f['document_id'] ? trk_document_get((int) $f['document_id']) : null;
+                if ($kr3) {
+                    $item['subjects'] = array_map(function ($s) {
+                        return ['label' => $s['code'] . ' ' . $s['name'], 'absent_hours' => (int) $s['absent_hours'], 'round_no' => (int) $s['round_no']];
+                    }, trk_kr3_subjects($kr3['data']));
+                }
             }
             $occasions[] = $item;
         }

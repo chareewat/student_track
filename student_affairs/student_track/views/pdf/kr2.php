@@ -24,7 +24,7 @@ $fullNo = $docNoPrefix . ($doc['doc_no'] ?? '');
   <?= trk_pdf_checkbox(true) ?> ขาดเรียน
   <?php foreach ($d['subjects'] as $i => $subj): ?>
     <?= $i > 0 ? '<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' : '' ?>
-    รหัสวิชา <?= e($subj['code']) ?> รายวิชา <?= e($subj['name']) ?> จำนวน <?= (int) $subj['absent_hours'] ?> คาบ
+    รหัสวิชา <?= e($subj['code']) ?> รายวิชา <?= e($subj['name']) ?> จำนวน <?= (int) $subj['absent_hours'] ?> คาบ<?= isset($subj['round_no']) ? ' (ขร.1 ครั้งที่ ' . (int) $subj['round_no'] . ')' : '' ?>
   <?php endforeach; ?>
 </div>
 <p class="indent">

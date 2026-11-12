@@ -1,6 +1,7 @@
 <?php
 /**
  * ครูที่ปรึกษาบันทึกผลติดตาม (พร้อมรูป) → ออก ขร.3 → ปิดรอบ
+ * เคส 1 บันทึกครั้งเดียวต่อชุด ขร.2: ขร.3 ใบเดียวระบุทุกรายวิชา และปิดทุกรอบในชุด
  */
 require __DIR__ . '/../bootstrap.php';
 
@@ -9,6 +10,10 @@ const TRK_FOLLOWUP_METHODS = ['เยี่ยมบ้าน', 'เชิญผ
 $user = trk_user();
 $roundId = (int) ($_GET['round'] ?? $_POST['round'] ?? 0);
 $round = trk_round_require_actionable($roundId, 'need_followup');
+$batch = trk_round_batch($round);
+$openedOn = max(array_map(function ($r) {
+    return substr($r['opened_at'], 0, 10);
+}, $batch));
 
 $advisorNames = array_column(trk_classroom_advisors((int) $round['std_classroom_id'], (int) $round['semester_id']), 'full_name');
 $values = [
@@ -31,8 +36,8 @@ if (trk_is_post()) {
         $errors['followup_date'] = 'วันที่ไม่ถูกต้อง';
     } elseif ($values['followup_date'] > date('Y-m-d')) {
         $errors['followup_date'] = 'วันที่ติดตามต้องไม่เกินวันนี้';
-    } elseif ($values['followup_date'] < substr($round['opened_at'], 0, 10)) {
-        $errors['followup_date'] = 'วันที่ติดตามต้องไม่ก่อนวันที่เปิดรอบ (' . trk_thai_date($round['opened_at']) . ')';
+    } elseif ($values['followup_date'] < $openedOn) {
+        $errors['followup_date'] = 'วันที่ติดตามต้องไม่ก่อนวันที่เปิดรอบ (' . trk_thai_date($openedOn) . ')';
     }
     if (!in_array($values['method'], TRK_FOLLOWUP_METHODS, true)) {
         $errors['method'] = 'กรุณาเลือกวิธีการติดตาม';
@@ -64,7 +69,7 @@ if (trk_is_post()) {
     if (!$errors) {
         $stored = array_map('trk_store_photo', $files);
         try {
-            trk_record_followup($round, $user['id'], $values, $stored);
+            trk_record_followup($batch, $user['id'], $values, $stored);
             trk_flash('success', 'บันทึกผลติดตามและออก ขร.3 แล้ว พิมพ์ ขร.3 เสนอผู้อำนวยการ');
         } catch (RuntimeException $ex) {
             foreach ($stored as $p) {
@@ -86,9 +91,13 @@ trk_render_header('บันทึกผลติดตาม', 'advisor');
 <a href="<?= e(trk_url('advisor/round.php?id=' . (int) $round['id'])) ?>" class="btn btn-navy btn-sm"><?= trk_icon('arrow-left') ?>รอบติดตาม</a>
 <h1 class="mt-2 text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('map-pin', 'h-5 w-5') ?></span>บันทึกผลติดตาม (ขร.3)</h1>
 <p class="mt-1 text-sm text-ink/60">
-  <?= e($round['full_name']) ?> (<?= e($round['std_student_code']) ?>) <?= e($round['classroom_label']) ?> · ครั้งที่ <?= (int) $round['round_no'] ?>
+  <?= e($round['full_name']) ?> (<?= e($round['std_student_code']) ?>) <?= e($round['classroom_label']) ?>
   <?php if ((int) $round['case_type'] === 1): ?>
-    · ขาดรายวิชา <?= e($round['vic_subject_code'] . ' ' . $round['vic_subject_name']) ?>
+    · ขาดรายวิชา <?= e(implode(', ', array_map(function ($r) {
+        return $r['vic_subject_code'] . ' ' . $r['vic_subject_name'] . ' (ขร.1 ครั้งที่ ' . (int) $r['round_no'] . ')';
+    }, $batch))) ?>
+  <?php else: ?>
+    · ครั้งที่ <?= (int) $round['round_no'] ?>
   <?php endif; ?>
 </p>
 
