@@ -90,7 +90,7 @@ trk_render_header('รอออกเอกสาร ' . $roomLabel, 'dashboard'
           <?php foreach ($kr1 as $r): ?>
             <tr>
               <td class="tabular-nums text-ink/60"><?= (int) $r['std_student_number'] ?></td>
-              <td><?= e($r['full_name']) ?> <span class="block text-xs text-ink/40"><?= e($r['std_student_code']) ?></span></td>
+              <td><?= e($r['full_name']) ?> <span class="block text-xs text-ink/60"><?= e($r['std_student_code']) ?></span></td>
               <td><span class="font-medium"><?= e($r['vic_subject_code']) ?></span> <span class="block text-xs text-ink/55"><?= e($r['vic_subject_name']) ?></span></td>
               <td class="hidden text-ink/60 md:table-cell"><?= e($r['teachers'] ?: '-') ?></td>
               <td class="whitespace-nowrap text-right tabular-nums">
@@ -168,7 +168,7 @@ trk_render_header('รอออกเอกสาร ' . $roomLabel, 'dashboard'
             <?php $ep = $c['next_episode']; ?>
             <tr>
               <td class="tabular-nums text-ink/60"><?= (int) $c['std_student_number'] ?></td>
-              <td><?= e($c['full_name']) ?> <span class="block text-xs text-ink/40"><?= e($c['std_student_code']) ?></span></td>
+              <td><?= e($c['full_name']) ?> <span class="block text-xs text-ink/60"><?= e($c['std_student_code']) ?></span></td>
               <td class="whitespace-nowrap">
                 <?= e(trk_thai_date($ep['from'], true)) ?> – <?= e(trk_thai_date($ep['to'], true)) ?>
                 <?php if (!empty($ep['ongoing'])): ?><span class="chip-red ml-1">ยังขาดอยู่</span><?php endif; ?>

@@ -44,27 +44,28 @@ trk_render_header('งานครูที่ปรึกษา', 'advisor');
     <p class="mt-0.5 text-xs text-ink/55"><?= e($hint) ?></p>
     <?php if ($groups[$stage]): ?>
       <div class="mt-3 table-wrap">
-        <table class="table">
-          <thead>
+        <table class="table block w-full sm:table">
+          <?php // จอมือถือ: แต่ละแถวเป็นการ์ดซ้อนแนวตั้ง (ซ่อนหัวตาราง) จอ sm ขึ้นไปเป็นตารางปกติ ?>
+          <thead class="hidden sm:table-header-group">
             <tr>
               <th class="px-4 py-2 font-medium">นักเรียน</th>
               <th class="hidden px-4 py-2 font-medium sm:table-cell">ห้อง</th>
               <th class="px-4 py-2 font-medium">เหตุ</th>
-              <th class="px-4 py-2 font-medium">ครั้งที่</th>
+              <th class="hidden px-4 py-2 font-medium sm:table-cell">ครั้งที่</th>
               <th class="hidden px-4 py-2 font-medium md:table-cell">เปิดรอบเมื่อ</th>
               <th class="px-4 py-2"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="block sm:table-row-group">
             <?php foreach ($groups[$stage] as $batch): ?>
               <?php $r = $batch[0]; ?>
-              <tr>
-                <td class="px-4 py-2">
-                  <div><?= e($r['full_name']) ?></div>
-                  <div class="text-xs text-ink/40"><?= e($r['std_student_code']) ?> · เลขที่ <?= (int) $r['std_student_number'] ?></div>
+              <tr class="block py-2 sm:table-row sm:py-0">
+                <td class="block px-4 py-1 sm:table-cell sm:py-2">
+                  <div class="font-medium sm:font-normal"><?= e($r['full_name']) ?></div>
+                  <div class="text-xs text-ink/60"><?= e($r['std_student_code']) ?> · เลขที่ <?= (int) $r['std_student_number'] ?><span class="sm:hidden"> · <?= e($r['classroom_label']) ?></span></div>
                 </td>
                 <td class="hidden px-4 py-2 sm:table-cell"><?= e($r['classroom_label']) ?></td>
-                <td class="px-4 py-2">
+                <td class="block px-4 py-1 sm:table-cell sm:py-2">
                   <?php if ((int) $r['case_type'] === 1): ?>
                     <?php foreach ($batch as $i => $b): ?>
                       <div><?= $i === 0 ? 'ขาดรายวิชา ' : '' ?><span class="font-mono text-xs"><?= e($b['vic_subject_code']) ?></span> <?= e($b['vic_subject_name']) ?>
@@ -74,11 +75,11 @@ trk_render_header('งานครูที่ปรึกษา', 'advisor');
                     ขาดติดต่อกัน <span class="text-xs text-ink/55"><?= e(trk_thai_date($r['absent_from'], true)) ?> – <?= e(trk_thai_date($r['absent_to'], true)) ?></span>
                   <?php endif; ?>
                 </td>
-                <td class="px-4 py-2"><?= e(implode(', ', array_unique(array_map(function ($b) {
+                <td class="hidden px-4 py-2 sm:table-cell"><?= e(implode(', ', array_unique(array_map(function ($b) {
                     return (int) $b['round_no'];
                 }, $batch)))) ?></td>
                 <td class="hidden px-4 py-2 text-ink/60 md:table-cell"><?= e(trk_thai_date($r['opened_at'], true)) ?></td>
-                <td class="px-4 py-2 text-right"><div class="flex flex-col items-end gap-1.5 sm:flex-row sm:justify-end">
+                <td class="block px-4 py-1 sm:table-cell sm:py-2 sm:text-right"><div class="flex flex-wrap gap-2 sm:flex-nowrap sm:justify-end sm:gap-1.5">
                   <?php if ($stage === 'need_kr2'): ?>
                     <a href="<?= e(trk_url('advisor/kr2.php?round=' . (int) $r['id'])) ?>" class="btn btn-green btn-sm"><?= trk_icon('file-plus') ?>ออก ขร.2</a>
                   <?php elseif ($stage === 'need_followup'): ?>
@@ -93,7 +94,7 @@ trk_render_header('งานครูที่ปรึกษา', 'advisor');
         </table>
       </div>
     <?php else: ?>
-      <p class="mt-2 text-sm text-ink/40 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ไม่มีรายการ</p>
+      <p class="mt-2 text-sm text-ink/60 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ไม่มีรายการ</p>
     <?php endif; ?>
   </section>
 <?php endforeach; ?>

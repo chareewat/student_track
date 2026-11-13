@@ -48,12 +48,12 @@ trk_render_header('ขร.6 เสนอจำหน่าย', 'kr6');
       <tbody>
         <?php foreach ($docs as $d): ?>
           <?php $data = json_decode($d['data'], true); ?>
-          <tr class="<?= $d['status'] === 'cancelled' ? 'text-ink/40' : '' ?>">
+          <tr class="<?= $d['status'] === 'cancelled' ? 'text-ink/60' : '' ?>">
             <td class="px-4 py-2">
               <?php if (isset($unread[(int) $d['id']])): ?><span class="mr-1 inline-block h-2 w-2 rounded-full bg-accent"></span><?php endif; ?>
               <?= e(trk_thai_date($d['issued_at'], true)) ?>
             </td>
-            <td class="px-4 py-2"><?= e($data['student']['name']) ?> <span class="text-xs text-ink/40"><?= e($data['student']['code']) ?></span></td>
+            <td class="px-4 py-2"><?= e($data['student']['name']) ?> <span class="text-xs text-ink/60"><?= e($data['student']['code']) ?></span></td>
             <td class="px-4 py-2"><?= e(trk_classroom_label($d)) ?></td>
             <td class="px-4 py-2"><?= e($d['issued_by_name']) ?></td>
             <td class="px-4 py-2 text-right"><?= (int) $data['followup_count'] ?> ครั้ง</td>

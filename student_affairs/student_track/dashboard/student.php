@@ -88,7 +88,7 @@ trk_render_header($student ? $student['full_name'] : 'ค้นหานัก�
           <a href="<?= e(trk_url('dashboard/student.php?id=' . (int) $s['std_student_id'])) ?>"
              class="card flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 transition hover:-translate-y-px hover:shadow-lift">
             <span class="font-medium"><?= e($s['full_name']) ?></span>
-            <span class="text-xs text-ink/40"><?= e($s['std_student_code']) ?></span>
+            <span class="text-xs text-ink/60"><?= e($s['std_student_code']) ?></span>
             <span class="text-sm text-ink/60"><?= $s['std_classroom_level'] ? 'ม.' . e($s['std_classroom_level'] . '/' . $s['std_classroom_room']) : '' ?></span>
             <?php if ((int) $s['std_status_id'] !== 1): ?><span class="text-xs text-ink/55">(<?= e($s['std_status_name']) ?>)</span><?php endif; ?>
             <span class="chip-sand ml-auto">ติดตาม <?= (int) $s['round_count'] ?> รอบ</span>

@@ -50,7 +50,7 @@ trk_render_header('เสนอจำหน่าย (ขร.6)', 'case3');
           <li class="px-4 py-4">
             <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <span class="font-medium"><?= e($c['full_name']) ?></span>
-              <span class="text-xs text-ink/40"><?= e($c['std_student_code']) ?> · เลขที่ <?= (int) $c['std_student_number'] ?></span>
+              <span class="text-xs text-ink/60"><?= e($c['std_student_code']) ?> · เลขที่ <?= (int) $c['std_student_number'] ?></span>
               <span class="rounded-full px-2 py-0.5 text-xs font-medium <?= $c['eligible'] ? 'bg-rose-100 text-rose-800' : 'bg-sand/50 text-ink/60' ?>">
                 <?= e($c['reason']) ?>
               </span>

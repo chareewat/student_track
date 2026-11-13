@@ -102,7 +102,7 @@ trk_render_header('บันทึกผลติดตาม', 'advisor');
 </p>
 
 <?php if ($errors): ?>
-  <div class="mt-4 alert border-rose-200 bg-rose-50 text-rose-800">กรุณาแก้ไขข้อมูลที่ไม่ถูกต้อง (ถ้าแนบรูปไว้ ต้องเลือกรูปใหม่อีกครั้ง)</div>
+  <div class="mt-4 alert border-rose-200 bg-rose-50 text-rose-800" role="alert">กรุณาแก้ไขข้อมูลที่ไม่ถูกต้อง (ถ้าแนบรูปไว้ ต้องเลือกรูปใหม่อีกครั้ง)</div>
 <?php endif; ?>
 
 <form method="post" enctype="multipart/form-data" class="mt-6 max-w-2xl space-y-4 card p-5">

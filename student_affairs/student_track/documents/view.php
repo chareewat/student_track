@@ -82,7 +82,7 @@ trk_render_header(trk_document_title($doc));
         <tr class="align-top">
           <td class="px-4 py-2">
             <div><?= e($s['name']) ?></div>
-            <div class="text-xs text-ink/40"><?= e($s['code']) ?></div>
+            <div class="text-xs text-ink/60"><?= e($s['code']) ?></div>
             <?php if (isset($roundIds[(int) $s['id']])): ?>
               <a href="<?= e(trk_url('advisor/round.php?id=' . $roundIds[(int) $s['id']])) ?>" class="btn btn-soft-blue btn-sm"><?= trk_icon('history') ?>รอบติดตาม</a>
             <?php endif; ?>

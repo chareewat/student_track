@@ -64,7 +64,7 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
   ครั้งถัดไปนับเมื่อนักเรียนกลับมาเรียนแล้วขาดใหม่ ขร.5 ต้องมีเลขหนังสือออกรายคน
 </p>
 <?php foreach (array_diff_key($errors, array_flip(array_map('intval', array_column($rooms, 'std_classroom_id')))) as $msg): ?>
-  <div class="mt-4 alert border-rose-200 bg-rose-50 text-rose-800"><?= e($msg) ?></div>
+  <div class="mt-4 alert border-rose-200 bg-rose-50 text-rose-800" role="alert"><?= e($msg) ?></div>
 <?php endforeach; ?>
 
 <?php foreach ($sections as $sec): ?>
@@ -76,7 +76,7 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
   <section class="mt-6 card">
     <div class="border-b border-sand/50 px-4 py-3 font-semibold"><?= e(trk_classroom_label($room)) ?></div>
     <?php if (isset($errors[$rid])): ?>
-      <div class="mx-4 mt-3 alert border-rose-200 bg-rose-50 text-rose-800"><?= e($errors[$rid]) ?></div>
+      <div class="mx-4 mt-3 alert border-rose-200 bg-rose-50 text-rose-800" role="alert"><?= e($errors[$rid]) ?></div>
     <?php endif; ?>
     <?php if (!$sec['candidates']): ?>
       <p class="px-4 py-4 text-sm text-ink/55 flex items-center gap-2"><?= trk_icon('inbox', 'h-4 w-4 text-ink/35') ?>ไม่มีนักเรียนที่ขาดติดต่อกันถึงเกณฑ์</p>
@@ -110,7 +110,7 @@ trk_render_header('นักเรียนขาดติดต่อกัน'
                   </td>
                   <td class="px-2 py-2">
                     <div><?= e($c['full_name']) ?></div>
-                    <div class="text-xs text-ink/40"><?= e($c['std_student_code']) ?> · เลขที่ <?= (int) $c['std_student_number'] ?></div>
+                    <div class="text-xs text-ink/60"><?= e($c['std_student_code']) ?> · เลขที่ <?= (int) $c['std_student_number'] ?></div>
                   </td>
                   <td class="px-2 py-2">
                     <?php foreach ($c['episodes'] as $ep): ?>

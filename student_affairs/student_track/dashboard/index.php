@@ -64,7 +64,7 @@ trk_render_header('ภาพรวม', 'dashboard');
         <span class="grid h-8 w-8 place-items-center rounded-xl bg-canvas text-navy/70"><?= trk_icon($tileIcon) ?></span>
       </div>
       <div class="stat-value"><?= (int) $value ?></div>
-      <div class="mt-1 text-xs leading-snug text-ink/45"><?= e($hint) ?></div>
+      <div class="mt-1 text-xs leading-snug text-ink/60"><?= e($hint) ?></div>
     </div>
   <?php endforeach; ?>
 </section>
@@ -107,7 +107,7 @@ trk_render_header('ภาพรวม', 'dashboard');
                 </span>
               </td>
               <td class="px-4 py-2"><?= e(TRK_STAGE_LABELS[$r['stage']]) ?></td>
-              <td class="px-4 py-2"><?= e($r['full_name']) ?> <span class="text-xs text-ink/40"><?= e($r['std_student_code']) ?></span></td>
+              <td class="px-4 py-2"><?= e($r['full_name']) ?> <span class="text-xs text-ink/60"><?= e($r['std_student_code']) ?></span></td>
               <td class="px-4 py-2"><?= e($r['classroom_label']) ?></td>
               <td class="px-4 py-2 text-ink/60">
                 <?= (int) $r['case_type'] === 1

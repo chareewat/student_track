@@ -20,6 +20,7 @@ foreach ($menu as $item) {
 }
 ?>
 <body class="min-h-screen">
+  <a href="#main" class="skip-link">ข้ามไปเนื้อหาหลัก</a>
   <header class="sticky top-0 z-30 px-3 pt-3 sm:px-4">
     <div class="mx-auto max-w-6xl overflow-hidden rounded-3xl border border-sand/60 bg-white/90 shadow-soft backdrop-blur">
       <div class="h-1 bg-gradient-to-r from-navy via-navy to-accent" aria-hidden="true"></div>
@@ -28,7 +29,7 @@ foreach ($menu as $item) {
           <span class="grid h-9 w-9 place-items-center rounded-xl bg-navy text-accent"><?= trk_icon('cap', 'h-5 w-5') ?></span>
           <span class="text-left leading-tight">
             <span class="block text-sm font-semibold text-navy">ระบบติดตามนักเรียน</span>
-            <span class="block text-[12px] font-medium text-ink/50">ภาคเรียน <?= e(trk_semester_label()) ?></span>
+            <span class="block text-[12px] font-medium text-ink/60">ภาคเรียน <?= e(trk_semester_label()) ?></span>
           </span>
         </a>
         <?php // จอเล็กกว่า lg (1024px): เมนูยุบเป็นปุ่ม hamburger (เปิด/ปิดด้วย assets/js/app.js) ?>
@@ -58,9 +59,9 @@ foreach ($menu as $item) {
       </nav>
     </div>
   </header>
-  <main class="mx-auto max-w-6xl px-3 py-6 sm:px-4">
+  <main id="main" tabindex="-1" class="mx-auto max-w-6xl px-3 py-6 focus:outline-none sm:px-4">
     <?php foreach (trk_take_flashes() as $flash): ?>
-      <div class="<?= $flash['type'] === 'error' ? 'alert-error' : 'alert-success' ?> mb-4" role="status">
+      <div class="<?= $flash['type'] === 'error' ? 'alert-error' : 'alert-success' ?> mb-4" role="<?= $flash['type'] === 'error' ? 'alert' : 'status' ?>">
         <?= trk_icon($flash['type'] === 'error' ? 'alert' : 'check-circle', 'mt-0.5 h-4 w-4') ?>
         <span><?= e($flash['message']) ?></span>
       </div>

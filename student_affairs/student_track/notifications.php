@@ -39,7 +39,7 @@ trk_render_header('แจ้งเตือน', 'notifications');
            class="card group flex items-center gap-3 px-4 py-3 transition hover:-translate-y-px hover:shadow-lift <?= $isUnread ? 'border-l-4 border-l-accent' : '' ?>">
           <span class="flex-1">
             <span class="block text-sm <?= $isUnread ? 'font-semibold text-ink' : 'text-ink/60' ?>"><?= e($n['title']) ?></span>
-            <span class="text-xs text-ink/40">
+            <span class="text-xs text-ink/60">
               <?= e(trk_thai_date($n['created_at'], true)) ?> <?= e(substr($n['created_at'], 11, 5)) ?> น.
               <?php if ($isUnread): ?><span class="chip-orange ml-1">ใหม่</span><?php endif; ?>
             </span>

@@ -17,14 +17,32 @@
  *   .btn-orange เร่งด่วน / งานที่ต้องทำต่อ (สี accent)
  *   .btn-sand   ปุ่มรองที่เป็นกลาง
  * ปุ่มในแถวตารางใช้แบบอ่อน (.btn-soft-*) และขนาดเล็ก (.btn-sm)
+ *
+ * การเข้าถึง (ตรวจตาม ui-ux-pro-max): ตัวอักษรจางสุด text-ink/55 (≥ 4.5:1 บน canvas),
+ * ทุกจุดที่โฟกัสได้มีกรอบโฟกัส, จอสัมผัสปุ่มสูงอย่างน้อย 44px (btn-sm 40px), เคารพ prefers-reduced-motion
  */
 
 @layer base {
   html { -webkit-tap-highlight-color: transparent; }
   body { @apply bg-canvas font-sans text-ink antialiased; }
   h1, h2, h3 { @apply text-navy; }
-  :focus-visible { outline: none; }
+  /* กรอบโฟกัสสำหรับคีย์บอร์ดทุกจุด (ปุ่มและช่องกรอกใช้ ring ของตัวเองแทน) */
+  :focus-visible { @apply rounded-md outline outline-2 outline-offset-2 outline-navy; }
   input[type='checkbox'] { @apply h-4 w-4 cursor-pointer rounded-md border-sand text-navy focus:ring-2 focus:ring-navy/25; }
+  ::placeholder { @apply text-ink/55; }
+
+  /* จอสัมผัส: เป้ากดใหญ่พอสำหรับนิ้ว */
+  @media (pointer: coarse) {
+    .btn { min-height: 44px; }
+    .btn-sm { min-height: 40px; }
+    input[type='checkbox'] { @apply h-5 w-5; }
+  }
+
+  /* ผู้ใช้ที่ตั้งค่าลดการเคลื่อนไหว: ไม่ยกปุ่ม/การ์ด ไม่มี transition */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; scroll-behavior: auto !important; }
+    .btn:hover, .card:hover, a:hover { transform: none !important; }
+  }
 }
 
 @layer components {
@@ -33,7 +51,8 @@
     @apply inline-flex select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-4 py-2
            text-sm font-semibold shadow-btn transition duration-150
            hover:-translate-y-px hover:shadow-lift active:translate-y-0 active:shadow-none
-           focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-50;
+           focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-50
+           aria-busy:cursor-progress aria-busy:opacity-70;
   }
   .btn-sm { @apply rounded-lg px-3 py-1.5 text-xs; }
   .btn-lg { @apply rounded-2xl px-5 py-2.5 text-base; }
@@ -61,7 +80,7 @@
   /* ปุ่มเมนูด้านบน */
   .nav-btn { @apply btn btn-sm bg-white/70 text-navy shadow-none ring-1 ring-sand hover:bg-white hover:shadow-btn; }
   .nav-btn-active { @apply btn btn-sm btn-navy shadow-[inset_0_-3px_0_#EE6200]; }
-  .nav-count { @apply ml-0.5 inline-flex min-w-5 items-center justify-center rounded-full bg-accent px-1.5 text-[12px] font-bold leading-5 text-white; }
+  .nav-count { @apply ml-0.5 inline-flex min-w-5 items-center justify-center rounded-full bg-accent-600 px-1.5 text-[12px] font-bold leading-5 text-white; }
 
   /* ---------------------------------------------------------------- พื้นผิว */
   .card { @apply rounded-2xl border border-sand/60 bg-white shadow-soft; }
@@ -69,12 +88,19 @@
   .card-head { @apply flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-sand/50 px-5 py-3.5; }
   .section-title { @apply text-base font-semibold text-navy; }
   .hint { @apply text-sm text-ink/60; }
-  .muted { @apply text-ink/50; }
+  .muted { @apply text-ink/60; }
+
+  /* ลิงก์ข้ามไปเนื้อหา: ซ่อนจนกว่าจะกด Tab */
+  .skip-link { @apply sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-xl focus:bg-navy focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lift; }
+
+  /* วงหมุนระหว่างส่งฟอร์ม (ใส่ด้วย assets/js/app.js) */
+  .spinner { @apply inline-block h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-current border-r-transparent motion-reduce:animate-none; }
 
   /* ---------------------------------------------------------------- ฟอร์ม */
   .input {
     @apply rounded-xl border border-sand bg-white px-3 py-2 text-sm text-ink placeholder:text-ink/35
-           focus:border-navy/50 focus:outline-none focus:ring-4 focus:ring-navy/10;
+           focus:border-navy/50 focus:outline-none focus:ring-4 focus:ring-navy/15
+           aria-[invalid=true]:border-rose-400 aria-[invalid=true]:ring-rose-100;
   }
   .label { @apply mb-1 block text-sm font-medium text-ink/80; }
   .field-error { @apply mt-1 text-sm text-rose-600; }

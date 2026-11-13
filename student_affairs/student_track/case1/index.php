@@ -94,7 +94,7 @@ trk_render_header('นักเรียนขาดรายวิชา', 'cas
                   </td>
                   <td class="px-2 py-2">
                     <div><?= e($c['full_name']) ?></div>
-                    <div class="text-xs text-ink/40"><?= e($c['std_student_code']) ?> · เลขที่ <?= (int) $c['std_student_number'] ?></div>
+                    <div class="text-xs text-ink/60"><?= e($c['std_student_code']) ?> · เลขที่ <?= (int) $c['std_student_number'] ?></div>
                   </td>
                   <td class="px-2 py-2"><?= e(trk_classroom_label($c)) ?></td>
                   <td class="px-2 py-2 text-right"><?= (int) $c['absent'] ?></td>
@@ -150,7 +150,7 @@ trk_render_header('นักเรียนขาดรายวิชา', 'cas
         </thead>
         <tbody>
           <?php foreach ($issuedDocs as $d): ?>
-            <tr class="<?= $d['status'] === 'cancelled' ? 'text-ink/40' : '' ?>">
+            <tr class="<?= $d['status'] === 'cancelled' ? 'text-ink/60' : '' ?>">
               <td class="px-4 py-2"><?= e(trk_thai_date($d['issued_at'], true)) ?></td>
               <td class="px-4 py-2"><span class="font-mono text-xs"><?= e($d['vic_subject_code']) ?></span> <?= e($d['vic_subject_name']) ?></td>
               <td class="px-4 py-2"><?= e(trk_classroom_label($d)) ?></td>

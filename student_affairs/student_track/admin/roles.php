@@ -124,7 +124,7 @@ trk_render_header('จัดการสิทธิ์', 'roles');
               class="<?= $prefilled ? 'bg-amber-50' : '' ?>">
             <td class="px-4 py-2">
               <div><?= e($m['full_name']) ?></div>
-              <div class="text-xs text-ink/40"><?= e($m['psn_mem_username']) ?></div>
+              <div class="text-xs text-ink/60"><?= e($m['psn_mem_username']) ?></div>
             </td>
             <td class="px-4 py-2 text-ink/55"><?= e($m['admin_type_name'] ?: '-') ?></td>
             <?php foreach (array_keys(TRK_ROLES) as $role): ?>
