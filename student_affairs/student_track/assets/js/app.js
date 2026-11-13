@@ -15,3 +15,26 @@ document.addEventListener('change', function (event) {
   var row = event.target.closest('tr[data-dirty-track]');
   if (row) row.classList.add('bg-amber-50');
 });
+
+// เมนู hamburger บนจอเล็ก: <button data-nav-toggle="#main-nav"> เปิด/ปิดเมนูหลัก
+(function () {
+  var button = document.querySelector('[data-nav-toggle]');
+  if (!button) return;
+  var nav = document.querySelector(button.getAttribute('data-nav-toggle'));
+  if (!nav) return;
+  function setOpen(open) {
+    nav.classList.toggle('hidden', !open);
+    button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    button.querySelector('[data-nav-icon="open"]').hidden = open;
+    button.querySelector('[data-nav-icon="close"]').hidden = !open;
+  }
+  button.addEventListener('click', function () {
+    setOpen(button.getAttribute('aria-expanded') !== 'true');
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      button.focus();
+    }
+  });
+})();

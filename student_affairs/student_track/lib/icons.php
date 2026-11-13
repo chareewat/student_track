@@ -22,6 +22,8 @@ const TRK_ICONS = [
     'activity' => '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
     'arrow-left' => '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
     'chevron-right' => '<path d="m9 18 6-6-6-6"/>',
+    'menu' => '<line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>',
+    'x' => '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
     'grid' => '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
     'cap' => '<path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>',
     // การกระทำ

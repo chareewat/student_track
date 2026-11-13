@@ -12,6 +12,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= e(trk_url('assets/css/app.css')) ?>?v=<?= e((string) @filemtime(TRK_ROOT . '/assets/css/app.css')) ?>">
 </head>
+<?php
+$menu = trk_menu();
+$menuCount = 0;
+foreach ($menu as $item) {
+    $menuCount += (int) ($item['count'] ?? 0);
+}
+?>
 <body class="min-h-screen">
   <header class="sticky top-0 z-30 px-3 pt-3 sm:px-4">
     <div class="mx-auto max-w-6xl overflow-hidden rounded-3xl border border-sand/60 bg-white/90 shadow-soft backdrop-blur">
@@ -24,16 +31,25 @@
             <span class="block text-[12px] font-medium text-ink/50">ภาคเรียน <?= e(trk_semester_label()) ?></span>
           </span>
         </a>
-        <div class="ml-auto flex flex-wrap items-center justify-end gap-2">
+        <?php // จอเล็กกว่า lg (1024px): เมนูยุบเป็นปุ่ม hamburger (เปิด/ปิดด้วย assets/js/app.js) ?>
+        <button type="button" class="btn btn-white btn-sm ml-auto lg:hidden" data-nav-toggle="#main-nav"
+                aria-controls="main-nav" aria-expanded="false">
+          <span data-nav-icon="open"><?= trk_icon('menu') ?></span>
+          <span data-nav-icon="close" hidden><?= trk_icon('x') ?></span>
+          เมนู
+          <?php if ($menuCount > 0): ?><span class="nav-count"><?= $menuCount > 99 ? '99+' : $menuCount ?></span><?php endif; ?>
+        </button>
+        <div class="flex w-full flex-wrap items-center gap-2 lg:ml-auto lg:w-auto lg:justify-end">
           <span class="hidden text-sm font-medium text-ink/80 sm:inline"><?= e($user['name']) ?></span>
           <span class="flex flex-wrap gap-1"><?= trk_role_badges($user['roles']) ?></span>
           <a href="<?= e(trk_legacy_url('lobby.php')) ?>" class="btn btn-sand btn-sm"><?= trk_icon('grid') ?>หน้ารวมระบบ</a>
         </div>
       </div>
-      <nav class="flex gap-2 overflow-x-auto border-t border-sand/50 px-4 py-2.5" aria-label="เมนูหลัก">
-        <?php foreach (trk_menu() as $item): ?>
+      <nav id="main-nav" class="flex hidden max-h-[70vh] flex-col gap-1.5 overflow-y-auto border-t border-sand/50 px-4 py-2.5
+                                lg:flex lg:max-h-none lg:flex-row lg:flex-wrap lg:gap-2 lg:overflow-visible" aria-label="เมนูหลัก">
+        <?php foreach ($menu as $item): ?>
           <?php $isActive = $item['key'] === $active; $count = (int) ($item['count'] ?? 0); ?>
-          <a href="<?= e($item['url']) ?>" class="<?= $isActive ? 'nav-btn-active' : 'nav-btn' ?>" <?= $isActive ? 'aria-current="page"' : '' ?>>
+          <a href="<?= e($item['url']) ?>" class="<?= $isActive ? 'nav-btn-active' : 'nav-btn' ?> justify-start lg:justify-center" <?= $isActive ? 'aria-current="page"' : '' ?>>
             <?= trk_icon($item['icon'] ?? 'chevron-right') ?>
             <?= e($item['label']) ?>
             <?php if ($count > 0): ?><span class="nav-count"><?= $count > 99 ? '99+' : $count ?></span><?php endif; ?>
