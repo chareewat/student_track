@@ -1,13 +1,15 @@
 <?php
 /**
  * แบบ บค.14 หนังสือเตือนให้ผู้ปกครองส่งนักเรียนเข้าเรียน (นักเรียนการศึกษาภาคบังคับ ม.1–3)
- * จำนวนวันขาดในเดือนดึงจากการเช็คชื่อรายวัน ณ วันที่ออกเอกสาร
+ * ออกคู่กับ ขร.2: แสดงรายวิชาที่ขาดชุดเดียวกับ ขร.2 ส่วนจำนวนวันขาดในเดือนดึงจากการเช็คชื่อรายวัน ณ วันที่ออกเอกสาร
+ * (ตัดช่อง "เกินกว่า 7 วัน ในรอบ 1 เดือน" ของแบบเดิมออก ตามที่โรงเรียนกำหนด)
  * @var array $doc
  * @var string $school, $amphur, $province
  */
 $d = $doc['data'];
 $s = $d['student'];
 $abs = $d['month_absence'];
+$subjects = trk_bk14_subjects($d);
 $formCode = 'แบบ บค.๑๔';
 $docNoPrefix = $d['doc_no_prefix'] . 'ว';
 $fullNo = $docNoPrefix . ($doc['doc_no'] ?? '');
@@ -21,13 +23,20 @@ $fullNo = $docNoPrefix . ($doc['doc_no'] ?? '');
 
 <p class="indent">
   ด้วย <?= e($s['name']) ?> นักเรียนชั้น ม.<?= e($s['level'] . '/' . $s['room']) ?> เลขประจำตัว <?= e($s['code']) ?>
-  ซึ่งเป็นนักเรียนในความปกครองของท่าน หยุดเรียนมาแล้วในเดือนนี้ รวม <?= (int) $abs['days'] ?> วัน
+  ซึ่งเป็นนักเรียนในความปกครองของท่าน
+  <?= (int) $abs['days'] > 0 ? 'หยุดเรียนมาแล้วในเดือนนี้ รวม ' . (int) $abs['days'] . ' วัน' : 'มีพฤติกรรมการขาดเรียน ดังนี้' ?>
 </p>
 <div style="margin-left: 2.5cm;">
   <?= trk_pdf_checkbox((int) $abs['max_consecutive'] >= (int) ($d['consecutive_days'] ?? 5)) ?> เกิน 5 วันติดต่อกัน
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <?= trk_pdf_checkbox((int) $abs['days'] > 7) ?> เกินกว่า 7 วัน ในรอบ 1 เดือน
 </div>
+<?php if ($subjects): ?>
+  <div style="margin-left: 2.5cm;">
+    <?= trk_pdf_checkbox(true) ?> ขาดเรียนรายวิชา
+    <?php foreach ($subjects as $i => $subj): ?>
+      <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?= e(trk_absent_subject_line($subj)) ?>
+    <?php endforeach; ?>
+  </div>
+<?php endif; ?>
 <p class="indent">
   โดยไม่ได้รับอนุญาตและไม่แจ้งสาเหตุให้โรงเรียนทราบ ซึ่งก่อให้เกิดผลเสียต่อการเรียนของนักเรียนเป็นอย่างยิ่ง
   โรงเรียนจึงขอเตือนให้ท่านส่งนักเรียนเข้าเรียนตามปกติโดยด่วน หากฝ่าฝืนโดยปราศจากเหตุผลอันสมควร

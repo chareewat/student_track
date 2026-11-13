@@ -308,6 +308,7 @@ function trk_issue_kr2(array $rounds, int $memberId, string $docNo, string $bk14
         if (trk_requires_bk14($round)) {
             $bk14Data = $common + [
                 'round_no' => $seq,
+                'subjects' => $subjects,
                 'month_absence' => trk_month_absence((int) $round['std_student_id'], $common['issued_date']),
                 'consecutive_days' => (int) trk_setting('consecutive_absent_days'),
                 'kr2_document_id' => $kr2Id,

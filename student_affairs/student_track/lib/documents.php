@@ -196,3 +196,28 @@ function trk_kr6_case1_text(array $o): string
         return $label . ' สะสม ' . (int) $s['absent_hours'] . ' ชั่วโมง (รายงานตาม ขร.1 ครั้งที่ ' . (int) $s['round_no'] . ')';
     }, $subjects));
 }
+
+/**
+ * รายวิชาที่ขาดใน บค.14 (ชุดเดียวกับ ขร.2 ที่ออกคู่กัน)
+ * บค.14 ที่ออกก่อนเก็บรายวิชาไว้ในตัวเอง จะอ่านจาก ขร.2 ที่อ้างถึงแทน
+ */
+function trk_bk14_subjects(array $d): array
+{
+    if (!empty($d['subjects'])) {
+        return $d['subjects'];
+    }
+    if (!empty($d['kr2_document_id'])) {
+        $kr2 = trk_document_get((int) $d['kr2_document_id']);
+        if ($kr2 && !empty($kr2['data']['subjects'])) {
+            return $kr2['data']['subjects'];
+        }
+    }
+    return [];
+}
+
+/** ข้อความรายวิชาที่ขาด 1 บรรทัด แบบเดียวกับ ขร.2 */
+function trk_absent_subject_line(array $subj): string
+{
+    return 'รหัสวิชา ' . $subj['code'] . ' รายวิชา ' . $subj['name'] . ' จำนวน ' . (int) $subj['absent_hours'] . ' คาบ'
+        . (isset($subj['round_no']) ? ' (ขร.1 ครั้งที่ ' . (int) $subj['round_no'] . ')' : '');
+}
