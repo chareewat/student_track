@@ -52,9 +52,12 @@ function trk_document_can_view(array $doc, int $memberId): bool
         || trk_is_advisor_of($memberId, (int) $doc['std_classroom_id'], (int) $doc['semester_id']);
 }
 
+/** เอกสารที่ครูที่ปรึกษาของห้องออก ครูที่ปรึกษาทุกคนของห้องยกเลิกแทนกันได้ (ขร.1 เป็นของครูประจำวิชา) */
+const TRK_ADVISOR_DOC_TYPES = ['KR2', 'BK14', 'KR3', 'KR5', 'KR6'];
+
 /**
- * ยกเลิกได้เมื่อยังไม่มีขั้นตอนถัดไป: รอบติดตามของเอกสารนี้ต้องไม่มีเอกสารอื่นที่ยัง active
- * ผู้ออกยกเลิกเองได้เฉพาะตอนที่ยังไม่มีขั้นตอนถัดไป ส่วน admin ยกเลิกได้ตลอด
+ * ใครยกเลิกได้: ผู้ออก, ครูที่ปรึกษาของห้อง (เฉพาะเอกสารของครูที่ปรึกษา) หรือ admin
+ * ยกเลิกเองได้เฉพาะตอนที่ยังไม่มีขั้นตอนถัดไป ส่วน admin ยกเลิกได้ตลอด และขั้นถัดไปจะถูกยกเลิกตาม
  * คืนข้อความเหตุผลที่ยกเลิกไม่ได้ หรือ null ถ้ายกเลิกได้
  */
 function trk_document_cancel_block_reason(array $doc, int $memberId): ?string
@@ -63,8 +66,12 @@ function trk_document_cancel_block_reason(array $doc, int $memberId): ?string
         return 'เอกสารนี้ถูกยกเลิกแล้ว';
     }
     $isAdmin = trk_has_role('admin');
-    if ((int) $doc['issued_by'] !== $memberId && !$isAdmin) {
-        return 'เฉพาะผู้ออกเอกสารหรือ Admin เท่านั้นที่ยกเลิกได้';
+    $isRoomAdvisor = in_array($doc['doc_type'], TRK_ADVISOR_DOC_TYPES, true)
+        && trk_is_advisor_of($memberId, (int) $doc['std_classroom_id'], (int) $doc['semester_id']);
+    if ((int) $doc['issued_by'] !== $memberId && !$isRoomAdvisor && !$isAdmin) {
+        return $doc['doc_type'] === 'KR1'
+            ? 'เฉพาะครูประจำวิชาที่ออกเอกสารหรือ Admin เท่านั้นที่ยกเลิกได้'
+            : 'เฉพาะครูที่ปรึกษาของห้องหรือ Admin เท่านั้นที่ยกเลิกได้';
     }
     if (!$isAdmin && trk_document_has_next_step((int) $doc['id'])) {
         return 'มีการดำเนินการขั้นถัดไปแล้ว ต้องให้ Admin เป็นผู้ยกเลิก';
@@ -73,63 +80,111 @@ function trk_document_cancel_block_reason(array $doc, int $memberId): ?string
 }
 
 /**
- * มีเอกสารขั้นถัดไป (ออกหลังเอกสารนี้ ในรอบเดียวกัน และยัง active) หรือไม่
+ * เอกสารขั้นถัดไปที่ยัง active ทั้งหมด (ไล่ต่อเป็นทอด) เรียงจากใหม่ไปเก่า
+ *  - เอกสารที่ออกทีหลังในรอบติดตามเดียวกัน (ขร.1 → ขร.2/บค.14 → ขร.3, ขร.5 → ขร.3)
+ *  - ขร.3 → ขร.6 ของนักเรียนคนเดียวกันในภาคเรียนที่ออกทีหลัง (ขร.6 นับจากผลติดตาม)
+ * คืน [['id' => .., 'doc_type' => .., 'round_no' => ..], ...]
+ */
+function trk_document_dependents(int $docId): array
+{
+    $seen = [$docId => true];
+    $queue = [$docId];
+    $result = [];
+    while ($queue) {
+        $id = array_shift($queue);
+        $doc = trk_db_one('SELECT id, doc_type, semester_id, data FROM trk_documents WHERE id = ?', [$id]);
+        $next = trk_db_all(
+            "SELECT DISTINCT d.id, d.doc_type, d.round_no FROM trk_document_rounds dr
+             JOIN trk_document_rounds other ON other.round_id = dr.round_id AND other.document_id > dr.document_id
+             JOIN trk_documents d ON d.id = other.document_id AND d.status = 'active'
+             WHERE dr.document_id = ?",
+            [$id]
+        );
+        if ($doc && $doc['doc_type'] === 'KR3') {
+            $data = json_decode($doc['data'], true);
+            $next = array_merge($next, trk_db_all(
+                "SELECT id, doc_type, round_no FROM trk_documents
+                 WHERE doc_type = 'KR6' AND status = 'active' AND semester_id = ? AND id > ?
+                   AND JSON_EXTRACT(data, '$.student.id') = ?",
+                [(int) $doc['semester_id'], $id, (int) ($data['student']['id'] ?? 0)]
+            ));
+        }
+        foreach ($next as $n) {
+            if (!isset($seen[(int) $n['id']])) {
+                $seen[(int) $n['id']] = true;
+                $queue[] = (int) $n['id'];
+                $result[] = $n;
+            }
+        }
+    }
+    usort($result, function ($a, $b) {
+        return (int) $b['id'] <=> (int) $a['id'];
+    });
+    return $result;
+}
+
+/**
+ * มีเอกสารขั้นถัดไปที่ยัง active หรือไม่
  * บค.14 เป็นเอกสารคู่ของ ขร.2 จึงไม่นับเป็นขั้นถัดไป (ยกเลิก ขร.2 แล้ว บค.14 ถูกยกเลิกตาม)
  */
 function trk_document_has_next_step(int $docId): bool
 {
-    return (bool) trk_db_value(
-        "SELECT 1 FROM trk_document_rounds dr
-         JOIN trk_document_rounds other ON other.round_id = dr.round_id AND other.document_id > dr.document_id
-         JOIN trk_documents d ON d.id = other.document_id AND d.status = 'active' AND d.doc_type <> 'BK14'
-         WHERE dr.document_id = ? LIMIT 1",
-        [$docId]
-    );
+    foreach (trk_document_dependents($docId) as $d) {
+        if ($d['doc_type'] !== 'BK14') {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
- * ยกเลิกเอกสาร (ไม่ลบจริง) รอบติดตามที่ไม่เหลือเอกสาร active ผูกอยู่จะถูกยกเลิกด้วย
- * เพื่อให้นักเรียนกลับมาอยู่ในรายชื่อที่ต้องออกเอกสารอีกครั้ง
+ * ยกเลิกเอกสาร (ไม่ลบจริง) พร้อมเอกสารขั้นถัดไปทั้งหมด (ยกเลิกจากใบใหม่ไปใบเก่า)
+ * รอบติดตามที่ไม่เหลือเอกสาร active ผูกอยู่จะถูกยกเลิกด้วย เพื่อให้นักเรียนกลับมาอยู่ในรายชื่อที่ต้องออกเอกสารอีกครั้ง
+ * คืนรายการเอกสารที่ถูกยกเลิกตาม (ไม่รวมใบหลัก)
  */
-function trk_document_cancel(int $docId, int $memberId, string $reason): void
+function trk_document_cancel(int $docId, int $memberId, string $reason): array
 {
-    trk_db_transaction(function () use ($docId, $memberId, $reason) {
-        $now = date('Y-m-d H:i:s');
-        $doc = trk_db_one('SELECT id, doc_type FROM trk_documents WHERE id = ?', [$docId]);
-        trk_db_exec(
-            "UPDATE trk_documents SET status = 'cancelled', cancelled_by = ?, cancelled_at = ?, cancel_reason = ?
-             WHERE id = ? AND status = 'active'",
-            [$memberId, $now, $reason, $docId]
-        );
+    return trk_db_transaction(function () use ($docId, $memberId, $reason) {
+        $main = trk_db_one('SELECT id, doc_type, round_no FROM trk_documents WHERE id = ?', [$docId]);
+        $dependents = trk_document_dependents($docId);
+        foreach ($dependents as $dep) {
+            trk_document_cancel_one((int) $dep['id'], $memberId,
+                'ยกเลิกตาม ' . trk_document_title($main) . ' #' . $docId . ': ' . $reason);
+        }
+        trk_document_cancel_one($docId, $memberId, $reason);
+        return $dependents;
+    });
+}
 
-        if ($doc['doc_type'] === 'KR2') {
-            // บค.14 ที่ออกคู่กับ ขร.2 นี้ ถูกยกเลิกตาม
-            trk_db_exec(
-                "UPDATE trk_documents SET status = 'cancelled', cancelled_by = ?, cancelled_at = ?, cancel_reason = ?
-                 WHERE doc_type = 'BK14' AND status = 'active'
-                   AND JSON_UNQUOTE(JSON_EXTRACT(data, '$.kr2_document_id')) = ?",
-                [$memberId, $now, 'ยกเลิกตาม ขร.2: ' . $reason, (string) $docId]
-            );
-        }
-        if ($doc['doc_type'] === 'KR3') {
-            // ผลติดตามของ ขร.3 นี้ไม่นับ และเปิดรอบกลับมาให้บันทึกใหม่
-            trk_db_exec("UPDATE trk_followups SET status = 'cancelled' WHERE document_id = ?", [$docId]);
-            trk_db_exec(
-                "UPDATE trk_rounds SET status = 'open', closed_at = NULL
-                 WHERE status = 'closed' AND id IN (SELECT round_id FROM trk_document_rounds WHERE document_id = ?)",
-                [$docId]
-            );
-        }
+/** ยกเลิกเอกสารใบเดียวและปรับผลติดตาม/รอบติดตามที่ผูกอยู่ (เรียกจาก trk_document_cancel เท่านั้น) */
+function trk_document_cancel_one(int $docId, int $memberId, string $reason): void
+{
+    $now = date('Y-m-d H:i:s');
+    $doc = trk_db_one('SELECT id, doc_type FROM trk_documents WHERE id = ?', [$docId]);
+    trk_db_exec(
+        "UPDATE trk_documents SET status = 'cancelled', cancelled_by = ?, cancelled_at = ?, cancel_reason = ?
+         WHERE id = ? AND status = 'active'",
+        [$memberId, $now, mb_substr($reason, 0, 255), $docId]
+    );
+
+    if ($doc['doc_type'] === 'KR3') {
+        // ผลติดตามของ ขร.3 นี้ไม่นับ และเปิดรอบกลับมาให้บันทึกใหม่
+        trk_db_exec("UPDATE trk_followups SET status = 'cancelled' WHERE document_id = ?", [$docId]);
         trk_db_exec(
-            "UPDATE trk_rounds r SET r.status = 'cancelled'
-             WHERE r.id IN (SELECT round_id FROM trk_document_rounds WHERE document_id = ?)
-               AND NOT EXISTS (
-                   SELECT 1 FROM trk_document_rounds dr JOIN trk_documents d ON d.id = dr.document_id
-                   WHERE dr.round_id = r.id AND d.status = 'active'
-               )",
+            "UPDATE trk_rounds SET status = 'open', closed_at = NULL
+             WHERE status = 'closed' AND id IN (SELECT round_id FROM trk_document_rounds WHERE document_id = ?)",
             [$docId]
         );
-    });
+    }
+    trk_db_exec(
+        "UPDATE trk_rounds r SET r.status = 'cancelled'
+         WHERE r.id IN (SELECT round_id FROM trk_document_rounds WHERE document_id = ?)
+           AND NOT EXISTS (
+               SELECT 1 FROM trk_document_rounds dr JOIN trk_documents d ON d.id = dr.document_id
+               WHERE dr.round_id = r.id AND d.status = 'active'
+           )",
+        [$docId]
+    );
 }
 
 /** ชื่อเอกสารสำหรับแสดงผล เช่น "ขร.1 ครั้งที่ 2" */

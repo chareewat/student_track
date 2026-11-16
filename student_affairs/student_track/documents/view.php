@@ -13,6 +13,8 @@ trk_mark_document_read($user['id'], (int) $doc['id']);
 $d = $doc['data'];
 $cancelBlock = trk_document_cancel_block_reason($doc, $user['id']);
 $canCancel = $cancelBlock === null;
+// เอกสารขั้นถัดไปที่จะถูกยกเลิกตาม (มีได้เฉพาะตอนที่ admin ยกเลิก หรือ บค.14 ของ ขร.2)
+$dependents = $canCancel ? trk_document_dependents((int) $doc['id']) : [];
 $canceller = $doc['cancelled_by'] ? trk_member_profile((int) $doc['cancelled_by'])['name'] : '';
 $isKr1 = $doc['doc_type'] === 'KR1';
 
@@ -166,6 +168,15 @@ trk_render_header(trk_document_title($doc));
             เอกสารนี้จะถูกทำเครื่องหมายว่ายกเลิก
           <?php endif; ?>
         </p>
+        <?php if ($dependents): ?>
+          <div class="alert-warn" role="note">
+            <?= trk_icon('alert', 'mt-0.5 h-4 w-4') ?>
+            <span>เอกสารขั้นถัดไปจะถูกยกเลิกตามด้วย:
+              <?= e(implode(', ', array_map(function ($x) {
+                  return trk_document_title($x) . ' #' . $x['id'];
+              }, $dependents))) ?></span>
+          </div>
+        <?php endif; ?>
         <input name="reason" required maxlength="255" placeholder="เหตุผลที่ยกเลิก (จำเป็น)"
                class="input w-full">
         <button class="btn btn-red"><?= trk_icon('x-circle') ?>ยืนยันยกเลิก</button>
