@@ -147,7 +147,7 @@ trk_render_header(trk_document_title($doc));
 <?php endif; ?>
 
 <?php if ($doc['status'] === 'active'): ?>
-  <details class="mt-8 card p-4">
+  <details id="cancel" class="mt-8 card p-4 scroll-mt-40">
     <summary class="btn btn-soft-red btn-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden"><?= trk_icon('x-circle') ?>ยกเลิกเอกสารนี้</summary>
     <?php if ($canCancel): ?>
       <form method="post" action="<?= e(trk_url('documents/cancel.php')) ?>" class="mt-3 space-y-3">

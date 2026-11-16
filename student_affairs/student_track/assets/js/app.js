@@ -66,3 +66,14 @@ window.addEventListener('pageshow', function () {
     if (spinner) spinner.remove();
   });
 });
+
+// ลิงก์ "ยกเลิก" (#cancel): เปิดกล่องยกเลิกในหน้าเอกสารให้ทันทีและโฟกัสช่องเหตุผล
+(function () {
+  if (location.hash !== '#cancel') return;
+  var box = document.getElementById('cancel');
+  if (!box || box.tagName !== 'DETAILS') return;
+  box.open = true;
+  var reason = box.querySelector('input[name="reason"]');
+  if (reason) reason.focus({ preventScroll: true });
+  box.scrollIntoView({ block: 'center' });
+})();

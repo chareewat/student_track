@@ -77,6 +77,9 @@ trk_render_header('รอบติดตาม', 'advisor');
           <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-blue btn-sm"><?= trk_icon('eye') ?>ดู</a>
           <a href="<?= e(trk_url('documents/print.php?id=' . (int) $d['id'])) ?>" target="_blank" class="btn btn-soft-purple btn-sm"><?= trk_icon('printer') ?>PDF</a>
           <a href="<?= e(trk_url('documents/docx.php?id=' . (int) $d['id'])) ?>" class="btn btn-soft-purple btn-sm"><?= trk_icon('file-text') ?>Word</a>
+          <?php if ($d['status'] === 'active'): ?>
+            <a href="<?= e(trk_url('documents/view.php?id=' . (int) $d['id'] . '#cancel')) ?>" class="btn btn-soft-red btn-sm"><?= trk_icon('x-circle') ?>ยกเลิก</a>
+          <?php endif; ?>
         </span>
       </li>
     <?php endforeach; ?>
