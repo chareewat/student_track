@@ -140,6 +140,72 @@ if (is_file(TRK_ROOT . '/vendor/autoload.php') && class_exists('ZipArchive')) {
 }
 $add('PDF', 'สร้าง Word (.docx) ด้วย PhpWord', $docxOk, $docxDetail);
 
+// ---------------------------------------------------------------- วัดเวลาหน้าภาพรวม (กดปุ่มเท่านั้น เพราะรัน query หนัก)
+$profile = null;
+if (($_GET['profile'] ?? '') === 'dashboard') {
+    require_once TRK_ROOT . '/lib/dashboard.php';
+    @set_time_limit(120);
+    $GLOBALS['trk_db_profile'] = true;
+    $GLOBALS['trk_db_stats'] = ['count' => 0, 'ms' => 0.0, 'slowest' => []];
+    $semesterId = trk_semester_id();
+    $steps = [];
+    $measure = function (string $label, callable $fn) use (&$steps) {
+        $before = $GLOBALS['trk_db_stats'];
+        $t = microtime(true);
+        $note = $fn();
+        $after = $GLOBALS['trk_db_stats'];
+        $steps[] = [
+            'label' => $label,
+            'ms' => (microtime(true) - $t) * 1000,
+            'db_ms' => $after['ms'] - $before['ms'],
+            'queries' => $after['count'] - $before['count'],
+            'note' => (string) $note,
+        ];
+    };
+    $rooms = [];
+    $measure('รายชื่อห้อง + ครูที่ปรึกษา', function () use (&$rooms, $semesterId) {
+        $rooms = trk_dashboard_classrooms($semesterId);
+        return count($rooms) . ' ห้อง';
+    });
+    $measure('ตัวเลข "รอ ขร.1" (นักเรียน × วิชาที่ถึงเกณฑ์)', function () use ($semesterId) {
+        return count(trk_dashboard_case1_waiting_rows($semesterId)) . ' รายการ';
+    });
+    $measure('ตัวเลข "รอ ขร.5" (ไล่ทีละห้อง)', function () use ($rooms, $semesterId) {
+        $n = 0;
+        foreach ($rooms as $room) {
+            foreach (trk_case2_candidates((int) $room['std_classroom_id'], $semesterId) as $c) {
+                $n += $c['eligible'] ? 1 : 0;
+            }
+        }
+        return $n . ' คน';
+    });
+    $measure('ตารางรายห้อง (รอบติดตามทุกห้อง)', function () use ($rooms, $semesterId) {
+        return count(trk_rounds_for_classrooms(array_column($rooms, 'std_classroom_id'), $semesterId)) . ' รอบ';
+    });
+    $measure('งานค้างเกินกำหนด', function () use ($semesterId) {
+        return count(trk_dashboard_overdue($semesterId)) . ' รายการ';
+    });
+    $measure('เมนูด้านบน (ทุกหน้า)', function () {
+        return count(trk_menu()) . ' เมนู';
+    });
+    $slowest = $GLOBALS['trk_db_stats']['slowest'];
+    uasort($slowest, function ($a, $b) {
+        return $b['ms'] <=> $a['ms'];
+    });
+    $volume = [];
+    foreach ([
+        'คาบที่เช็คชื่อรายวิชา (ภาคเรียนนี้)' => ['SELECT COUNT(*) FROM vic_attendance_teach WHERE std_semester_id = ?', [$semesterId]],
+        'แถวเช็คชื่อรายวิชา (ภาคเรียนนี้)' => ['SELECT COUNT(*) FROM vic_attendance_subject a JOIN vic_attendance_teach t ON t.vic_att_teach_id = a.vic_att_teach_id WHERE t.std_semester_id = ?', [$semesterId]],
+        'แถวเช็คชื่อรายวัน (ภาคเรียนนี้)' => ['SELECT COUNT(*) FROM sch_attendance WHERE std_semester_id = ?', [$semesterId]],
+        'นักเรียนที่กำลังเรียน' => ['SELECT COUNT(*) FROM std_student WHERE std_status_id = 1', []],
+        'รอบติดตาม (ภาคเรียนนี้)' => ['SELECT COUNT(*) FROM trk_rounds WHERE semester_id = ?', [$semesterId]],
+    ] as $label => [$sql, $params]) {
+        $volume[$label] = (int) trk_db_value($sql, $params);
+    }
+    $GLOBALS['trk_db_profile'] = false;
+    $profile = ['steps' => $steps, 'slowest' => array_slice($slowest, 0, 8, true), 'volume' => $volume];
+}
+
 $summary = ['ok' => 0, 'warn' => 0, 'fail' => 0];
 foreach ($checks as $items) {
     foreach ($items as $c) {
@@ -159,6 +225,64 @@ trk_render_header('ตรวจสอบระบบ', 'system');
   ผ่าน <?= $summary['ok'] ?> · ควรแก้ <?= $summary['warn'] ?> · ไม่ผ่าน <?= $summary['fail'] ?>
   <?php if ($summary['fail'] === 0): ?> — <span class="chip-green">พร้อมใช้งาน</span><?php endif; ?>
 </p>
+
+<section class="mt-6 card p-4">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h2 class="text-base font-semibold flex items-center gap-2"><?= trk_icon('clock', 'h-[18px] w-[18px] text-navy/70') ?>วัดเวลาหน้าภาพรวม</h2>
+      <p class="mt-0.5 text-xs text-ink/60">คำนวณทุกส่วนของหน้าภาพรวมแยกกันแล้วจับเวลา ใช้เวลาเท่ากับการเปิดหน้าภาพรวม 1 ครั้ง ไม่แก้ข้อมูลใด ๆ</p>
+    </div>
+    <a href="<?= e(trk_url('admin/system.php?profile=dashboard#profile')) ?>" class="btn btn-blue btn-sm"><?= trk_icon('activity') ?>เริ่มวัด</a>
+  </div>
+  <?php if ($profile): ?>
+    <?php $totalMs = array_sum(array_column($profile['steps'], 'ms')); ?>
+    <div id="profile" class="mt-4 scroll-mt-40">
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>ส่วนของหน้า</th><th class="text-right">เวลา</th><th class="text-right">ในฐานข้อมูล</th><th class="text-right">query</th><th>ผลลัพธ์</th></tr></thead>
+          <tbody>
+            <?php foreach ($profile['steps'] as $st): ?>
+              <tr>
+                <td><?= e($st['label']) ?></td>
+                <td class="text-right tabular-nums font-medium"><?= number_format($st['ms'] / 1000, 2) ?> วิ</td>
+                <td class="text-right tabular-nums text-ink/60"><?= number_format($st['db_ms'] / 1000, 2) ?> วิ</td>
+                <td class="text-right tabular-nums text-ink/60"><?= number_format($st['queries']) ?></td>
+                <td class="text-ink/60"><?= e($st['note']) ?></td>
+              </tr>
+            <?php endforeach; ?>
+            <tr class="font-semibold"><td>รวม</td><td class="text-right tabular-nums"><?= number_format($totalMs / 1000, 2) ?> วิ</td><td colspan="3"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="mt-4 text-sm font-semibold">query ที่ใช้เวลารวมมากที่สุด</h3>
+      <div class="mt-2 table-wrap">
+        <table class="table">
+          <thead><tr><th class="text-right">เวลารวม</th><th class="text-right">ครั้ง</th><th class="text-right">นานสุด/ครั้ง</th><th class="text-right">แถว</th><th>SQL (ย่อ)</th></tr></thead>
+          <tbody>
+            <?php foreach ($profile['slowest'] as $sql => $q): ?>
+              <tr>
+                <td class="text-right tabular-nums font-medium"><?= number_format($q['ms'] / 1000, 2) ?> วิ</td>
+                <td class="text-right tabular-nums"><?= number_format($q['calls']) ?></td>
+                <td class="text-right tabular-nums text-ink/60"><?= number_format($q['max_ms'] / 1000, 3) ?> วิ</td>
+                <td class="text-right tabular-nums text-ink/60"><?= number_format($q['rows']) ?></td>
+                <td class="font-mono text-xs text-ink/70"><?= e(mb_substr($sql, 0, 160)) ?>…</td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="mt-4 text-sm font-semibold">ปริมาณข้อมูล</h3>
+      <dl class="mt-2 grid gap-x-6 gap-y-1 text-sm sm:grid-cols-[18rem_1fr]">
+        <?php foreach ($profile['volume'] as $label => $n): ?>
+          <dt class="text-ink/60"><?= e($label) ?></dt><dd class="tabular-nums"><?= number_format($n) ?></dd>
+        <?php endforeach; ?>
+      </dl>
+      <p class="mt-3 text-xs text-ink/60">ถ่ายภาพหน้าจอส่วนนี้ส่งให้ผู้พัฒนา (ไม่มีข้อมูลส่วนตัวของนักเรียน)</p>
+    </div>
+  <?php endif; ?>
+</section>
 
 <?php foreach ($checks as $group => $items): ?>
   <section class="mt-6">

@@ -29,15 +29,43 @@ function trk_db_stmt(string $sql, array $params): mysqli_stmt
     return $stmt;
 }
 
+/**
+ * สถิติ query ของ request นี้ (จำนวนและเวลารวม) ใช้ในหน้าตรวจสอบระบบ
+ * เก็บรายการ query ที่ช้าที่สุดเฉพาะเมื่อ $GLOBALS['trk_db_profile'] = true
+ */
+function trk_db_record(string $sql, float $started, int $rows): void
+{
+    $ms = (microtime(true) - $started) * 1000;
+    $stats = &$GLOBALS['trk_db_stats'];
+    if (!is_array($stats)) {
+        $stats = ['count' => 0, 'ms' => 0.0, 'slowest' => []];
+    }
+    $stats['count']++;
+    $stats['ms'] += $ms;
+    if (!empty($GLOBALS['trk_db_profile'])) {
+        $key = preg_replace('/\s+/', ' ', trim($sql));
+        $agg = $stats['slowest'][$key] ?? ['calls' => 0, 'ms' => 0.0, 'max_ms' => 0.0, 'rows' => 0];
+        $agg['calls']++;
+        $agg['ms'] += $ms;
+        $agg['max_ms'] = max($agg['max_ms'], $ms);
+        $agg['rows'] += $rows;
+        $stats['slowest'][$key] = $agg;
+    }
+}
+
 /** คืนทุกแถวเป็น array ของ associative array */
 function trk_db_all(string $sql, array $params = []): array
 {
+    $started = microtime(true);
     $stmt = trk_db_stmt($sql, $params);
     if (method_exists($stmt, 'get_result')) {
         $result = $stmt->get_result();
-        return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $rows = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    } else {
+        $rows = trk_db_fetch_without_mysqlnd($stmt);
     }
-    return trk_db_fetch_without_mysqlnd($stmt);
+    trk_db_record($sql, $started, count($rows));
+    return $rows;
 }
 
 /** สำรองสำหรับ host ที่ไม่มี mysqlnd (ไม่มี get_result) */
@@ -82,7 +110,10 @@ function trk_db_value(string $sql, array $params = [])
 /** รัน INSERT/UPDATE/DELETE คืนจำนวนแถวที่เปลี่ยน */
 function trk_db_exec(string $sql, array $params = []): int
 {
-    return trk_db_stmt($sql, $params)->affected_rows;
+    $started = microtime(true);
+    $affected = trk_db_stmt($sql, $params)->affected_rows;
+    trk_db_record($sql, $started, max(0, $affected));
+    return $affected;
 }
 
 function trk_db_transaction(callable $fn)
