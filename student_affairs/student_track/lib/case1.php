@@ -31,16 +31,50 @@ function trk_case1_threshold_hours(int $totalHours, int $pct): int
     return (int) ceil($totalHours * $pct / 100);
 }
 
+/** กุญแจเทียบรหัสนักเรียนแบบเดียวกับ MySQL utf8_general_ci (ไม่สนตัวพิมพ์และช่องว่างท้าย) */
+function trk_student_code_key($code): string
+{
+    return strtolower(rtrim((string) $code));
+}
+
+/**
+ * นักเรียนที่กำลังเรียน (std_status_id = 1) [รหัสนักเรียน (trk_student_code_key) => ข้อมูล] ระบุห้องได้
+ * ใช้จับคู่กับข้อมูลเช็คชื่อรายวิชาใน PHP แทน JOIN ด้วยรหัสใน SQL
+ * (std_student ของระบบเดิมไม่มี index ที่ std_student_code การ JOIN ด้วยรหัสจึงไล่ทั้งตารางทุกแถว)
+ */
+function trk_active_students_by_code(?int $classroomId = null): array
+{
+    static $cache = [];
+    $key = $classroomId === null ? 'all' : (string) $classroomId;
+    if (!isset($cache[$key])) {
+        $rows = trk_db_all(
+            "SELECT st.std_student_id, st.std_classroom_id, st.std_student_code, st.std_student_number,
+                    CONCAT(IFNULL(ti.psn_title_name, ''), st.std_student_name, ' ', st.std_student_surname) AS full_name,
+                    c.std_classroom_level, c.std_classroom_room, c.std_classroom_priority
+             FROM std_student st
+             JOIN std_classroom c ON c.std_classroom_id = st.std_classroom_id
+             LEFT JOIN psn_title ti ON ti.psn_title_id = st.psn_title_id
+             WHERE st.std_status_id = 1" . ($classroomId !== null ? ' AND st.std_classroom_id = ?' : ''),
+            $classroomId !== null ? [$classroomId] : []
+        );
+        $cache[$key] = [];
+        foreach ($rows as $r) {
+            $cache[$key][trk_student_code_key($r['std_student_code'])] = $r;
+        }
+    }
+    return $cache[$key];
+}
+
 /**
  * นักเรียนทุกคนที่ถูกเช็คชื่อในรายวิชา × ห้องที่สอน (ข้อความห้อง เช่น "1/1") พร้อมชั่วโมงขาด
  * นักเรียนวิชาเลือกอาจมาจากหลายห้อง จึงคืนห้องจริงของนักเรียนด้วย (std_classroom_id)
  */
 function trk_case1_student_hours(int $subjectId, string $roomLabel, int $semesterId): array
 {
-    return trk_db_all(
-        "SELECT st.std_student_id, st.std_student_code, st.std_student_number,
-                CONCAT(IFNULL(ti.psn_title_name, ''), st.std_student_name, ' ', st.std_student_surname) AS full_name,
-                c.std_classroom_id, c.std_classroom_level, c.std_classroom_room,
+    $students = trk_active_students_by_code();
+    $result = [];
+    foreach (trk_db_all(
+        "SELECT a.std_student_code AS code,
                 COUNT(*) AS periods,
                 SUM(a.vic_att_subject_check_status IN (2, 3, 4)) AS absent_hours,
                 SUM(a.vic_att_subject_check_status = 2) AS absent,
@@ -48,16 +82,33 @@ function trk_case1_student_hours(int $subjectId, string $roomLabel, int $semeste
                 SUM(a.vic_att_subject_check_status = 4) AS skipped
          FROM vic_attendance_teach t
          JOIN vic_attendance_subject a ON a.vic_att_teach_id = t.vic_att_teach_id
-         JOIN std_student st ON st.std_student_code = a.std_student_code AND st.std_status_id = 1
-         JOIN std_classroom c ON c.std_classroom_id = st.std_classroom_id
-         LEFT JOIN psn_title ti ON ti.psn_title_id = st.psn_title_id
          WHERE t.std_semester_id = ? AND t.vic_subject_id = ? AND t.vic_att_classroom = ?
-         GROUP BY st.std_student_id, st.std_student_code, st.std_student_number, ti.psn_title_name,
-                  st.std_student_name, st.std_student_surname,
-                  c.std_classroom_id, c.std_classroom_level, c.std_classroom_room, c.std_classroom_priority
-         ORDER BY c.std_classroom_priority, st.std_student_number",
+         GROUP BY a.std_student_code",
         [$semesterId, $subjectId, $roomLabel]
-    );
+    ) as $agg) {
+        $st = $students[trk_student_code_key($agg['code'])] ?? null;
+        if ($st === null) {
+            continue;
+        }
+        unset($agg['code']);
+        $result[] = [
+            'std_student_id' => $st['std_student_id'],
+            'std_student_code' => $st['std_student_code'],
+            'std_student_number' => $st['std_student_number'],
+            'full_name' => $st['full_name'],
+            'std_classroom_id' => $st['std_classroom_id'],
+            'std_classroom_level' => $st['std_classroom_level'],
+            'std_classroom_room' => $st['std_classroom_room'],
+            '_sort' => [(int) $st['std_classroom_priority'], (int) $st['std_student_number']],
+        ] + $agg;
+    }
+    usort($result, function ($a, $b) {
+        return $a['_sort'] <=> $b['_sort'];
+    });
+    foreach ($result as &$row) {
+        unset($row['_sort']);
+    }
+    return $result;
 }
 
 /** ครั้งที่ล่าสุดที่ออก ขร.1 แล้ว ของนักเรียนแต่ละคนในรายวิชา [std_student_id => round_no] */
