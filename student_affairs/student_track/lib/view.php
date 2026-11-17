@@ -121,6 +121,7 @@ function trk_menu(): array
     }
     $unread = trk_unread_count($user['id']);
     $items[] = ['key' => 'notifications', 'icon' => 'bell', 'label' => 'แจ้งเตือน', 'count' => $unread, 'url' => trk_url('notifications.php')];
+    $items[] = ['key' => 'guide', 'icon' => 'help-circle', 'label' => 'คู่มือ', 'url' => trk_url('guide.php')];
     if (trk_has_role('admin')) {
         $items[] = ['key' => 'roles', 'icon' => 'shield', 'label' => 'จัดการสิทธิ์', 'url' => trk_url('admin/roles.php')];
         $items[] = ['key' => 'settings', 'icon' => 'sliders', 'label' => 'ตั้งค่า', 'url' => trk_url('admin/settings.php')];
