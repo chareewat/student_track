@@ -100,6 +100,7 @@ $subjects = $isCase1 ? trk_kr3_subjects($d) : [];
 </table>
 </td></tr></table>
 
+<?php // หลักฐานการติดตาม (รูปถ่าย) ขึ้นหน้าใหม่เสมอ ถ้าบันทึกข้อความล้นไปหน้า 2 ก็เริ่มหน้า 3 ?>
 <pagebreak />
 
 <div class="form-code">แบบ ขร.๓ (ต่อ)</div>

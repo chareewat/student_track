@@ -19,10 +19,23 @@ if (!isset($templates[$doc['doc_type']])) {
 $title = trk_document_title($doc) . ' #' . $doc['id'];
 $mpdf = trk_pdf_new($title);
 // เอกสารราชการใช้เลขไทย: แปลงเฉพาะข้อความที่แสดง (ไม่แตะ CSS/attribute)
-$mpdf->WriteHTML(trk_thai_digits_html(trk_pdf_template($templates[$doc['doc_type']], [
+$html = trk_thai_digits_html(trk_pdf_template($templates[$doc['doc_type']], [
     'doc' => $doc,
     'school' => $GLOBALS['school_name'] ?? '',
     'amphur' => $GLOBALS['amphur'] ?? '',
     'province' => $GLOBALS['province'] ?? '',
-])));
+]));
+// เทมเพลตที่มีตัวคั่น <!--TRK_EVIDENCE--> (บค.14): ส่วนหลักฐานการติดตามขึ้นหน้าใหม่เมื่อส่วนแรกล้นเกินหน้า 1
+$marker = '<!--TRK_EVIDENCE-->';
+if (strpos($html, $marker) !== false) {
+    [$first, $evidence] = explode($marker, $html, 2);
+    $mpdf->WriteHTML($first);
+    if ($mpdf->page > 1) {
+        $mpdf->AddPage();
+    }
+    $styleEnd = strpos($first, '</style>');
+    $mpdf->WriteHTML(($styleEnd !== false ? substr($first, 0, $styleEnd + 8) : '') . $evidence);
+} else {
+    $mpdf->WriteHTML($html);
+}
 $mpdf->Output($doc['doc_type'] . '-' . $doc['id'] . '.pdf', \Mpdf\Output\Destination::INLINE);

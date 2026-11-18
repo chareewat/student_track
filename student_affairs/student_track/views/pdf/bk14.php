@@ -58,7 +58,10 @@ $fullNo = $docNoPrefix . ($doc['doc_no'] ?? '');
   </td></tr>
 </table>
 
-<div style="margin-top: 10pt; text-align: center;"><b>หลักฐานการติดตามนักเรียนขาดเรียน ครั้งที่ <?= (int) $d['round_no'] ?></b></div>
+<?php // หลักฐานการติดตาม: ถ้าส่วนแรกล้นไปหน้า 2 ให้ขึ้นหน้าใหม่ (documents/print.php แยกเขียนที่ตัวคั่นนี้) และไม่แยกหน้ากลางส่วน ?>
+<!--TRK_EVIDENCE-->
+<table width="100%" style="page-break-inside: avoid; margin-top: 10pt;"><tr><td style="width: 100%; text-align: center;">
+<div style="text-align: center;"><b>หลักฐานการติดตามนักเรียนขาดเรียน ครั้งที่ <?= (int) $d['round_no'] ?></b></div>
 <div style="text-align: center;">วันที่ .......... เดือน ................................ พ.ศ. ..............</div>
 <table width="100%" class="sign" >
   <tr>
@@ -67,3 +70,4 @@ $fullNo = $docNoPrefix . ($doc['doc_no'] ?? '');
     <td width="34%">ลงชื่อ ..............................<br>(<?= e($s['name']) ?>)<br>นักเรียน</td>
   </tr>
 </table>
+</td></tr></table>
