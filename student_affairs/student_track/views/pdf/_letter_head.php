@@ -16,8 +16,8 @@ $date = trk_thai_date_parts($d['issued_date']);
 <div style="text-align: center;"><img src="<?= e(TRK_ROOT . '/assets/img/garuda.jpg') ?>" style="height: 2cm;"></div>
 <table width="100%" class="letter-head">
   <tr>
-    <td width="55%">ที่ <?= e($docNoPrefix) ?><?= trk_pdf_fill($doc['doc_no'], 12) ?></td>
-    <td width="45%" style="padding-left: 1.27cm;">
+    <td width="50%">ที่ <?= e($docNoPrefix) ?><?= trk_pdf_fill($doc['doc_no'], 12) ?></td>
+    <td width="50%" style="padding-left: 2.54cm;">
       <?= e($school) ?><br>
       อำเภอ<?= e($amphur) ?><br>
       จังหวัด<?= e($province) ?> <?= e($d['postcode'] ?? '') ?>

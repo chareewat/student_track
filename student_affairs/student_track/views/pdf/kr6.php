@@ -38,7 +38,7 @@ $occasions = array_values($d['occasions']);
   ด้วยข้าพเจ้า <?= e($d['advisor']['name']) ?> เป็นครูที่ปรึกษา ม.<?= e($s['level'] . '/' . $s['room']) ?>
   ได้ติดตามการมาเรียนของ <?= e($s['name']) ?> เลขประจำตัว <?= e($s['code']) ?> ซึ่งไม่มาโรงเรียน ดังนี้
 </p>
-<div style="margin-left: 1.2cm;">
+<div class="list">
   <?php foreach ([0, 1, 2] as $i): ?>
     <?php $o = $occasions[$i] ?? null; ?>
     <div>
@@ -54,7 +54,7 @@ $occasions = array_values($d['occasions']);
   <?php endforeach; ?>
 </div>
 <p class="indent">โดยข้าพเจ้าได้ส่งหนังสือ/ติดตามจำนวน <?= count($occasions) ?> ครั้ง ดังนี้</p>
-<div style="margin-left: 2.5cm;">
+<div class="list">
   <?php foreach ([0, 1, 2] as $i): ?>
     <?php $o = $occasions[$i] ?? null; ?>
     <div>ครั้งที่ <?= $i + 1 ?> เมื่อวันที่ <?= $o ? e(trk_thai_date($o['followup_date'])) . ' (' . e($o['method']) . ')' : '..............................' ?></div>
@@ -75,22 +75,28 @@ $occasions = array_values($d['occasions']);
   </td></tr>
 </table>
 
+<?php // ความเห็น + ช่องเขียน + ลายเซ็น อยู่หน้าเดียวกันเสมอ (ถ้าไม่พอจะขึ้นหน้าใหม่ทั้งชุด) ?>
+<table width="100%" style="page-break-inside: avoid;"><tr><td>
 <div style="margin-top: 8pt;"><b>ความเห็นรองผู้อำนวยการกลุ่มบริหารวิชาการ</b></div>
-<div class="dots"></div>
-<div class="dots"></div>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
 <table width="100%" class="sign">
   <tr><td width="40%"></td><td>
     (<?= trk_pdf_fill($d['signatories']['deputy_academic'], 35) ?>)<br>
     รองผู้อำนวยการกลุ่มบริหารวิชาการ
   </td></tr>
 </table>
+</td></tr></table>
 
+<?php // ความเห็น + ช่องเขียน + ลายเซ็น อยู่หน้าเดียวกันเสมอ (ถ้าไม่พอจะขึ้นหน้าใหม่ทั้งชุด) ?>
+<table width="100%" style="page-break-inside: avoid;"><tr><td>
 <div style="margin-top: 8pt;"><b>ความเห็นผู้อำนวยการโรงเรียน</b></div>
-<div class="dots"></div>
-<div class="dots"></div>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
 <table width="100%" class="sign">
   <tr><td width="40%"></td><td>
     (<?= trk_pdf_fill($d['signatories']['director'], 35) ?>)<br>
     ผู้อำนวยการ<?= e($school) ?>
   </td></tr>
 </table>
+</td></tr></table>

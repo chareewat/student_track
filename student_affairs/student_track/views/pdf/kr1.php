@@ -60,7 +60,7 @@ $cancelled = $doc['status'] === 'cancelled';
 </p>
 
 <?php foreach ($d['students'] as $i => $s): ?>
-  <div style="margin-left: 1.2cm;">
+  <div class="list">
     <?= $i + 1 ?>. <?= e($s['name']) ?> &nbsp; เลขประจำตัว <?= e($s['code']) ?> &nbsp; ขาดเรียนสะสมมาแล้ว <?= (int) $s['absent_hours'] ?> ชั่วโมง
   </div>
 <?php endforeach; ?>
@@ -85,9 +85,11 @@ $cancelled = $doc['status'] === 'cancelled';
   </tr>
 </table>
 
+<?php // ความเห็น + ช่องเขียน + ลายเซ็น อยู่หน้าเดียวกันเสมอ (ถ้าไม่พอจะขึ้นหน้าใหม่ทั้งชุด) ?>
+<table width="100%" style="page-break-inside: avoid;"><tr><td>
 <div style="margin-top: 8pt;"><b>ความคิดเห็นของรองผู้อำนวยการกลุ่มบริหารวิชาการ</b></div>
-<div class="dots"></div>
-<div class="dots"></div>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
 <table width="100%" class="sign">
   <tr><td width="40%"></td><td>
     ลงชื่อ ....................................<br>
@@ -95,10 +97,13 @@ $cancelled = $doc['status'] === 'cancelled';
     รองผู้อำนวยการกลุ่มบริหารวิชาการ
   </td></tr>
 </table>
+</td></tr></table>
 
+<?php // ความเห็น + ช่องเขียน + ลายเซ็น อยู่หน้าเดียวกันเสมอ (ถ้าไม่พอจะขึ้นหน้าใหม่ทั้งชุด) ?>
+<table width="100%" style="page-break-inside: avoid;"><tr><td>
 <div style="margin-top: 8pt;"><b>ความคิดเห็นของผู้อำนวยการ<?= e($school) ?></b></div>
-<div class="dots"></div>
-<div class="dots"></div>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
 <table width="100%" class="sign">
   <tr><td width="40%"></td><td>
     ลงชื่อ ....................................<br>
@@ -106,6 +111,7 @@ $cancelled = $doc['status'] === 'cancelled';
     ผู้อำนวยการ<?= e($school) ?>
   </td></tr>
 </table>
+</td></tr></table>
 
 <pagebreak />
 <div style="text-align: center;"><b>ตารางเปรียบเทียบหน่วยกิตและเวลาขาดเรียน</b></div>
@@ -128,15 +134,15 @@ $cancelled = $doc['status'] === 'cancelled';
     </tr>
   <?php endforeach; ?>
 </table>
-<p class="note">
+<table width="100%" style="page-break-inside: avoid;"><tr><td><p class="note">
   <b>หมายเหตุ:</b> หากขาดเกิน 20% ซึ่งจะตรงกับการรายงานครั้งที่ 2 นักเรียนจะหมดสิทธิ์สอบในรายวิชาดังกล่าว
   ในกรณีที่ขาดเกิน <?= (int) $thresholds[3] ?>% ซึ่งจะตรงกับการรายงานครั้งที่ 3 ให้อยู่ในดุลยพินิจของท่านผู้อำนวยการ
-</p>
+</p></td></tr></table>
 
 <pagebreak />
 
 <div class="form-code">เอกสารแนบ แบบ ขร.๑</div>
-<div style="text-align: center; font-size: 21pt; font-weight: bold;">วันที่นักเรียนขาดเรียน</div>
+<div class="heading">วันที่นักเรียนขาดเรียน</div>
 <div style="text-align: center;">
   รายวิชา <?= e($d['subject']['code']) ?> <?= e($d['subject']['name']) ?> ชั้นมัธยมศึกษาปีที่ <?= e($classLabel) ?>
   ภาคเรียนที่ <?= e($d['semester']['term']) ?>/<?= e($d['semester']['year']) ?>

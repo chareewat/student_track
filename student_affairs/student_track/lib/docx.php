@@ -66,8 +66,8 @@ class TrkDocx
         return $tr;
     }
 
-    /** ย่อหน้าเนื้อความ ย่อหน้าแรก 2.5 ซม. จัดแบบไทย */
-    public function body($runs, float $indentCm = 2.5): void
+    /** ย่อหน้าเนื้อความ ย่อหน้าแรก 1 แท็บ (1.27 ซม.) จัดแบบไทย */
+    public function body($runs, float $indentCm = 1.27): void
     {
         $this->p($runs, ['alignment' => Jc::THAI_DISTRIBUTE, 'indentation' => ['firstLine' => Converter::cmToTwip($indentCm)]]);
     }
@@ -90,7 +90,7 @@ class TrkDocx
 
     public function formCode(string $code): void
     {
-        $this->p([[$code, ['size' => 14]]], ['alignment' => Jc::END]);
+        $this->p([[$code, ['bold' => true]]], ['alignment' => Jc::END]);
     }
 
     public function voidBanner(array $doc): void
@@ -108,10 +108,10 @@ class TrkDocx
         $t->addCell(Converter::cmToTwip(3.2), ['valign' => 'center'])
             ->addImage(TRK_ROOT . '/assets/img/garuda.jpg', ['height' => Converter::cmToPoint(1.5), 'width' => Converter::cmToPoint(1.5)]);
         $t->addCell(Converter::cmToTwip(9.6), ['valign' => 'center'])
-            ->addText('บันทึกข้อความ', ['bold' => true, 'size' => 29], ['alignment' => Jc::CENTER]);
+            ->addText('บันทึกข้อความ', ['bold' => true, 'size' => 18], ['alignment' => Jc::CENTER]);
         $t->addCell(Converter::cmToTwip(3.2));
 
-        $label = ['bold' => true, 'size' => 20];
+        $label = ['bold' => true];
         $this->p([['ส่วนราชการ ', $label], $unit]);
         $tab = ['tabs' => [new \PhpOffice\PhpWord\Style\Tab('left', Converter::cmToTwip(8))]];
         $this->p([['ที่ ', $label], self::fill($docNo, 22), "\t", ['วันที่ ', $label],
@@ -128,11 +128,11 @@ class TrkDocx
             ['height' => Converter::cmToPoint(2.3), 'width' => Converter::cmToPoint(2.3), 'alignment' => Jc::CENTER]);
         $t = $this->section->addTable(['cellMargin' => 0]);
         $t->addRow();
-        $t->addCell(Converter::cmToTwip(9))->addText('ที่ ' . $prefix . self::fill($docNo, 12));
-        $right = $t->addCell(Converter::cmToTwip(7));
+        $t->addCell(Converter::cmToTwip(8))->addText('ที่ ' . $prefix . self::fill($docNo, 12));
+        $right = $t->addCell(Converter::cmToTwip(8));
         foreach ($lines as $line) {
-            // ที่อยู่โรงเรียนเยื้องขวา 1 แท็บ
-            $right->addText($line, null, ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
+            // ที่อยู่โรงเรียนเยื้องขวา 2 แท็บ
+            $right->addText($line, null, ['indentation' => ['left' => Converter::cmToTwip(2.54)]]);
         }
         $this->p('วันที่ ' . $date['day'] . ' เดือน ' . $date['month'] . ' พ.ศ. ' . $date['year'],
             ['indentation' => ['left' => Converter::cmToTwip(8)], 'spaceBefore' => 120]);
@@ -180,7 +180,7 @@ class TrkDocx
     }
 
     /** ตารางมีเส้นขอบ: $rows[0] เป็นหัวตาราง */
-    public function grid(array $rows, array $widthsCm, int $size = 15): void
+    public function grid(array $rows, array $widthsCm, int $size = self::SIZE): void
     {
         $t = $this->section->addTable(['borderSize' => 4, 'borderColor' => '000000', 'cellMargin' => Converter::cmToTwip(0.08)]);
         foreach ($rows as $i => $row) {
@@ -287,7 +287,7 @@ function trk_docx_kr1(TrkDocx $w, array $doc, array $ctx): void
         . ' ชั่วโมงขึ้นไป (ร้อยละ ' . (int) $th[$d['round_no']] . ' ของเวลาเรียนทั้งหมด) ซึ่งมีความเสี่ยง "หมดสิทธิ์สอบ" ในรายวิชาดังกล่าว ดังนี้');
     foreach ($d['students'] as $i => $s) {
         $w->p(($i + 1) . '. ' . $s['name'] . '   เลขประจำตัว ' . $s['code'] . '   ขาดเรียนสะสมมาแล้ว ' . (int) $s['absent_hours'] . ' ชั่วโมง',
-            ['indentation' => ['left' => Converter::cmToTwip(1.25)]]);
+            ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
     }
     $w->body('วันที่ที่นักเรียนขาดเรียน ระบุตามเอกสารดังแนบ');
     $w->body('จึงเรียนเพื่อโปรดทราบและช่วยเหลือติดตามนักเรียน');
@@ -318,8 +318,8 @@ function trk_docx_kr1(TrkDocx $w, array $doc, array $ctx): void
     }
     $w->grid($rows, [2.6, 3.8, 3.2, 3.2, 3.2]);
     $w->blank();
-    $w->p([['หมายเหตุ: ', ['bold' => true, 'size' => 15]], ['หากขาดเกิน 20% ซึ่งจะตรงกับการรายงานครั้งที่ 2 นักเรียนจะหมดสิทธิ์สอบในรายวิชาดังกล่าว ในกรณีที่ขาดเกิน '
-        . (int) $th[3] . '% ซึ่งจะตรงกับการรายงานครั้งที่ 3 ให้อยู่ในดุลยพินิจของท่านผู้อำนวยการ', ['size' => 15]]],
+    $w->p([['หมายเหตุ: ', ['bold' => true]], ['หากขาดเกิน 20% ซึ่งจะตรงกับการรายงานครั้งที่ 2 นักเรียนจะหมดสิทธิ์สอบในรายวิชาดังกล่าว ในกรณีที่ขาดเกิน '
+        . (int) $th[3] . '% ซึ่งจะตรงกับการรายงานครั้งที่ 3 ให้อยู่ในดุลยพินิจของท่านผู้อำนวยการ', ['size' => 16]]],
         ['alignment' => Jc::THAI_DISTRIBUTE]);
 
     $w->pageBreak();
@@ -344,7 +344,7 @@ function trk_docx_parent_slip(TrkDocx $w, array $d, string $fullNo): void
 {
     $s = $d['student'];
     $w->blank();
-    $w->p([['-------------------- ผู้ปกครองส่งส่วนที่ 2 คืนโรงเรียน --------------------', ['size' => 14]]],
+    $w->p([['-------------------- ผู้ปกครองส่งส่วนที่ 2 คืนโรงเรียน --------------------', []]],
         ['alignment' => Jc::CENTER]);
     $w->body('ข้าพเจ้า ' . TrkDocx::fill($d['guardian'], 45) . ' เป็นผู้ปกครองของ ' . $s['name'] . ' ชั้นมัธยมศึกษาปีที่ ' . $s['level']
         . ' ห้อง ' . $s['room'] . ' เลขประจำตัว ' . $s['code'] . ' ได้รับทราบรายละเอียดตามหนังสือที่ ' . $fullNo
@@ -373,18 +373,18 @@ function trk_docx_kr2(TrkDocx $w, array $doc, array $ctx): void
         $w->p([$i === 0 ? $w->checkbox(true) : '    ', ($i === 0 ? ' ขาดเรียน ' : '              ')
             . 'รหัสวิชา ' . $subj['code'] . ' รายวิชา ' . $subj['name'] . ' จำนวน ' . (int) $subj['absent_hours'] . ' คาบ'
             . (isset($subj['round_no']) ? ' (ขร.1 ครั้งที่ ' . (int) $subj['round_no'] . ')' : '')],
-            ['indentation' => ['left' => Converter::cmToTwip(1.25)]]);
+            ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
     }
     $w->body('ซึ่งหากนักเรียนมีเวลาเรียนไม่ถึงร้อยละ 80 ของเวลาเรียนทั้งหมด ตามแนวปฏิบัติการวัดและประเมินผลการเรียนรู้'
         . ' ตามหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พุทธศักราช 2551 จะทำให้นักเรียนหมดสิทธิ์ในการเข้าสอบปลายภาครายวิชาดังกล่าว'
         . ' ส่งผลให้ไม่จบการศึกษาตามหลักสูตร');
-    $w->p([$w->checkbox(false), ' ขาดส่งงานที่ได้รับมอบหมาย ' . str_repeat('.', 70)], ['indentation' => ['left' => Converter::cmToTwip(1.25)]]);
-    $w->p([$w->checkbox(false), ' พฤติกรรมอื่น ๆ ' . str_repeat('.', 85)], ['indentation' => ['left' => Converter::cmToTwip(1.25)]]);
+    $w->p([$w->checkbox(false), ' ขาดส่งงานที่ได้รับมอบหมาย ' . str_repeat('.', 70)], ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
+    $w->p([$w->checkbox(false), ' พฤติกรรมอื่น ๆ ' . str_repeat('.', 85)], ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
     $w->body('จึงเรียนมาเพื่อทราบ');
     $w->signatures([['ขอแสดงความนับถือ', '', '', '(' . TrkDocx::fill($d['signatories']['director'], 35) . ')', 'ผู้อำนวยการ' . $ctx['school']]], 7);
     trk_docx_parent_slip($w, $d, $d['doc_no_prefix'] . ($doc['doc_no'] ?? ''));
-    $w->p([['หมายเหตุ: ', ['bold' => true, 'size' => 14]], ['ในกรณีที่ครูที่ปรึกษาได้รับรายงานจากครูประจำวิชาผ่านแบบฟอร์ม ขร.1 ครูที่ปรึกษาจะต้องทำแบบฟอร์ม ขร.2'
-        . ' ส่งให้ผู้ปกครองทราบภายในสัปดาห์ที่ 8 สำหรับเอกสาร ขร.2 ในส่วนที่ 2 ให้ครูที่ปรึกษาเป็นผู้เก็บรวบรวมเอกสารเพื่อเป็นหลักฐาน', ['size' => 14]]],
+    $w->p([['หมายเหตุ: ', ['bold' => true]], ['ในกรณีที่ครูที่ปรึกษาได้รับรายงานจากครูประจำวิชาผ่านแบบฟอร์ม ขร.1 ครูที่ปรึกษาจะต้องทำแบบฟอร์ม ขร.2'
+        . ' ส่งให้ผู้ปกครองทราบภายในสัปดาห์ที่ 8 สำหรับเอกสาร ขร.2 ในส่วนที่ 2 ให้ครูที่ปรึกษาเป็นผู้เก็บรวบรวมเอกสารเพื่อเป็นหลักฐาน', ['size' => 16]]],
         ['alignment' => Jc::THAI_DISTRIBUTE]);
 }
 
@@ -404,7 +404,7 @@ function trk_docx_bk14(TrkDocx $w, array $doc, array $ctx): void
     $w->body('ด้วย ' . $s['name'] . ' นักเรียนชั้น ม.' . $s['level'] . '/' . $s['room'] . ' เลขประจำตัว ' . $s['code']
         . ' ซึ่งเป็นนักเรียนในความปกครองของท่าน '
         . ((int) $abs['days'] > 0 ? 'หยุดเรียนมาแล้วในเดือนนี้ รวม ' . (int) $abs['days'] . ' วัน' : 'มีพฤติกรรมการขาดเรียน ดังนี้'));
-    $indent = ['indentation' => ['left' => Converter::cmToTwip(2.5)]];
+    $indent = ['indentation' => ['left' => Converter::cmToTwip(1.27)]];
     $w->p([$w->checkbox((int) $abs['max_consecutive'] >= (int) ($d['consecutive_days'] ?? 5)), ' เกิน 5 วันติดต่อกัน'], $indent);
     foreach (trk_bk14_subjects($d) as $i => $subj) {
         $w->p([$i === 0 ? $w->checkbox(true) : '    ', ($i === 0 ? ' ขาดเรียนรายวิชา ' : '                          ')
@@ -491,8 +491,8 @@ function trk_docx_kr3(TrkDocx $w, array $doc, array $ctx): void
         ['ลงชื่อ ' . str_repeat('.', 24), '(' . $s['name'] . ')', 'นักเรียน'],
     ], 0, 15);
     $w->blank();
-    $w->p([['หมายเหตุ: ', ['bold' => true, 'size' => 14]], ['การรายงานตามแบบฟอร์ม ขร.3 ให้ครูที่ปรึกษาดำเนินการรายงานครั้งที่ 1–3'
-        . ' และใช้เป็นหลักฐานในกรณีติดตามนักเรียนไม่มีตัวตน หรือขาดเรียนนาน และใช้เป็นหลักฐานในการลาออก', ['size' => 14]]],
+    $w->p([['หมายเหตุ: ', ['bold' => true]], ['การรายงานตามแบบฟอร์ม ขร.3 ให้ครูที่ปรึกษาดำเนินการรายงานครั้งที่ 1–3'
+        . ' และใช้เป็นหลักฐานในกรณีติดตามนักเรียนไม่มีตัวตน หรือขาดเรียนนาน และใช้เป็นหลักฐานในการลาออก', ['size' => 16]]],
         ['alignment' => Jc::THAI_DISTRIBUTE]);
 }
 
@@ -539,13 +539,13 @@ function trk_docx_kr6(TrkDocx $w, array $doc, array $ctx): void
         } else {
             $text = ' ครั้งที่ ' . ($i + 1) . ' ขาดเรียนรายวิชา ' . trk_kr6_case1_text($o);
         }
-        $w->p([$w->checkbox($o !== null), $text], ['indentation' => ['left' => Converter::cmToTwip(1.25)]]);
+        $w->p([$w->checkbox($o !== null), $text], ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
     }
     $w->body('โดยข้าพเจ้าได้ส่งหนังสือ/ติดตามจำนวน ' . count($occ) . ' ครั้ง ดังนี้');
     foreach ([0, 1, 2] as $i) {
         $o = $occ[$i] ?? null;
         $w->p('ครั้งที่ ' . ($i + 1) . ' เมื่อวันที่ ' . ($o ? trk_thai_date($o['followup_date']) . ' (' . $o['method'] . ')' : '..............................'),
-            ['indentation' => ['left' => Converter::cmToTwip(2.5)]]);
+            ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
     }
     $w->body('รวมการส่งหนังสือ/ติดตาม ' . count($occ) . ' ครั้งแล้ว ผู้ปกครองยังไม่มาติดต่อและไม่ได้นำนักเรียนมาเข้าเรียน'
         . ' (หลังการติดตามครั้งล่าสุดเมื่อวันที่ ' . trk_thai_date($d['last_followup']) . ' นักเรียนไม่มาโรงเรียน ' . (int) $d['after']['checked'] . ' วันทำการ)'

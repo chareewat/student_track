@@ -26,11 +26,11 @@ $fullNo = $docNoPrefix . ($doc['doc_no'] ?? '');
   ซึ่งเป็นนักเรียนในความปกครองของท่าน
   <?= (int) $abs['days'] > 0 ? 'หยุดเรียนมาแล้วในเดือนนี้ รวม ' . (int) $abs['days'] . ' วัน' : 'มีพฤติกรรมการขาดเรียน ดังนี้' ?>
 </p>
-<div style="margin-left: 2.5cm;">
+<div class="list">
   <?= trk_pdf_checkbox((int) $abs['max_consecutive'] >= (int) ($d['consecutive_days'] ?? 5)) ?> เกิน 5 วันติดต่อกัน
 </div>
 <?php if ($subjects): ?>
-  <div style="margin-left: 2.5cm;">
+  <div class="list">
     <?= trk_pdf_checkbox(true) ?> ขาดเรียนรายวิชา
     <?php foreach ($subjects as $i => $subj): ?>
       <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?= e(trk_absent_subject_line($subj)) ?>
@@ -66,7 +66,7 @@ $fullNo = $docNoPrefix . ($doc['doc_no'] ?? '');
 
 <div style="margin-top: 10pt; text-align: center;"><b>หลักฐานการติดตามนักเรียนขาดเรียน ครั้งที่ <?= (int) $d['round_no'] ?></b></div>
 <div style="text-align: center;">วันที่ .......... เดือน ................................ พ.ศ. ..............</div>
-<table width="100%" class="sign" style="font-size: 15pt;">
+<table width="100%" class="sign" >
   <tr>
     <td width="33%">ลงชื่อ ..............................<br>(..........................................)<br>ครูที่ปรึกษา</td>
     <td width="33%">ลงชื่อ ..............................<br>(..........................................)<br>ผู้ปกครอง</td>

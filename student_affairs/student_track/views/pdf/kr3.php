@@ -74,30 +74,36 @@ $subjects = $isCase1 ? trk_kr3_subjects($d) : [];
   </tr>
 </table>
 
+<?php // ความเห็น + ช่องเขียน + ลายเซ็น อยู่หน้าเดียวกันเสมอ (ถ้าไม่พอจะขึ้นหน้าใหม่ทั้งชุด) ?>
+<table width="100%" style="page-break-inside: avoid;"><tr><td>
 <div style="margin-top: 8pt;"><b>ความเห็นรองผู้อำนวยการกลุ่มบริหารวิชาการ</b></div>
-<div class="dots"></div>
-<div class="dots"></div>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
 <table width="100%" class="sign">
   <tr><td width="40%"></td><td>
     (<?= trk_pdf_fill($d['signatories']['deputy_academic'], 35) ?>)<br>
     รองผู้อำนวยการกลุ่มบริหารวิชาการ
   </td></tr>
 </table>
+</td></tr></table>
 
+<?php // ความเห็น + ช่องเขียน + ลายเซ็น อยู่หน้าเดียวกันเสมอ (ถ้าไม่พอจะขึ้นหน้าใหม่ทั้งชุด) ?>
+<table width="100%" style="page-break-inside: avoid;"><tr><td>
 <div style="margin-top: 8pt;"><b>ความเห็นผู้อำนวยการโรงเรียน</b></div>
-<div class="dots"></div>
-<div class="dots"></div>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
+<table width="100%" class="dots-line"><tr><td>&nbsp;</td></tr></table>
 <table width="100%" class="sign">
   <tr><td width="40%"></td><td>
     (<?= trk_pdf_fill($d['signatories']['director'], 35) ?>)<br>
     ผู้อำนวยการ<?= e($school) ?>
   </td></tr>
 </table>
+</td></tr></table>
 
 <pagebreak />
 
 <div class="form-code">แบบ ขร.๓ (ต่อ)</div>
-<div style="text-align: center; font-size: 21pt; font-weight: bold;">หลักฐานการติดตามนักเรียนขาดเรียน ครั้งที่ <?= (int) $d['round_no'] ?></div>
+<div class="heading">หลักฐานการติดตามนักเรียนขาดเรียน ครั้งที่ <?= (int) $d['round_no'] ?></div>
 <div style="text-align: center;"><?= e($s['name']) ?> เลขประจำตัว <?= e($s['code']) ?> ชั้น ม.<?= e($s['level'] . '/' . $s['room']) ?></div>
 <div style="text-align: center;">วันที่ติดตาม <?= e(trk_thai_date($f['date'])) ?></div>
 
@@ -119,7 +125,7 @@ $subjects = $isCase1 ? trk_kr3_subjects($d) : [];
     <td colspan="2">ลงชื่อ ....................................<br>(<?= e($s['name']) ?>)<br>นักเรียน</td>
   </tr>
 </table>
-<p class="note">
+<table width="100%" style="page-break-inside: avoid;"><tr><td><p class="note">
   <b>หมายเหตุ:</b> การรายงานตามแบบฟอร์ม ขร.3 ให้ครูที่ปรึกษาดำเนินการรายงานครั้งที่ 1–3
   และใช้เป็นหลักฐานในกรณีติดตามนักเรียนไม่มีตัวตน หรือขาดเรียนนาน และใช้เป็นหลักฐานในการลาออก
-</p>
+</p></td></tr></table>
