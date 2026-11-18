@@ -117,13 +117,10 @@ $subjects = $isCase1 ? trk_kr3_subjects($d) : [];
   </div>
 <?php endif; ?>
 
+<?php // หน้าหลักฐาน: ลงชื่อเฉพาะครูที่ปรึกษา กึ่งกลางหน้า ?>
 <table width="100%" class="sign" style="margin-top: 10pt;">
   <tr>
-    <td width="50%">ลงชื่อ ....................................<br>(<?= trk_pdf_fill($d['advisors'][0] ?? '', 35) ?>)<br>ครูที่ปรึกษา</td>
-    <td width="50%">ลงชื่อ ....................................<br>(....................................................)<br>ผู้ปกครอง</td>
-  </tr>
-  <tr>
-    <td colspan="2">ลงชื่อ ....................................<br>(<?= e($s['name']) ?>)<br>นักเรียน</td>
+    <td style="width: 100%; text-align: center;">ลงชื่อ ....................................<br>(<?= trk_pdf_fill($d['advisors'][0] ?? '', 35) ?>)<br>ครูที่ปรึกษา</td>
   </tr>
 </table>
 <table width="100%" style="page-break-inside: avoid;"><tr><td><p class="note">
