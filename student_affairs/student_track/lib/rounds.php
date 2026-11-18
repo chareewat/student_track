@@ -434,7 +434,22 @@ function trk_record_followup(array $rounds, int $memberId, array $input, array $
 
 // ---------------------------------------------------------------- รูปถ่าย
 
-const TRK_PHOTO_MAX = 4;
+const TRK_PHOTO_MAX = 2;                 // หลักฐานการติดตาม: แสดงในเอกสารแถวละ 1 รูป
+const TRK_PHOTO_RATIOS = ['4:3', '3:4', '16:9', '9:16']; // อัตราส่วนที่ให้ครอปตอนอัปโหลด (assets/js/app.js)
+
+/**
+ * ขนาดรูปในเอกสารให้พอดีกรอบ $maxW × $maxH (หน่วยใดก็ได้) โดยคงอัตราส่วนเดิม คืน [กว้าง, สูง]
+ * รูปที่อ่านขนาดไม่ได้คืนขนาดกรอบ 4:3
+ */
+function trk_photo_fit(string $absPath, float $maxW, float $maxH): array
+{
+    $info = @getimagesize($absPath);
+    if (!$info || $info[0] <= 0 || $info[1] <= 0) {
+        return [$maxW, min($maxH, $maxW * 3 / 4)];
+    }
+    $scale = min($maxW / $info[0], $maxH / $info[1]);
+    return [round($info[0] * $scale, 1), round($info[1] * $scale, 1)];
+}
 const TRK_PHOTO_MAX_BYTES = 10 * 1024 * 1024;
 const TRK_PHOTO_MAX_SIDE = 1600;
 

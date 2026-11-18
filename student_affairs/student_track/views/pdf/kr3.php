@@ -108,14 +108,14 @@ $subjects = $isCase1 ? trk_kr3_subjects($d) : [];
 <div style="text-align: center;"><?= e($s['name']) ?> เลขประจำตัว <?= e($s['code']) ?> ชั้น ม.<?= e($s['level'] . '/' . $s['room']) ?></div>
 <div style="text-align: center;">วันที่ติดตาม <?= e(trk_thai_date($f['date'])) ?></div>
 
-<?php if ($f['photos']): ?>
-  <div style="text-align: center; margin-top: 8pt;">
-    <?php foreach ($f['photos'] as $path): ?>
-      <?php $abs = TRK_ROOT . '/storage/uploads/' . $path; ?>
-      <?php if (is_file($abs)): ?><img class="photo" src="<?= e($abs) ?>"><?php endif; ?>
-    <?php endforeach; ?>
-  </div>
-<?php endif; ?>
+<?php // รูปถ่ายแถวละ 1 รูป คงอัตราส่วนที่ครอปไว้ (กรอบไม่เกิน 15 × 8.5 ซม. เพื่อให้ 2 รูปอยู่หน้าเดียวกับลายเซ็น) ?>
+<?php foreach ($f['photos'] as $path): ?>
+  <?php $abs = TRK_ROOT . '/storage/uploads/' . $path; ?>
+  <?php if (is_file($abs)): ?>
+    <?php [$pw, $ph] = trk_photo_fit($abs, 150, 85); ?>
+    <div style="text-align: center; margin-top: 8pt;"><img src="<?= e($abs) ?>" style="width: <?= $pw ?>mm; height: <?= $ph ?>mm;"></div>
+  <?php endif; ?>
+<?php endforeach; ?>
 
 <?php // หน้าหลักฐาน: ลงชื่อเฉพาะครูที่ปรึกษา กึ่งกลางหน้า ?>
 <table width="100%" class="sign" style="margin-top: 10pt;">

@@ -143,10 +143,12 @@ trk_render_header('บันทึกผลติดตาม', 'advisor');
   <label class="block">
     <span class="mb-1 block text-sm font-medium">รูปถ่าย (JPG/PNG ไม่เกิน <?= TRK_PHOTO_MAX ?> รูป)</span>
     <input type="file" name="photos[]" accept="image/jpeg,image/png" multiple
+           data-photo-crop="photo-crop" data-max="<?= TRK_PHOTO_MAX ?>" data-ratios="<?= e(implode(',', TRK_PHOTO_RATIOS)) ?>"
            class="block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-sand/50 file:px-3 file:py-2 file:text-sm">
-    <p class="mt-1 text-xs text-ink/55">การเยี่ยมบ้านต้องแนบอย่างน้อย 1 รูป ระบบจะย่อรูปให้อัตโนมัติ</p>
-    <?= trk_field_error($errors, 'photos') ?>
+    <p class="mt-1 text-xs text-ink/60">การเยี่ยมบ้านต้องแนบอย่างน้อย 1 รูป · เลือกรูปแล้วเลือกอัตราส่วน (<?= e(implode(', ', TRK_PHOTO_RATIOS)) ?>) ลากเพื่อจัดตำแหน่ง และเลื่อนแถบเพื่อซูม · ในเอกสาร ขร.3 แสดงแถวละ 1 รูป</p>
   </label>
+  <div id="photo-crop" class="space-y-4"></div>
+  <?= trk_field_error($errors, 'photos') ?>
 
   <label class="block">
     <span class="mb-1 block text-sm font-medium">เลขที่บันทึกข้อความ ขร.3 (ไม่บังคับ)</span>

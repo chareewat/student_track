@@ -499,15 +499,11 @@ function trk_docx_kr3(TrkDocx $w, array $doc, array $ctx): void
     $photos = array_values(array_filter($f['photos'], function ($p) {
         return is_file(TRK_ROOT . '/storage/uploads/' . $p);
     }));
-    if ($photos) {
-        $t = $w->section->addTable(['cellMargin' => Converter::cmToTwip(0.1)]);
-        foreach (array_chunk($photos, 2) as $pair) {
-            $t->addRow();
-            foreach ($pair as $p) {
-                $t->addCell(Converter::cmToTwip(8))->addImage(TRK_ROOT . '/storage/uploads/' . $p,
-                    ['width' => Converter::cmToPoint(7.6), 'height' => Converter::cmToPoint(5.7), 'alignment' => Jc::CENTER]);
-            }
-        }
+    // รูปถ่ายแถวละ 1 รูป คงอัตราส่วนที่ครอปไว้ (กรอบไม่เกิน 15 × 8.5 ซม.)
+    foreach ($photos as $p) {
+        $abs = TRK_ROOT . '/storage/uploads/' . $p;
+        [$pw, $ph] = trk_photo_fit($abs, 15, 8.5);
+        $w->section->addImage($abs, ['width' => Converter::cmToPoint($pw), 'height' => Converter::cmToPoint($ph), 'alignment' => Jc::CENTER]);
     }
     // หน้าหลักฐาน: ลงชื่อเฉพาะครูที่ปรึกษา กึ่งกลางหน้า
     $w->signatures([$w->sign($d['advisors'][0] ?? '', 'ครูที่ปรึกษา')]);
