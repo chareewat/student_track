@@ -465,7 +465,6 @@ function trk_docx_kr3(TrkDocx $w, array $doc, array $ctx): void
     $w->p([['ความเห็นผู้อำนวยการโรงเรียน', ['bold' => true]]]);
     $w->dottedLines(2);
     $w->signatures([['(' . TrkDocx::fill($d['signatories']['director'], 35) . ')', 'ผู้อำนวยการ' . $ctx['school']]], 7);
-    $w->p('"เรียนดี มีคุณธรรม"', ['alignment' => Jc::CENTER]);
 
     $w->pageBreak();
     $w->formCode('แบบ ขร.๓ (ต่อ)');
@@ -559,5 +558,4 @@ function trk_docx_kr6(TrkDocx $w, array $doc, array $ctx): void
     $w->p([['ความเห็นผู้อำนวยการโรงเรียน', ['bold' => true]]]);
     $w->dottedLines(2);
     $w->signatures([['(' . TrkDocx::fill($d['signatories']['director'], 35) . ')', 'ผู้อำนวยการ' . $ctx['school']]], 7);
-    $w->p('"เรียนดี มีคุณธรรม"', ['alignment' => Jc::CENTER]);
 }

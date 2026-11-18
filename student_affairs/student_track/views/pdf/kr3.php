@@ -93,7 +93,6 @@ $subjects = $isCase1 ? trk_kr3_subjects($d) : [];
     ผู้อำนวยการ<?= e($school) ?>
   </td></tr>
 </table>
-<div style="text-align: center; margin-top: 6pt;">"เรียนดี มีคุณธรรม"</div>
 
 <pagebreak />
 

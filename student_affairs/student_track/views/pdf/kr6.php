@@ -94,4 +94,3 @@ $occasions = array_values($d['occasions']);
     ผู้อำนวยการ<?= e($school) ?>
   </td></tr>
 </table>
-<div style="text-align: center; margin-top: 6pt;">"เรียนดี มีคุณธรรม"</div>
