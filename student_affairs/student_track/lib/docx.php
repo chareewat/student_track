@@ -121,22 +121,46 @@ class TrkDocx
         $this->blank();
     }
 
-    /** หัวหนังสือภายนอก (ขร.2, บค.14, ขร.5) */
+    /**
+     * หัวหนังสือภายนอก (ขร.2, บค.14, ขร.5): ครุฑ 3 ซม. กลางหน้า "ที่" และชื่อโรงเรียนอยู่ระนาบเท้าครุฑ
+     * ที่อยู่เริ่มกึ่งกลาง + 2 แท็บ วันที่เริ่มกึ่งกลาง (พื้นที่ข้อความกว้าง 16 ซม. กึ่งกลาง = 8 ซม.)
+     */
     public function letterHead(string $prefix, ?string $docNo, array $lines, array $date): void
     {
-        $this->section->addImage(TRK_ROOT . '/assets/img/garuda.jpg',
-            ['height' => Converter::cmToPoint(2.3), 'width' => Converter::cmToPoint(2.3), 'alignment' => Jc::CENTER]);
         $t = $this->section->addTable(['cellMargin' => 0]);
         $t->addRow();
-        $t->addCell(Converter::cmToTwip(8))->addText('ที่ ' . $prefix . self::fill($docNo, 12));
-        $right = $t->addCell(Converter::cmToTwip(8));
+        $t->addCell(Converter::cmToTwip(6.5), ['valign' => 'bottom'])->addText('ที่ ' . $prefix . self::fill($docNo, 12));
+        $t->addCell(Converter::cmToTwip(3), ['valign' => 'bottom'])->addImage(TRK_ROOT . '/assets/img/garuda.jpg',
+            ['height' => Converter::cmToPoint(3), 'width' => Converter::cmToPoint(3), 'alignment' => Jc::CENTER]);
+        $addressIndent = ['indentation' => ['left' => Converter::cmToTwip(2.54 - 1.5)]];
+        $t->addCell(Converter::cmToTwip(6.5), ['valign' => 'bottom'])->addText(array_shift($lines), null, $addressIndent);
+        $t->addRow();
+        $t->addCell(Converter::cmToTwip(6.5));
+        $t->addCell(Converter::cmToTwip(3));
+        $rest = $t->addCell(Converter::cmToTwip(6.5));
         foreach ($lines as $line) {
-            // ที่อยู่โรงเรียนเยื้องขวา 2 แท็บ
-            $right->addText($line, null, ['indentation' => ['left' => Converter::cmToTwip(2.54)]]);
+            $rest->addText($line, null, $addressIndent);
         }
         $this->p('วันที่ ' . $date['day'] . ' เดือน ' . $date['month'] . ' พ.ศ. ' . $date['year'],
             ['indentation' => ['left' => Converter::cmToTwip(8)], 'spaceBefore' => 120]);
         $this->blank();
+    }
+
+    /**
+     * ส่วนท้ายหนังสือภายนอก: "ขอแสดงความนับถือ" เริ่มกึ่งกลาง ชื่อและตำแหน่ง ผอ. จัดกึ่งกลางใต้คำนี้
+     * (คำนี้กว้างประมาณ 2.97 ซม. ที่ TH Sarabun New 16pt จึงจุดกึ่งกลางอยู่ที่ 8 + 1.485 ซม.)
+     */
+    public function letterClosing(string $name, string $title): void
+    {
+        $this->p('ขอแสดงความนับถือ', ['indentation' => ['left' => Converter::cmToTwip(8)], 'spaceBefore' => 240]);
+        $this->blank(16);
+        $this->blank(16);
+        $center = 8 + 1.485;
+        $span = min(5.0, 16 - $center);
+        $para = ['alignment' => Jc::CENTER, 'indentation' => [
+            'left' => Converter::cmToTwip($center - $span), 'right' => Converter::cmToTwip(16 - $center - $span)]];
+        $this->p($name, $para);
+        $this->p($title, $para);
     }
 
     /**
@@ -381,7 +405,7 @@ function trk_docx_kr2(TrkDocx $w, array $doc, array $ctx): void
     $w->p([$w->checkbox(false), ' ขาดส่งงานที่ได้รับมอบหมาย ' . str_repeat('.', 70)], ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
     $w->p([$w->checkbox(false), ' พฤติกรรมอื่น ๆ ' . str_repeat('.', 85)], ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
     $w->body('จึงเรียนมาเพื่อทราบ');
-    $w->signatures([['ขอแสดงความนับถือ', '', '', '(' . TrkDocx::fill($d['signatories']['director'], 35) . ')', 'ผู้อำนวยการ' . $ctx['school']]], 7);
+    $w->letterClosing('(' . TrkDocx::fill($d['signatories']['director'], 35) . ')', 'ผู้อำนวยการ' . $ctx['school']);
     trk_docx_parent_slip($w, $d, $d['doc_no_prefix'] . ($doc['doc_no'] ?? ''));
     $w->p([['หมายเหตุ: ', ['bold' => true]], ['ในกรณีที่ครูที่ปรึกษาได้รับรายงานจากครูประจำวิชาผ่านแบบฟอร์ม ขร.1 ครูที่ปรึกษาจะต้องทำแบบฟอร์ม ขร.2'
         . ' ส่งให้ผู้ปกครองทราบภายในสัปดาห์ที่ 8 สำหรับเอกสาร ขร.2 ในส่วนที่ 2 ให้ครูที่ปรึกษาเป็นผู้เก็บรวบรวมเอกสารเพื่อเป็นหลักฐาน', ['size' => 16]]],
@@ -414,7 +438,7 @@ function trk_docx_bk14(TrkDocx $w, array $doc, array $ctx): void
         . ' โรงเรียนจึงขอเตือนให้ท่านส่งนักเรียนเข้าเรียนตามปกติโดยด่วน หากฝ่าฝืนโดยปราศจากเหตุผลอันสมควร'
         . ' จะมีความผิดตามมาตรา 15 แห่งพระราชบัญญัติการศึกษาภาคบังคับ พ.ศ. 2545 ต้องระวางโทษปรับไม่เกิน 10,000 บาท (หนึ่งหมื่นบาทถ้วน)');
     $w->body('จึงเรียนมาเพื่อทราบและดำเนินการต่อไป');
-    $w->signatures([['ขอแสดงความนับถือ', '', '', '(' . TrkDocx::fill($d['signatories']['director'], 35) . ')', 'ผู้อำนวยการ' . $ctx['school']]], 7);
+    $w->letterClosing('(' . TrkDocx::fill($d['signatories']['director'], 35) . ')', 'ผู้อำนวยการ' . $ctx['school']);
     trk_docx_parent_slip($w, $d, $prefix . ($doc['doc_no'] ?? ''));
     $w->blank();
     $w->p([['หลักฐานการติดตามนักเรียนขาดเรียน ครั้งที่ ' . (int) $d['round_no'], ['bold' => true]]], ['alignment' => Jc::CENTER]);
@@ -514,7 +538,7 @@ function trk_docx_kr5(TrkDocx $w, array $doc, array $ctx): void
     $w->body('หากท่านไม่ติดต่อทางโรงเรียนภายในวันที่ ' . trk_thai_date($d['deadline'])
         . ' นักเรียนในความปกครองของท่านจะไม่มีสิทธิ์สอบและไม่จบหลักสูตรการศึกษา โรงเรียนจำเป็นต้องดำเนินการตามระเบียบของโรงเรียนต่อไป');
     $w->body('จึงเรียนมาเพื่อทราบ');
-    $w->signatures([['ขอแสดงความนับถือ', '', '', '(' . TrkDocx::fill($d['signatories']['director'], 35) . ')', 'ผู้อำนวยการ' . $ctx['school']]], 7);
+    $w->letterClosing('(' . TrkDocx::fill($d['signatories']['director'], 35) . ')', 'ผู้อำนวยการ' . $ctx['school']);
     trk_docx_parent_slip($w, $d, $d['doc_no_prefix'] . ($doc['doc_no'] ?? ''));
 }
 

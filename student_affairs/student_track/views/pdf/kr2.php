@@ -36,13 +36,7 @@ $fullNo = $docNoPrefix . ($doc['doc_no'] ?? '');
 <div class="list"><?= trk_pdf_checkbox(false) ?> พฤติกรรมอื่น ๆ ..........................................................................................................</div>
 
 <p class="indent">จึงเรียนมาเพื่อทราบ</p>
-<table width="100%" class="sign">
-  <tr><td width="45%"></td><td>
-    ขอแสดงความนับถือ<br><br><br>
-    (<?= trk_pdf_fill($d['signatories']['director'], 35) ?>)<br>
-    ผู้อำนวยการ<?= e($school) ?>
-  </td></tr>
-</table>
+<?php require __DIR__ . '/_letter_closing.php'; ?>
 
 <div class="tear">------------------------------------------ ผู้ปกครองส่งส่วนที่ 2 คืนโรงเรียน ------------------------------------------</div>
 <p class="indent">

@@ -29,13 +29,7 @@ $advisors = implode(' และ ', array_filter($d['advisors']));
   นักเรียนในความปกครองของท่านจะไม่มีสิทธิ์สอบและไม่จบหลักสูตรการศึกษา โรงเรียนจำเป็นต้องดำเนินการตามระเบียบของโรงเรียนต่อไป
 </p>
 <p class="indent">จึงเรียนมาเพื่อทราบ</p>
-<table width="100%" class="sign">
-  <tr><td width="45%"></td><td>
-    ขอแสดงความนับถือ<br><br><br>
-    (<?= trk_pdf_fill($d['signatories']['director'], 35) ?>)<br>
-    ผู้อำนวยการ<?= e($school) ?>
-  </td></tr>
-</table>
+<?php require __DIR__ . '/_letter_closing.php'; ?>
 
 <div class="tear">------------------------------------------ ผู้ปกครองส่งส่วนที่ 2 คืนโรงเรียน ------------------------------------------</div>
 <p class="indent">

@@ -60,7 +60,7 @@ $cancelled = $doc['status'] === 'cancelled';
 </p>
 
 <?php foreach ($d['students'] as $i => $s): ?>
-  <div class="list">
+  <div>
     <?= $i + 1 ?>. <?= e($s['name']) ?> &nbsp; เลขประจำตัว <?= e($s['code']) ?> &nbsp; ขาดเรียนสะสมมาแล้ว <?= (int) $s['absent_hours'] ?> ชั่วโมง
   </div>
 <?php endforeach; ?>
