@@ -20,10 +20,24 @@ $customSubjects = trk_db_all(
 $errors = [];
 $values = trk_settings();
 
+// ---------------------------------------------------------------- เปิด/ปิดระบบ (ฟอร์มแยก)
+if (trk_is_post() && ($_POST['form'] ?? '') === 'system') {
+    trk_csrf_check();
+    $open = ($_POST['system_open'] ?? '') === '1';
+    $message = mb_substr(trim((string) ($_POST['system_closed_message'] ?? '')), 0, 255);
+    trk_save_settings(['system_open' => $open ? '1' : '0', 'system_closed_message' => $message], $me['id']);
+    trk_audit($open ? 'system.open' : 'system.close', ['message' => $message]);
+    trk_flash('success', $open ? 'เปิดระบบแล้ว ผู้ใช้ทุกคนเข้าใช้งานได้ตามปกติ' : 'ปิดระบบแล้ว ผู้ใช้อื่นนอกจาก admin จะเห็นข้อความแจ้งปิดระบบ');
+    trk_redirect('admin/settings.php');
+}
+
 if (trk_is_post()) {
     trk_csrf_check();
     $input = [];
     foreach (array_keys(trk_setting_defaults()) as $key) {
+        if (in_array($key, TRK_SYSTEM_SETTING_KEYS, true)) {
+            continue; // บันทึกจากกล่องเปิด/ปิดระบบเท่านั้น
+        }
         $input[$key] = trim((string) ($_POST[$key] ?? ''));
     }
 
@@ -99,6 +113,34 @@ function trk_settings_error(array $errors, string $key): string
 trk_render_header('ตั้งค่า', 'settings');
 ?>
 <h1 class="text-2xl font-semibold tracking-tight flex items-center gap-3"><span class="title-icon"><?= trk_icon('sliders', 'h-5 w-5') ?></span>ตั้งค่า</h1>
+
+<?php $isOpen = trk_system_open(); ?>
+<section id="system" class="mt-4 card p-5 scroll-mt-40 <?= $isOpen ? '' : 'ring-2 ring-rose-300' ?>">
+  <div class="flex flex-wrap items-center gap-2">
+    <h2 class="font-semibold flex items-center gap-2"><?= trk_icon('activity', 'h-[18px] w-[18px] text-navy/70') ?>เปิด/ปิดระบบ</h2>
+    <span class="<?= $isOpen ? 'chip-green' : 'chip-red' ?>"><?= $isOpen ? 'เปิดใช้งานอยู่' : 'ปิดอยู่' ?></span>
+  </div>
+  <p class="mt-1 text-sm text-ink/60">
+    เมื่อปิด ผู้ใช้ทุกคนยกเว้น admin จะเห็นข้อความด้านล่างแทนทุกหน้า และบันทึก/พิมพ์เอกสารไม่ได้ ข้อมูลที่บันทึกไว้แล้วไม่เปลี่ยนแปลง
+    ใช้ตอนอัปเดตระบบหรือแก้ไขข้อมูล
+  </p>
+  <form method="post" class="mt-4 space-y-3">
+    <?= trk_csrf_field() ?>
+    <input type="hidden" name="form" value="system">
+    <input type="hidden" name="system_open" value="<?= $isOpen ? '0' : '1' ?>">
+    <label class="block">
+      <span class="label">ข้อความที่ผู้ใช้เห็นตอนปิดระบบ</span>
+      <input name="system_closed_message" maxlength="255" value="<?= e(trk_setting('system_closed_message')) ?>"
+             placeholder="<?= e(trk_system_closed_message()) ?>" class="input w-full">
+      <p class="mt-1 text-xs text-ink/60">เว้นว่างได้ ระบบจะใช้ข้อความในช่องเป็นค่าเริ่มต้น</p>
+    </label>
+    <?php if ($isOpen): ?>
+      <button class="btn btn-red" onclick="return confirm('ปิดระบบ? ผู้ใช้อื่นนอกจาก admin จะเข้าใช้งานไม่ได้จนกว่าจะเปิดอีกครั้ง')"><?= trk_icon('x-circle') ?>ปิดระบบ</button>
+    <?php else: ?>
+      <button class="btn btn-green"><?= trk_icon('check-circle') ?>เปิดระบบ</button>
+    <?php endif; ?>
+  </form>
+</section>
 
 <form method="post" class="mt-4 space-y-6">
   <?= trk_csrf_field() ?>

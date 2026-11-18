@@ -52,6 +52,8 @@ function trk_demo_build(): array
     }
 
     // สิทธิ์: ทุกคนเป็นครู + บทบาทพิเศษของบัญชีเจ้าหน้าที่
+    // รีเซ็ตแล้วระบบต้องเปิดเสมอ (เผื่อทดลองปิดระบบในหน้าตั้งค่าไว้)
+    trk_db_exec("DELETE FROM trk_settings WHERE setting_key IN ('system_open', 'system_closed_message')");
     trk_db_exec('DELETE FROM trk_user_roles');
     $special = ['admin' => 'admin', 'exec' => 'executive', 'acad' => 'academic', 'affairs' => 'affairs'];
     foreach (trk_db_all('SELECT psn_mem_id, psn_mem_username FROM psn_member') as $m) {

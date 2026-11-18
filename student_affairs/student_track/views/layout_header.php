@@ -60,6 +60,13 @@ foreach ($menu as $item) {
     </div>
   </header>
   <main id="main" tabindex="-1" class="mx-auto max-w-6xl px-3 py-6 focus:outline-none sm:px-4">
+    <?php if (!trk_system_open() && trk_has_role('admin')): ?>
+      <div class="alert-error mb-4" role="status">
+        <?= trk_icon('alert', 'mt-0.5 h-4 w-4') ?>
+        <span><b>ระบบปิดอยู่</b> ผู้ใช้อื่นนอกจาก admin เข้าใช้งานไม่ได้
+          <a href="<?= e(trk_url('admin/settings.php#system')) ?>" class="btn btn-soft-red btn-sm ml-2"><?= trk_icon('sliders') ?>เปิดระบบ</a></span>
+      </div>
+    <?php endif; ?>
     <?php foreach (trk_take_flashes() as $flash): ?>
       <div class="<?= $flash['type'] === 'error' ? 'alert-error' : 'alert-success' ?> mb-4" role="<?= $flash['type'] === 'error' ? 'alert' : 'status' ?>">
         <?= trk_icon($flash['type'] === 'error' ? 'alert' : 'check-circle', 'mt-0.5 h-4 w-4') ?>

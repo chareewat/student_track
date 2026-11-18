@@ -18,7 +18,25 @@ function trk_setting_defaults(): array
         'academic_phone' => '',             // โทรศัพท์กลุ่มบริหารวิชาการ (ขร.5)
         'overdue_kr2_days' => '7',          // Dashboard: รอออก ขร.2 นานเกินกี่วันถือว่าค้าง
         'overdue_followup_days' => '14',    // Dashboard: รอบันทึกผลติดตามนานเกินกี่วันถือว่าค้าง
+        // เปิด/ปิดระบบ (แก้จากกล่องด้านบนของหน้าตั้งค่า ไม่ใช่ฟอร์มตั้งค่าหลัก)
+        'system_open' => '1',               // '1' = เปิดให้ทุกคนใช้, '0' = ปิด (เข้าได้เฉพาะ admin)
+        'system_closed_message' => '',      // ข้อความที่ผู้ใช้เห็นตอนปิดระบบ
     ];
+}
+
+/** คีย์ตั้งค่าที่บันทึกจากกล่องเปิด/ปิดระบบ ฟอร์มตั้งค่าหลักจะไม่แตะ */
+const TRK_SYSTEM_SETTING_KEYS = ['system_open', 'system_closed_message'];
+
+function trk_system_open(): bool
+{
+    return trk_setting('system_open') !== '0';
+}
+
+/** ข้อความที่แสดงให้ผู้ใช้เห็นตอนปิดระบบ */
+function trk_system_closed_message(): string
+{
+    $msg = trim(trk_setting('system_closed_message'));
+    return $msg !== '' ? $msg : 'ระบบปิดปรับปรุงชั่วคราว กรุณาเข้าใช้งานใหม่ภายหลัง';
 }
 
 function trk_settings(): array

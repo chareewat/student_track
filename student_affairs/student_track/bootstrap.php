@@ -46,3 +46,11 @@ if (!trk_user()['roles']) {
     trk_render_message('ยังไม่ได้รับสิทธิ์ใช้งาน', 'กรุณาติดต่อผู้ดูแลระบบเพื่อขอสิทธิ์ใช้งานระบบติดตามนักเรียน');
     exit;
 }
+
+// ปิดระบบ (admin ตั้งในหน้าตั้งค่า): ทุกหน้า ทุกคำขอ รวมถึงการบันทึกและพิมพ์เอกสาร ใช้ได้เฉพาะ admin
+if (!trk_system_open() && !trk_has_role('admin')) {
+    http_response_code(503);
+    header('Retry-After: 3600');
+    trk_render_message('ระบบปิดชั่วคราว', trk_system_closed_message());
+    exit;
+}
