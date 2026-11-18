@@ -121,6 +121,11 @@ function trk_demo_build(): array
     $state['kr6_student'] = '900048';
     // 1.5 ม.ปลาย รอ ขร.2 (ไม่มี บค.14) และค้างเกินกำหนด: 900048 คณิตศาสตร์
     $state['kr2_hs_round'] = trk_demo_kr1('900048', 'ค', '2026-11-02');
+    // 1.6 กดออก ขร.1 ครั้งเดียวได้หลายใบ (ม.4/1 วิทยาศาสตร์): 900048 ออกครั้งที่ 1 ไปแล้วและขาดถึง 20%
+    //     ส่วน 900046, 900049 เพิ่งขาดถึง 10% → ได้ ขร.1 ครั้งที่ 2 (1 คน) และครั้งที่ 1 (2 คน) แยกใบ
+    $mixed = trk_demo_set_subject_absence(['900046', '900049'], 'ว', '4/1', 10);
+    $state['mixed_subject'] = $mixed['label'];
+    $state['mixed_teacher'] = trk_demo_username(trk_demo_teacher($mixed['subject_id'], $mixed['classroom_id']));
 
     // 3.2 ม.6/1 900077: ส่ง ขร.6 ถึงเจ้าหน้าที่วิชาการแล้ว (และสุขศึกษาถึงเกณฑ์ครั้งที่ 2 แล้ว)
     $r = trk_demo_kr5('900077', '2026-10-26');
@@ -208,6 +213,41 @@ function trk_demo_kr1(string $code, string $prefix, string $date): int
     );
     trk_db_exec('UPDATE trk_rounds SET opened_at = ? WHERE id = ?', ["$date 10:15:00", $roundId]);
     return $roundId;
+}
+
+/**
+ * ปรับการเช็คชื่อรายวิชาให้นักเรียนที่ระบุขาดพอดี $pct% ของเวลาเรียนทั้งหมด (คาบแรก ๆ เป็นขาด ที่เหลือเป็นมา)
+ * ในรายวิชากลุ่ม $prefix ที่สอนห้อง $room คืนข้อมูลรายวิชาและห้อง
+ */
+function trk_demo_set_subject_absence(array $codes, string $prefix, string $room, int $pct): array
+{
+    $sem = trk_semester_id();
+    $subject = trk_db_one(
+        "SELECT DISTINCT s.vic_subject_id, s.vic_subject_code, s.vic_subject_name, s.vic_subject_credit
+         FROM vic_attendance_teach t JOIN vic_subject s ON s.vic_subject_id = t.vic_subject_id
+         WHERE t.std_semester_id = ? AND t.vic_att_classroom = ? AND s.vic_subject_code LIKE ? LIMIT 1",
+        [$sem, $room, $prefix . '%']
+    );
+    $need = (int) ceil(trk_subject_total_hours((int) $subject['vic_subject_id'], (float) $subject['vic_subject_credit']) * $pct / 100);
+    foreach ($codes as $code) {
+        $rows = trk_db_all(
+            'SELECT a.vic_att_subject_id FROM vic_attendance_subject a
+             JOIN vic_attendance_teach t ON t.vic_att_teach_id = a.vic_att_teach_id
+             WHERE t.std_semester_id = ? AND t.vic_subject_id = ? AND t.vic_att_classroom = ? AND a.std_student_code = ?
+             ORDER BY t.vic_att_date_teach, t.vic_att_period',
+            [$sem, (int) $subject['vic_subject_id'], $room, $code]
+        );
+        foreach ($rows as $i => $r) {
+            trk_db_exec('UPDATE vic_attendance_subject SET vic_att_subject_check_status = ? WHERE vic_att_subject_id = ?',
+                [$i < $need ? 2 : 1, (int) $r['vic_att_subject_id']]);
+        }
+    }
+    [$level, $no] = explode('/', $room);
+    return [
+        'subject_id' => (int) $subject['vic_subject_id'],
+        'classroom_id' => (int) trk_db_value('SELECT std_classroom_id FROM std_classroom WHERE std_classroom_level = ? AND std_classroom_room = ?', [$level, $no]),
+        'label' => $subject['vic_subject_code'] . ' ' . $subject['vic_subject_name'] . ' ม.' . $room,
+    ];
 }
 
 /** ครูที่ปรึกษาออก ขร.2 (+ บค.14 ถ้า ม.ต้น) ใบเดียวให้รอบที่ระบุ (หลายรายวิชาได้) */
