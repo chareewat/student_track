@@ -17,7 +17,7 @@ $date = trk_thai_date_parts($d['issued_date']);
 <table width="100%" class="letter-head">
   <tr>
     <td width="55%">ที่ <?= e($docNoPrefix) ?><?= trk_pdf_fill($doc['doc_no'], 12) ?></td>
-    <td width="45%">
+    <td width="45%" style="padding-left: 1.27cm;">
       <?= e($school) ?><br>
       อำเภอ<?= e($amphur) ?><br>
       จังหวัด<?= e($province) ?> <?= e($d['postcode'] ?? '') ?>

@@ -131,7 +131,8 @@ class TrkDocx
         $t->addCell(Converter::cmToTwip(9))->addText('ที่ ' . $prefix . self::fill($docNo, 12));
         $right = $t->addCell(Converter::cmToTwip(7));
         foreach ($lines as $line) {
-            $right->addText($line);
+            // ที่อยู่โรงเรียนเยื้องขวา 1 แท็บ
+            $right->addText($line, null, ['indentation' => ['left' => Converter::cmToTwip(1.27)]]);
         }
         $this->p('วันที่ ' . $date['day'] . ' เดือน ' . $date['month'] . ' พ.ศ. ' . $date['year'],
             ['indentation' => ['left' => Converter::cmToTwip(8)], 'spaceBefore' => 120]);
@@ -301,7 +302,6 @@ function trk_docx_kr1(TrkDocx $w, array $doc, array $ctx): void
     $w->p([['ความคิดเห็นของผู้อำนวยการ' . $ctx['school'], ['bold' => true]]]);
     $w->dottedLines(2);
     $w->signatures([$w->sign($d['signatories']['director'], 'ผู้อำนวยการ' . $ctx['school'])], 7);
-    $w->p('"เรียนดี มีคุณธรรม"', ['alignment' => Jc::CENTER]);
 
     $w->pageBreak();
     $w->p([['ตารางเปรียบเทียบหน่วยกิตและเวลาขาดเรียน', ['bold' => true]]], ['alignment' => Jc::CENTER]);

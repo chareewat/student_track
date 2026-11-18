@@ -106,9 +106,9 @@ $cancelled = $doc['status'] === 'cancelled';
     ผู้อำนวยการ<?= e($school) ?>
   </td></tr>
 </table>
-<div style="text-align: center; margin-top: 6pt;">"เรียนดี มีคุณธรรม"</div>
 
-<div style="margin-top: 10pt; text-align: center;"><b>ตารางเปรียบเทียบหน่วยกิตและเวลาขาดเรียน</b></div>
+<pagebreak />
+<div style="text-align: center;"><b>ตารางเปรียบเทียบหน่วยกิตและเวลาขาดเรียน</b></div>
 <table class="grid" width="100%">
   <tr>
     <th>หน่วยกิต</th>
@@ -136,7 +136,7 @@ $cancelled = $doc['status'] === 'cancelled';
 <pagebreak />
 
 <div class="form-code">เอกสารแนบ แบบ ขร.๑</div>
-<div style="text-align: center; font-size: 13pt; font-weight: bold;">วันที่นักเรียนขาดเรียน</div>
+<div style="text-align: center; font-size: 21pt; font-weight: bold;">วันที่นักเรียนขาดเรียน</div>
 <div style="text-align: center;">
   รายวิชา <?= e($d['subject']['code']) ?> <?= e($d['subject']['name']) ?> ชั้นมัธยมศึกษาปีที่ <?= e($classLabel) ?>
   ภาคเรียนที่ <?= e($d['semester']['term']) ?>/<?= e($d['semester']['year']) ?>

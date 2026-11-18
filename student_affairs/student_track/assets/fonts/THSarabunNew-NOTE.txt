@@ -1,0 +1,7 @@
+TH Sarabun New (THSarabunNew*.ttf)
+Copyright (c) 2010-2011 Software Industry Promotion Agency (SIPA), created by Suppakit Chalermlarp.
+สัญญาอนุญาต GNU General Public License v2 ขึ้นไป ตามที่ระบุในไฟล์ฟอนต์ (แจกจ่ายและแก้ไขได้)
+
+แก้ไขจากต้นฉบับ: เพิ่ม glyph ว่าง uni200B (ZERO WIDTH SPACE, กว้าง 0) ในทั้ง 4 ไฟล์
+เหตุผล: mPDF แทรก U+200B ที่จุดตัดคำภาษาไทย ฟอนต์ต้นฉบับไม่มีอักขระนี้ จึงแสดงเป็นช่องสี่เหลี่ยมใน PDF
+แก้ด้วย fontTools (Python) ไม่ได้เปลี่ยนรูปอักษรอื่น
