@@ -141,7 +141,7 @@ class TrkDocx
         foreach ($lines as $line) {
             $rest->addText($line, null, $addressIndent);
         }
-        $this->p('วันที่ ' . $date['day'] . ' เดือน ' . $date['month'] . ' พ.ศ. ' . $date['year'],
+        $this->p('วันที่ ' . $date['day'] . ' ' . $date['month'] . ' พ.ศ. ' . $date['year'],
             ['indentation' => ['left' => Converter::cmToTwip(8)], 'spaceBefore' => 120]);
         $this->blank();
     }

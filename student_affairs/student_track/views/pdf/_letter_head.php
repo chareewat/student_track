@@ -44,6 +44,6 @@ $mm = function (float $v): string {
 <table width="100%" style="margin-top: 6pt;">
   <tr>
     <td style="width: <?= $mm($half) ?>;"></td>
-    <td>วันที่ <?= e($date['day']) ?> เดือน <?= e($date['month']) ?> พ.ศ. <?= e($date['year']) ?></td>
+    <td>วันที่ <?= e($date['day']) ?> <?= e($date['month']) ?> พ.ศ. <?= e($date['year']) ?></td>
   </tr>
 </table>
