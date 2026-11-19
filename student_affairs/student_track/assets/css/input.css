@@ -80,6 +80,9 @@
   /* ปุ่มเมนูด้านบน */
   .nav-btn { @apply btn btn-sm bg-white/70 text-navy shadow-none ring-1 ring-sand hover:bg-white hover:shadow-btn; }
   .nav-btn-active { @apply btn btn-sm btn-navy shadow-[inset_0_-3px_0_#EE6200]; }
+  /* ชื่อเอกสารที่ออกจากเมนูนั้น เช่น ขร.1 (ป้ายเล็กในปุ่มเมนู) */
+  .nav-doc { @apply ml-0.5 inline-flex items-center rounded-md bg-navy-50 px-1.5 text-[12px] font-semibold leading-5 text-navy ring-1 ring-navy/15; }
+  .nav-btn-active .nav-doc { @apply bg-white/15 text-white ring-white/30; }
   .nav-count { @apply ml-0.5 inline-flex min-w-5 items-center justify-center rounded-full bg-accent-600 px-1.5 text-[12px] font-bold leading-5 text-white; }
 
   /* ---------------------------------------------------------------- พื้นผิว */

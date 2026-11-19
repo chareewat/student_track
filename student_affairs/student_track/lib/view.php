@@ -82,7 +82,7 @@ function trk_take_flashes(): array
 
 // ---------------------------------------------------------------- layout
 
-/** เมนูตาม role (เพิ่มเมนูของแต่ละเฟสที่นี่) */
+/** เมนูตาม role (เพิ่มเมนูของแต่ละเฟสที่นี่) 'docs' = ชื่อเอกสารที่ออกจากเมนูนั้น แสดงเป็นป้ายเล็กในปุ่ม */
 function trk_menu(): array
 {
     $user = trk_user();
@@ -97,24 +97,24 @@ function trk_menu(): array
              WHERE r.semester_id = ? AND r.status = 'open'",
             [$user['id'], trk_semester_id()]
         );
-        $items[] = ['key' => 'advisor', 'icon' => 'clipboard', 'label' => 'งานครูที่ปรึกษา', 'count' => $pending, 'url' => trk_url('advisor/index.php')];
+        $items[] = ['key' => 'advisor', 'icon' => 'clipboard', 'label' => 'งานครูที่ปรึกษา', 'docs' => 'ขร.2 · ขร.3', 'count' => $pending, 'url' => trk_url('advisor/index.php')];
         $case2 = 0;
         foreach (trk_advisor_classrooms($user['id'], trk_semester_id()) as $room) {
             foreach (trk_case2_candidates((int) $room['std_classroom_id'], trk_semester_id()) as $c) {
                 $case2 += $c['eligible'] ? 1 : 0;
             }
         }
-        $items[] = ['key' => 'case2', 'icon' => 'calendar-x', 'label' => 'นักเรียนขาดติดต่อกัน', 'count' => $case2, 'url' => trk_url('advisor/case2.php')];
+        $items[] = ['key' => 'case2', 'icon' => 'calendar-x', 'label' => 'นักเรียนขาดติดต่อกัน', 'docs' => 'ขร.5', 'count' => $case2, 'url' => trk_url('advisor/case2.php')];
         $case3 = 0;
         foreach (trk_advisor_classrooms($user['id'], trk_semester_id()) as $room) {
             foreach (trk_case3_candidates((int) $room['std_classroom_id'], trk_semester_id()) as $c) {
                 $case3 += $c['eligible'] ? 1 : 0;
             }
         }
-        $items[] = ['key' => 'case3', 'icon' => 'user-x', 'label' => 'เสนอจำหน่าย', 'count' => $case3, 'url' => trk_url('advisor/case3.php')];
+        $items[] = ['key' => 'case3', 'icon' => 'user-x', 'label' => 'เสนอจำหน่าย', 'docs' => 'ขร.6', 'count' => $case3, 'url' => trk_url('advisor/case3.php')];
     }
     if (trk_teaching_assignments($user['id'], trk_semester_id())) {
-        $items[] = ['key' => 'case1', 'icon' => 'book', 'label' => 'นักเรียนขาดรายวิชา', 'url' => trk_url('case1/index.php')];
+        $items[] = ['key' => 'case1', 'icon' => 'book', 'label' => 'นักเรียนขาดรายวิชา', 'docs' => 'ขร.1', 'url' => trk_url('case1/index.php')];
     }
     if (trk_sees_all_rooms()) {
         $items[] = ['key' => 'kr6', 'icon' => 'file-warning', 'label' => 'ขร.6 เสนอจำหน่าย', 'url' => trk_url('academic/kr6.php')];

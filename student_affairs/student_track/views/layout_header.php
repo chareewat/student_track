@@ -53,6 +53,7 @@ foreach ($menu as $item) {
           <a href="<?= e($item['url']) ?>" class="<?= $isActive ? 'nav-btn-active' : 'nav-btn' ?> justify-start lg:justify-center" <?= $isActive ? 'aria-current="page"' : '' ?>>
             <?= trk_icon($item['icon'] ?? 'chevron-right') ?>
             <?= e($item['label']) ?>
+            <?php if (!empty($item['docs'])): ?><span class="nav-doc"><?= e($item['docs']) ?></span><?php endif; ?>
             <?php if ($count > 0): ?><span class="nav-count"><?= $count > 99 ? '99+' : $count ?></span><?php endif; ?>
           </a>
         <?php endforeach; ?>
