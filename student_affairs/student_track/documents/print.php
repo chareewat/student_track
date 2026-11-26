@@ -17,7 +17,7 @@ if (!isset($templates[$doc['doc_type']])) {
 }
 
 $title = trk_document_title($doc) . ' #' . $doc['id'];
-$mpdf = trk_pdf_new($title);
+$mpdf = trk_pdf_new($title, trk_document_family($doc['doc_type']));
 // เอกสารราชการใช้เลขไทย: แปลงเฉพาะข้อความที่แสดง (ไม่แตะ CSS/attribute)
 $html = trk_thai_digits_html(trk_pdf_template($templates[$doc['doc_type']], [
     'doc' => $doc,

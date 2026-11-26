@@ -3,7 +3,7 @@
  * หัวหนังสือภายนอก (ขร.2, บค.14, ขร.5)
  *  - ตราครุฑสูง 3 ซม. กลางหน้า
  *  - "ที่ ..." (ซ้าย) และชื่อโรงเรียน (ขวา) อยู่ระนาบเดียวกับเท้าครุฑ
- *  - ที่อยู่โรงเรียนเริ่มจากกึ่งกลางหน้าเยื้องขวา 2 แท็บ
+ *  - ที่อยู่โรงเรียนเริ่มที่ 11.5 ซม. จากขอบซ้ายของพื้นที่ข้อความ
  *  - วันที่เริ่มที่กึ่งกลางหน้า
  * @var array $doc
  * @var string $formCode  เช่น "แบบ ขร.๒"
@@ -12,10 +12,10 @@
  */
 $d = $doc['data'];
 $date = trk_thai_date_parts($d['issued_date']);
-$half = TRK_PDF_TEXT_WIDTH_MM / 2;
+$half = trk_pdf_text_area_mm() / 2;
 $garuda = 30.0;                       // ครุฑ 3 x 3 ซม.
 $left = $half - $garuda / 2;          // ช่อง "ที่" จบที่ขอบซ้ายของครุฑ
-$addressPad = 25.4 - $garuda / 2;     // ที่อยู่เริ่มที่กึ่งกลาง + 2 แท็บ
+$addressPad = TRK_LETTER_ADDRESS_CM * 10 - $half - $garuda / 2; // ที่อยู่เริ่มที่ 11.5 ซม.
 $mm = function (float $v): string {
     return number_format($v, 1, '.', '') . 'mm';
 };
@@ -41,7 +41,7 @@ $mm = function (float $v): string {
     </td>
   </tr>
 </table>
-<table width="100%" style="margin-top: 6pt;">
+<table width="100%" class="flush" style="margin-top: 6pt;">
   <tr>
     <td style="width: <?= $mm($half) ?>;"></td>
     <td>วันที่ <?= e($date['day']) ?> <?= e($date['month']) ?> พ.ศ. <?= e($date['year']) ?></td>

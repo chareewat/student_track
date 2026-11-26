@@ -55,6 +55,31 @@ function trk_document_can_view(array $doc, int $memberId): bool
 /** เอกสารที่ครูที่ปรึกษาของห้องออก ครูที่ปรึกษาทุกคนของห้องยกเลิกแทนกันได้ (ขร.1 เป็นของครูประจำวิชา) */
 const TRK_ADVISOR_DOC_TYPES = ['KR2', 'BK14', 'KR3', 'KR5', 'KR6'];
 
+/** หนังสือภายนอก (ส่งถึงผู้ปกครอง) ชนิดอื่นเป็นบันทึกข้อความ (หนังสือภายใน) */
+const TRK_LETTER_DOC_TYPES = ['KR2', 'BK14', 'KR5'];
+
+/** ขอบกระดาษ A4 (ซม.) ตามที่โรงเรียนกำหนด ใช้ทั้ง PDF และ Word */
+const TRK_PAGE_MARGINS_CM = [
+    'memo' => ['top' => 2.25, 'bottom' => 0.0, 'left' => 2.54, 'right' => 2.0],
+    'letter' => ['top' => 2.25, 'bottom' => 1.5, 'left' => 2.54, 'right' => 2.54],
+];
+
+/** หนังสือภายนอก: ที่อยู่โรงเรียนเริ่มที่ 11.5 ซม. (วัดจากขอบซ้ายของพื้นที่ข้อความ แบบไม้บรรทัดใน Word) */
+const TRK_LETTER_ADDRESS_CM = 11.5;
+
+/** 'letter' หรือ 'memo' */
+function trk_document_family(string $type): string
+{
+    return in_array($type, TRK_LETTER_DOC_TYPES, true) ? 'letter' : 'memo';
+}
+
+/** ความกว้างพื้นที่ข้อความ (ซม.) ของกระดาษ A4 ตามชนิดเอกสาร */
+function trk_page_text_width_cm(string $family): float
+{
+    $m = TRK_PAGE_MARGINS_CM[$family];
+    return 21.0 - $m['left'] - $m['right'];
+}
+
 /**
  * ใครยกเลิกได้: ผู้ออก, ครูที่ปรึกษาของห้อง (เฉพาะเอกสารของครูที่ปรึกษา) หรือ admin
  * ยกเลิกเองได้เฉพาะตอนที่ยังไม่มีขั้นตอนถัดไป ส่วน admin ยกเลิกได้ตลอด และขั้นถัดไปจะถูกยกเลิกตาม

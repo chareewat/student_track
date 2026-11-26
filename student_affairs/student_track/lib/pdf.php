@@ -4,11 +4,16 @@
  * ฟอนต์ Sarabun เดิมยังเก็บไว้ใน assets/fonts (ชื่อ sarabun) เผื่อต้องการกลับไปใช้
  */
 
-/** ความกว้างพื้นที่ข้อความ A4 (210 − ขอบซ้าย 25 − ขอบขวา 18 มม.) ใช้คำนวณตำแหน่งกึ่งกลางหน้า */
-const TRK_PDF_TEXT_WIDTH_MM = 167.0;
-
-function trk_pdf_new(string $title): \Mpdf\Mpdf
+/** ความกว้างพื้นที่ข้อความ (มม.) ของเอกสารที่กำลังสร้าง ใช้คำนวณตำแหน่งกึ่งกลางหน้า */
+function trk_pdf_text_area_mm(): float
 {
+    return trk_page_text_width_cm($GLOBALS['trk_pdf_family'] ?? 'memo') * 10;
+}
+
+/** $family = 'memo' (บันทึกข้อความ) หรือ 'letter' (หนังสือภายนอก) กำหนดขอบกระดาษ */
+function trk_pdf_new(string $title, string $family = 'memo'): \Mpdf\Mpdf
+{
+    $margin = TRK_PAGE_MARGINS_CM[$family];
     require_once TRK_ROOT . '/vendor/autoload.php';
 
     $config = (new \Mpdf\Config\ConfigVariables())->getDefaults();
@@ -39,16 +44,17 @@ function trk_pdf_new(string $title): \Mpdf\Mpdf
         ],
         'default_font' => 'thsarabunnew',
         'default_font_size' => 16,
-        'margin_left' => 25,
-        'margin_right' => 18,
-        'margin_top' => 12,
-        'margin_bottom' => 12,
+        'margin_left' => $margin['left'] * 10,
+        'margin_right' => $margin['right'] * 10,
+        'margin_top' => $margin['top'] * 10,
+        'margin_bottom' => $margin['bottom'] * 10,
         'autoScriptToLang' => true,
         'autoLangToFont' => false,
         // ห้ามย่อตาราง/ตัวอักษรให้พอดีหน้า (ค่าเริ่มต้นของ mPDF ย่อได้ถึง 1.4 เท่า) ให้ล้นไปหน้าถัดไปแทน
         'shrink_tables_to_fit' => 0,
     ]);
     $GLOBALS['trk_mpdf'] = $mpdf;
+    $GLOBALS['trk_pdf_family'] = $family;
     $mpdf->SetTitle($title);
     $mpdf->SetCreator('ระบบติดตามนักเรียน');
     return $mpdf;

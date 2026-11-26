@@ -18,6 +18,7 @@
   .note { font-size: 16pt; }
   .void { color: #c00; font-size: 21pt; font-weight: bold; text-align: center; border: 1.5pt solid #c00; padding: 4pt; }
   .letter-head td { vertical-align: top; }
+  .letter-head td, .flush td { padding-left: 0; padding-right: 0; }
   .tear { text-align: center; font-size: 16pt; margin: 10pt 0 6pt 0; }
   .photo { width: 7.6cm; height: 5.7cm; margin: 4pt; }
 </style>

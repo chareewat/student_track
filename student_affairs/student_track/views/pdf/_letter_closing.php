@@ -6,17 +6,18 @@
  * @var string $school
  */
 $closing = 'ขอแสดงความนับถือ';
-$half = TRK_PDF_TEXT_WIDTH_MM / 2;                      // กึ่งกลางพื้นที่ข้อความ (จากขอบซ้าย)
+$area = trk_pdf_text_area_mm();
+$half = $area / 2;                      // กึ่งกลางพื้นที่ข้อความ (จากขอบซ้าย)
 $phraseCenter = $half + trk_pdf_text_width_mm($closing) / 2;
-$span = min(50.0, TRK_PDF_TEXT_WIDTH_MM - $phraseCenter); // ครึ่งความกว้างของช่องชื่อ/ตำแหน่ง
+$span = min(50.0, $area - $phraseCenter); // ครึ่งความกว้างของช่องชื่อ/ตำแหน่ง
 ?>
-<table width="100%" style="margin-top: 14pt;">
+<table width="100%" class="flush" style="margin-top: 14pt;">
   <tr>
     <td style="width: <?= number_format($half, 1, '.', '') ?>mm;"></td>
     <td><?= e($closing) ?></td>
   </tr>
 </table>
-<table width="100%" style="margin-top: 42pt;">
+<table width="100%" class="flush" style="margin-top: 42pt;">
   <tr>
     <td style="width: <?= number_format($phraseCenter - $span, 1, '.', '') ?>mm;"></td>
     <td style="width: <?= number_format($span * 2, 1, '.', '') ?>mm; text-align: center;">

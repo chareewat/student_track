@@ -25,9 +25,14 @@ class TrkDocx
     public $section;
     /** ย่อหน้าถัดไปขึ้นหน้าใหม่ (ใช้แทนตัวแบ่งหน้า เพื่อไม่ให้เกิดหน้าว่างเมื่อหน้าก่อนเต็มพอดี) */
     private $breakNext = false;
+    /** ความกว้างพื้นที่ข้อความ (ซม.) ตามขอบกระดาษของชนิดเอกสาร */
+    public $textCm;
 
-    public function __construct(string $title)
+    /** $family = 'memo' (บันทึกข้อความ) หรือ 'letter' (หนังสือภายนอก) กำหนดขอบกระดาษ */
+    public function __construct(string $title, string $family = 'memo')
     {
+        $margin = TRK_PAGE_MARGINS_CM[$family];
+        $this->textCm = trk_page_text_width_cm($family);
         require_once TRK_ROOT . '/vendor/autoload.php';
         Settings::setTempDir(TRK_ROOT . '/storage/tmp');
         Settings::setOutputEscapingEnabled(true);
@@ -40,10 +45,11 @@ class TrkDocx
         $this->word->getDocInfo()->setTitle($title)->setCreator('ระบบติดตามนักเรียน');
         $this->section = $this->word->addSection([
             'paperSize' => 'A4',
-            'marginTop' => Converter::cmToTwip(1.5),
-            'marginBottom' => Converter::cmToTwip(1.5),
-            'marginLeft' => Converter::cmToTwip(3),
-            'marginRight' => Converter::cmToTwip(2),
+            'marginTop' => Converter::cmToTwip($margin['top']),
+            'marginBottom' => Converter::cmToTwip($margin['bottom']),
+            'marginLeft' => Converter::cmToTwip($margin['left']),
+            'marginRight' => Converter::cmToTwip($margin['right']),
+            'footerHeight' => 0,
         ]);
     }
 
@@ -105,15 +111,16 @@ class TrkDocx
     {
         $t = $this->section->addTable(['cellMargin' => 0]);
         $t->addRow();
-        $t->addCell(Converter::cmToTwip(3.2), ['valign' => 'center'])
+        $side = $this->textCm * 0.2;
+        $t->addCell(Converter::cmToTwip($side), ['valign' => 'center'])
             ->addImage(TRK_ROOT . '/assets/img/garuda.jpg', ['height' => Converter::cmToPoint(1.5), 'width' => Converter::cmToPoint(1.5)]);
-        $t->addCell(Converter::cmToTwip(9.6), ['valign' => 'center'])
+        $t->addCell(Converter::cmToTwip($this->textCm - 2 * $side), ['valign' => 'center'])
             ->addText('บันทึกข้อความ', ['bold' => true, 'size' => 18], ['alignment' => Jc::CENTER]);
-        $t->addCell(Converter::cmToTwip(3.2));
+        $t->addCell(Converter::cmToTwip($side));
 
         $label = ['bold' => true];
         $this->p([['ส่วนราชการ ', $label], $unit]);
-        $tab = ['tabs' => [new \PhpOffice\PhpWord\Style\Tab('left', Converter::cmToTwip(8))]];
+        $tab = ['tabs' => [new \PhpOffice\PhpWord\Style\Tab('left', Converter::cmToTwip($this->textCm / 2))]];
         $this->p([['ที่ ', $label], self::fill($docNo, 22), "\t", ['วันที่ ', $label],
             $date['day'] . ' เดือน ' . $date['month'] . ' พ.ศ. ' . $date['year']], $tab);
         $this->p(array_merge([['เรื่อง ', $label]], $subjectRuns),
@@ -123,42 +130,46 @@ class TrkDocx
 
     /**
      * หัวหนังสือภายนอก (ขร.2, บค.14, ขร.5): ครุฑ 3 ซม. กลางหน้า "ที่" และชื่อโรงเรียนอยู่ระนาบเท้าครุฑ
-     * ที่อยู่เริ่มกึ่งกลาง + 2 แท็บ วันที่เริ่มกึ่งกลาง (พื้นที่ข้อความกว้าง 16 ซม. กึ่งกลาง = 8 ซม.)
+     * ที่อยู่เริ่มที่ 11.5 ซม. จากขอบซ้ายของพื้นที่ข้อความ วันที่เริ่มกึ่งกลาง
      */
     public function letterHead(string $prefix, ?string $docNo, array $lines, array $date): void
     {
+        $half = $this->textCm / 2;
+        $side = $half - 1.5;                                        // ครุฑกว้าง 3 ซม. อยู่กึ่งกลาง
+        $right = $this->textCm - $side - 3;
+        $addressIndent = ['indentation' => ['left' => Converter::cmToTwip(TRK_LETTER_ADDRESS_CM - $half - 1.5)]];
         $t = $this->section->addTable(['cellMargin' => 0]);
         $t->addRow();
-        $t->addCell(Converter::cmToTwip(6.5), ['valign' => 'bottom'])->addText('ที่ ' . $prefix . self::fill($docNo, 12));
+        $t->addCell(Converter::cmToTwip($side), ['valign' => 'bottom'])->addText('ที่ ' . $prefix . self::fill($docNo, 12));
         $t->addCell(Converter::cmToTwip(3), ['valign' => 'bottom'])->addImage(TRK_ROOT . '/assets/img/garuda.jpg',
             ['height' => Converter::cmToPoint(3), 'width' => Converter::cmToPoint(3), 'alignment' => Jc::CENTER]);
-        $addressIndent = ['indentation' => ['left' => Converter::cmToTwip(2.54 - 1.5)]];
-        $t->addCell(Converter::cmToTwip(6.5), ['valign' => 'bottom'])->addText(array_shift($lines), null, $addressIndent);
+        $t->addCell(Converter::cmToTwip($right), ['valign' => 'bottom'])->addText(array_shift($lines), null, $addressIndent);
         $t->addRow();
-        $t->addCell(Converter::cmToTwip(6.5));
+        $t->addCell(Converter::cmToTwip($side));
         $t->addCell(Converter::cmToTwip(3));
-        $rest = $t->addCell(Converter::cmToTwip(6.5));
+        $rest = $t->addCell(Converter::cmToTwip($right));
         foreach ($lines as $line) {
             $rest->addText($line, null, $addressIndent);
         }
         $this->p('วันที่ ' . $date['day'] . ' ' . $date['month'] . ' พ.ศ. ' . $date['year'],
-            ['indentation' => ['left' => Converter::cmToTwip(8)], 'spaceBefore' => 120]);
+            ['indentation' => ['left' => Converter::cmToTwip($half)], 'spaceBefore' => 120]);
         $this->blank();
     }
 
     /**
      * ส่วนท้ายหนังสือภายนอก: "ขอแสดงความนับถือ" เริ่มกึ่งกลาง ชื่อและตำแหน่ง ผอ. จัดกึ่งกลางใต้คำนี้
-     * (คำนี้กว้างประมาณ 2.97 ซม. ที่ TH Sarabun New 16pt จึงจุดกึ่งกลางอยู่ที่ 8 + 1.485 ซม.)
+     * (คำนี้กว้างประมาณ 2.97 ซม. ที่ TH Sarabun New 16pt จึงจุดกึ่งกลางอยู่ที่กึ่งกลางหน้า + 1.485 ซม.)
      */
     public function letterClosing(string $name, string $title): void
     {
-        $this->p('ขอแสดงความนับถือ', ['indentation' => ['left' => Converter::cmToTwip(8)], 'spaceBefore' => 240]);
+        $half = $this->textCm / 2;
+        $this->p('ขอแสดงความนับถือ', ['indentation' => ['left' => Converter::cmToTwip($half)], 'spaceBefore' => 240]);
         $this->blank(16);
         $this->blank(16);
-        $center = 8 + 1.485;
-        $span = min(5.0, 16 - $center);
+        $center = $half + 1.485;
+        $span = min(5.0, $this->textCm - $center);
         $para = ['alignment' => Jc::CENTER, 'indentation' => [
-            'left' => Converter::cmToTwip($center - $span), 'right' => Converter::cmToTwip(16 - $center - $span)]];
+            'left' => Converter::cmToTwip($center - $span), 'right' => Converter::cmToTwip($this->textCm - $center - $span)]];
         $this->p($name, $para);
         $this->p($title, $para);
     }
@@ -169,7 +180,7 @@ class TrkDocx
      */
     public function signatures(array $blocks, float $offsetCm = 0, int $size = self::SIZE): void
     {
-        $usable = 16.0 - $offsetCm;
+        $usable = $this->textCm - $offsetCm;
         $t = $this->section->addTable(['cellMargin' => Converter::cmToTwip(0.1)]);
         $t->addRow(null, ['cantSplit' => true]);
         if ($offsetCm > 0) {
@@ -198,7 +209,7 @@ class TrkDocx
         $t = $this->section->addTable(['cellMargin' => 0]);
         for ($i = 0; $i < $n; $i++) {
             $t->addRow(Converter::cmToTwip(0.75), ['exactHeight' => true]);
-            $t->addCell(Converter::cmToTwip(16), ['borderBottomSize' => 4, 'borderBottomColor' => '000000', 'borderBottomStyle' => 'dotted'])
+            $t->addCell(Converter::cmToTwip($this->textCm), ['borderBottomSize' => 4, 'borderBottomColor' => '000000', 'borderBottomStyle' => 'dotted'])
                 ->addText('');
         }
     }
@@ -271,7 +282,7 @@ function trk_docx_build(array $doc, array $ctx): TrkDocx
         'KR1' => 'trk_docx_kr1', 'KR2' => 'trk_docx_kr2', 'BK14' => 'trk_docx_bk14',
         'KR3' => 'trk_docx_kr3', 'KR5' => 'trk_docx_kr5', 'KR6' => 'trk_docx_kr6',
     ];
-    $w = new TrkDocx(trk_document_title($doc));
+    $w = new TrkDocx(trk_document_title($doc), trk_document_family($doc['doc_type']));
     $w->voidBanner($doc);
     $builders[$doc['doc_type']]($w, $doc, $ctx);
     return $w;
